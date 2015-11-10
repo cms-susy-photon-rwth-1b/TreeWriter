@@ -111,8 +111,11 @@ if __name__ == '__main__':
     for dataset in datasets["common"]+datasets[user]:
 
         isSim = 'SIM' in dataset
+        isUser = dataset.endswith("/USER")
 
-        if not isSim:
+        config.Data.inputDBS = 'phys03' if isUser else 'global'
+
+        if not isSim and not isUser:
             # https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2531.html
             # RunD: 1546.908 pb-1
             config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-259891_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
@@ -120,6 +123,7 @@ if __name__ == '__main__':
             try: del config.Data.lumiMask
             except: pass
 
+        config.Data.splitting = 'FileBased' if isSim or isUser else 'LumiBased'
         if isSim:
             config.General.requestName = dataset.split('/')[1]
         else:
