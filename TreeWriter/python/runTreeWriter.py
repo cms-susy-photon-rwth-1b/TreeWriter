@@ -13,6 +13,11 @@ options.register ('user',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.string,
                   "Name the user. If not set by crab, this script will determine it.")
+
+# defaults
+options.inputFiles = 'file:/user/lange/cmssw/CMSSW_7_4_4/src/AODtoMiniAOD/test1_MINIAODSIM.root'
+options.outputFile = 'photonTree.root'
+options.maxEvents = -1
 # get and parse the command line arguments
 options.parseArguments()
 
@@ -40,13 +45,6 @@ else:
     print "you shall not pass!"
     print "(unkown user '%s')"%options.user
     exit()
-
-# setup any defaults you want
-options.inputFiles = 'root://xrootd.unl.edu//store/mc/RunIISpring15MiniAODv2/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/00642A0F-AA6C-E511-BF83-0025905B85D0.root'
-
-
-options.outputFile = 'photonTree.root'
-options.maxEvents = -1
 
 # determine if Data or Simulation
 isRealData=(not options.dataset.endswith("SIM"))
