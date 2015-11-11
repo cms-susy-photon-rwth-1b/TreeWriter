@@ -112,6 +112,9 @@ if __name__ == '__main__':
 
         isSim = 'SIM' in dataset
         isUser = dataset.endswith("/USER")
+        isFastSim="False"
+        # TODO check for fastsim and pass option to cmssw config
+        # if "something" in dataset: isFastSim="True"
 
         config.Data.inputDBS = 'phys03' if isUser else 'global'
 
@@ -129,7 +132,7 @@ if __name__ == '__main__':
         else:
             config.General.requestName = '_'.join(dataset.split('/')[1:3])
 
-        config.JobType.pyCfgParams = [ "dataset="+dataset, "user="+user]
+        config.JobType.pyCfgParams = [ "dataset="+dataset, "user="+user, "fastSim="+isFastSim]
 
         config.Data.inputDataset = dataset
         crabCommand('submit', config = config)
