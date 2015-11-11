@@ -4,6 +4,11 @@
 #include <TLorentzVector.h>
 #include <TVector3.h>
 
+enum PhotonMatchType {UNMATCHED = 0,
+                      MATCHED_FROM_GUDSCB,
+                      MATCHED_FROM_PI0,
+                      MATCHED_FROM_OTHER_SOURCES};
+
 namespace tree
 {
    struct Particle

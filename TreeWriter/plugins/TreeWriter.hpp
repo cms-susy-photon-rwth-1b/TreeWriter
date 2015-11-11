@@ -67,11 +67,6 @@ public:
 
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
-   enum PhotonMatchType {UNMATCHED = 0,
-                         MATCHED_FROM_GUDSCB,
-                         MATCHED_FROM_PI0,
-                         MATCHED_FROM_OTHER_SOURCES};
-
 private:
    virtual void beginJob() override;
    virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
