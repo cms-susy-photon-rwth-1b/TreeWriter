@@ -240,16 +240,18 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (!metFilterBits->accept(index)) return; // not passed
    }
    hCutFlow_->Fill("METfilters",mc_weight_*pu_weight_);
+
    // this is manually re-run atm:
    edm::Handle<bool> HBHENoiseFilterResult;
    edm::Handle<bool> HBHEIsoNoiseFilterResult;
    iEvent.getByToken(HBHENoiseFilterResult_, HBHENoiseFilterResult);
    iEvent.getByToken(HBHEIsoNoiseFilterResult_, HBHEIsoNoiseFilterResult);
-   if (!*HBHENoiseFilterResult) return;
-   hCutFlow_->Fill("HBHENoiseFilter",mc_weight_*pu_weight_);
-   if (!*HBHEIsoNoiseFilterResult) return;
-   hCutFlow_->Fill("HBHEIsoNoiseFilter",mc_weight_*pu_weight_);
-
+   if (HBHEIsoNoiseFilterResult.isValid() && HBHEIsoNoiseFilterResult.isValid()){
+      if (!*HBHENoiseFilterResult) return;
+      hCutFlow_->Fill("HBHENoiseFilter",mc_weight_*pu_weight_);
+      if (!*HBHEIsoNoiseFilterResult) return;
+      hCutFlow_->Fill("HBHEIsoNoiseFilter",mc_weight_*pu_weight_);
+   } // else: fast-sim, has no hcalnoise info
 
    // Get PV
    edm::Handle<reco::VertexCollection> vertices;
