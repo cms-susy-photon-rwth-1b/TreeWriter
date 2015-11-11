@@ -346,6 +346,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    } // photon loop
 
    if (vPhotons_.empty() || vPhotons_.at(0).p.Pt()<dPhoton_pT_cut_) return;
+   sort(vPhotons_.begin(), vPhotons_.end(), tree::PtGreater);
    hCutFlow_->Fill("photons",mc_weight_*pu_weight_);
 
    // Muons
@@ -360,6 +361,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trMuon.isTight=mu.isTightMuon(firstGoodVertex);
       vMuons_.push_back(trMuon);
    } // muon loop
+   sort(vMuons_.begin(), vMuons_.end(), tree::PtGreater);
 
    // Electrons
    // Get the electron ID data from the event stream
@@ -386,6 +388,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trEl.p.SetPtEtaPhi(el->pt(),el->superCluster()->eta(),el->superCluster()->phi());
       vElectrons_.push_back(trEl);
    }
+   sort(vElectrons_.begin(), vElectrons_.end(), tree::PtGreater);
 
    // Jets
    edm::Handle<pat::JetCollection> jetColl;
@@ -415,6 +418,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       vJets_.push_back(trJet);
    } // jet loop
+   sort(vJets_.begin(), vJets_.end(), tree::PtGreater);
 
 
    edm::Handle<reco::GenJetCollection> genJetColl;
@@ -426,6 +430,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         trGJet.p.SetPtEtaPhi(jet.pt(),jet.eta(),jet.phi());
         vGenJets_.push_back(trGJet);
      }
+     sort(vGenJets_.begin(), vGenJets_.end(), tree::PtGreater);
    } // gen-jet loop
 
    if (hardPUveto_){
@@ -528,6 +533,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             vGenParticles_.push_back(trP);
          }
       }
+      sort(vGenParticles_.begin(), vGenParticles_.end(), tree::PtGreater);
    }
 
    dR_recoGenJet_ = -1;

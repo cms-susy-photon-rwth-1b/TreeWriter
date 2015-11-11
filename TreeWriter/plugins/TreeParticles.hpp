@@ -65,7 +65,7 @@ namespace tree
       Float_t  uncertainty;
    };
 
-   inline bool EtGreater(const tree::Particle p1, const tree::Particle p2) {
+   inline bool PtGreater(const tree::Particle p1, const tree::Particle p2) {
       return p1.p.Pt() > p2.p.Pt();
    }
 
