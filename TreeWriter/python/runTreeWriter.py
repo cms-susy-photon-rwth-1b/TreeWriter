@@ -13,11 +13,17 @@ options.register ('user',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.string,
                   "Name the user. If not set by crab, this script will determine it.")
+options.register ('fastSim',
+                  '',
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.bool,
+                  "Whether the sample is simulated with fast-sim. (Default: False)")
 
 # defaults
 options.inputFiles = 'file:/user/lange/cmssw/CMSSW_7_4_4/src/AODtoMiniAOD/test1_MINIAODSIM.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
+options.fastSim=False
 # get and parse the command line arguments
 options.parseArguments()
 
@@ -165,7 +171,10 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     )
 )
 
-if re.match( "/SMS-.*/.*/USER", options.dataset ):
+if options.fastSim:
+    process.TreeWriter.metFilterNames = [] # no met filters for fastsim
+    process.TreeWriter.pileUpSummary = "addPileupInfo" # for miniaod v1
+elif re.match( "/SMS-.*/.*/USER", options.dataset ):
     # signal scan
     process.TreeWriter.metFilterNames = [] # no met filters for fastsim
     process.TreeWriter.pileUpSummary = "addPileupInfo" # for miniaod v1
@@ -204,6 +213,8 @@ process.p = cms.Path(
     process.photonIDValueMapProducer
     *process.egmGsfElectronIDSequence
     *process.egmPhotonIDSequence
-    *process.HBHENoiseFilterResultProducer #produces HBHE bools (applied in TreeWriter manually)
-    *process.TreeWriter
-)
+    )
+if not options.fastSim:
+    process.p*=process.HBHENoiseFilterResultProducer #produces HBHE bools (applied in TreeWriter manually)
+process.p*=process.TreeWriter
+
