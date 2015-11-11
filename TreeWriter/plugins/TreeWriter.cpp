@@ -259,12 +259,10 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    reco::Vertex firstGoodVertex;
    nGoodVertices_=0;
    for ( const auto& vtx : *vertices ) {
-      // Replace isFake() for miniAOD because it requires tracks and miniAOD vertices don't have tracks:
-      // Vertex.h: bool isFake() const {return (chi2_==0 && ndof_==0 && tracks_.empty());}
-      if (  /*!vtx->isFake() &&*/
-         !(vtx.chi2()==0 && vtx.ndof()==0)
-         &&  vtx.ndof()>=4. && vtx.position().Rho()<=2.0
-         && fabs(vtx.position().Z())<=24.0)
+      // from https://cmssdt.cern.ch/SDT/doxygen/CMSSW_7_4_14/doc/html/db/d49/GoodVertexFilter_8cc_source.html
+      if( vtx.ndof() > 4
+         && vtx.position().Rho()<=2.0
+         && fabs(vtx.position().Z())<=24.0 )
       {
          nGoodVertices_++;
          // first one?
