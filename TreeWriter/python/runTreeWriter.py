@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 import re
+import getpass
 
 options = VarParsing ('analysis')
 options.register ('dataset',
@@ -20,37 +21,12 @@ options.register ('fastSim',
                   "Whether the sample is simulated with fast-sim. (Default: False)")
 
 # defaults
-options.inputFiles = 'file:/user/lange/cmssw/CMSSW_7_4_4/src/AODtoMiniAOD/test1_MINIAODSIM.root'
+options.inputFiles = 'root://xrootd.unl.edu//store/mc/RunIISpring15MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/0CB41EBB-CA6D-E511-A28E-002618943C3A.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
 options.fastSim=False
 # get and parse the command line arguments
 options.parseArguments()
-
-# determine user if not set by crab
-user={}
-if not options.user:
-    import getpass
-    user["name"]=getpass.getuser()
-else:
-    user["name"]=options.user
-# user settings
-if user["name"]=="kiesel":
-    user["HT_cut"]=500.
-    user["photon_pT_cut"]=90.
-    user["isolatedPhotons"]=False
-elif user["name"]=="lange":
-    user["HT_cut"]=0.
-    user["photon_pT_cut"]=20.
-    user["isolatedPhotons"]=True
-elif user["name"]=="rmeyer":
-    user["HT_cut"]=0.
-    user["photon_pT_cut"]=20.
-    user["isolatedPhotons"]=True
-else:
-    print "you shall not pass!"
-    print "(unkown user '%s')"%options.user
-    exit()
 
 # determine if Data or Simulation
 isRealData=(not options.dataset.endswith("SIM"))
@@ -110,9 +86,9 @@ process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFil
 ################################
 process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     # selection configuration
-                                    HT_cut=cms.untracked.double(user["HT_cut"]),
-                                    photon_pT_cut=cms.untracked.double(user["photon_pT_cut"]),
-                                    isolatedPhotons=cms.untracked.bool(user["isolatedPhotons"]),
+                                    HT_cut=cms.untracked.double(0),
+                                    photon_pT_cut=cms.untracked.double(20),
+                                    isolatedPhotons=cms.untracked.bool(True),
                                     # physics objects
                                     photons = cms.InputTag("slimmedPhotons"),
                                     jets = cms.InputTag("slimmedJets"),
@@ -146,30 +122,56 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     # triggers to be saved
                                     # Warning: To be independent of the version number, the trigger result is saved if the trigger name begins
                                     # with the strings given here. E.g. "HLT" would always be true if any of the triggers fired.
-                                    triggerNames=cms.vstring(
-                                        "HLT_Photon90_CaloIdL_PFHT500_v",
-                                        "HLT_Photon90_v",
-                                        "HLT_PFHT600_v",
-                                        "HLT_Photon36_R9Id90_HE10_Iso40_EBOnly_PFMET40_v",
-                                        "HLT_Photon36_R9Id90_HE10_Iso40_EBOnly_VBF_v",
-                                        "HLT_Photon50_R9Id90_HE10_Iso40_EBOnly_PFMET40_v",
-                                        "HLT_Photon50_R9Id90_HE10_Iso40_EBOnly_VBF_v",
-                                        "HLT_Photon22_v",
-                                        "HLT_Photon30_v",
-                                        "HLT_Photon36_v",
-                                        "HLT_Photon50_v",
-                                        "HLT_Photon165_R9Id90_HE10_IsoM_v",
-                                        "HLT_Photon36_R9Id90_HE10_IsoM_v",
-                                        "HLT_Photon135_PFMET100_v",
-                                        "HLT_Photon175_v",
-                                        "HLT_Photon500_v",
-                                        "HLT_PFMET170_v",
-                                        "HLT_IsoMu18_v",
-                                        "HLT_IsoMu20_v",
-                                        "HLT_Mu20_v",
-                                        "HLT_Mu50_v",
-                                    )
+                                    triggerNames=cms.vstring()
 )
+
+# determine user if not set by crab
+user=options.user or getpass.getuser()
+
+# user settings
+if user=="kiesel":
+    process.TreeWriter.HT_cut=500.
+    process.TreeWriter.photon_pT_cut=90.
+    process.TreeWriter.isolatedPhotons=False
+    process.TreeWriter.triggerNames=[
+        "HLT_Photon90_CaloIdL_PFHT500_v",
+        "HLT_Photon90_v",
+        "HLT_PFHT600_v",
+    ]
+elif user=="lange":
+    process.TreeWriter.triggerNames=[
+        "HLT_Photon90_CaloIdL_PFHT500_v",
+        "HLT_Photon90_v",
+        "HLT_PFHT600_v",
+        "HLT_Photon36_R9Id90_HE10_Iso40_EBOnly_PFMET40_v",
+        "HLT_Photon36_R9Id90_HE10_Iso40_EBOnly_VBF_v",
+        "HLT_Photon50_R9Id90_HE10_Iso40_EBOnly_PFMET40_v",
+        "HLT_Photon50_R9Id90_HE10_Iso40_EBOnly_VBF_v",
+        "HLT_Photon22_v",
+        "HLT_Photon30_v",
+        "HLT_Photon36_v",
+        "HLT_Photon50_v",
+        "HLT_Photon165_R9Id90_HE10_IsoM_v",
+        "HLT_Photon36_R9Id90_HE10_IsoM_v",
+        "HLT_Photon135_PFMET100_v",
+        "HLT_Photon175_v",
+        "HLT_Photon500_v",
+        "HLT_PFMET170_v",
+        "HLT_IsoMu18_v",
+        "HLT_IsoMu20_v",
+        "HLT_Mu20_v",
+        "HLT_Mu50_v",
+    ]
+elif user=="rmeyer":
+    process.TreeWriter.triggerNames=[
+        "HLT_Photon90_CaloIdL_PFHT500_v",
+        "HLT_Photon36_R9Id90_HE10_Iso40_EBOnly_PFMET40_v",
+        "HLT_Photon36_R9Id85_OR_CaloId24b40e_Iso50T80L_Photon22_AND_HE10_R9Id65_Eta2_Mass15_v",
+    ]
+else:
+    print "you shall not pass!"
+    print "(unkown user '%s')"%options.user
+    exit()
 
 if options.fastSim:
     process.TreeWriter.metFilterNames = [] # no met filters for fastsim
