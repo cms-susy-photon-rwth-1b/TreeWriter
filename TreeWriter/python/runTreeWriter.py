@@ -29,7 +29,11 @@ options.fastSim=False
 options.parseArguments()
 
 # determine if Data or Simulation
-isRealData=(not options.dataset.endswith("SIM"))
+isRealData=True
+if options.dataset: # crab sumission
+    isRealData=(not options.dataset.endswith("SIM"))
+else: # running locally
+    isRealData=("SIM" not in options.inputFiles[0])
 
 # the actual TreeWriter module
 process = cms.Process("TreeWriter")
