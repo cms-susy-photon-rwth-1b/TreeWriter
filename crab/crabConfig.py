@@ -26,7 +26,7 @@ config.Data.splitting = 'LumiBased'
 config.Data.unitsPerJob = 500
 config.Data.publication = False
 # This string is used to construct the output dataset name
-config.Data.outputDatasetTag = 'V04'
+config.Data.outputDatasetTag = 'V05'
 config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
 
 config.section_("Site")
@@ -35,6 +35,7 @@ config.Site.storageSite = 'T2_DE_RWTH'
 
 datasets={}
 datasets["common"] = [
+    '/SinglePhoton/Run2015C_25ns-05Oct2015-v1/MINIAOD',
     '/SinglePhoton/Run2015D-05Oct2015-v1/MINIAOD',
     '/SinglePhoton/Run2015D-PromptReco-v4/MINIAOD',
     '/GJets_HT-40To100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
@@ -58,6 +59,7 @@ datasets["common"] = [
 ]
 
 datasets["kiesel"] = [
+    '/JetHT/Run2015C_25ns-05Oct2015-v1/MINIAOD',
     '/JetHT/Run2015D-05Oct2015-v1/MINIAOD',
     '/JetHT/Run2015D-PromptReco-v4/MINIAOD',
     '/GJet_Pt-15ToInf_TuneCUETP8M1_13TeV-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
@@ -83,6 +85,8 @@ datasets["kiesel"] = [
     '/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
+    '/SMS-T5gg/kiesel-SMS-T5gg_mGluino-1400_mNeutralino-200-3d7be4403ea17498be45eb057fcb0278/USER',
+    '/SMS-T5gg/kiesel-SMS-T5gg_mGluino-1400_mNeutralino-1200-3d7be4403ea17498be45eb057fcb0278/USER',
 ]
 datasets["lange"] = [
     '/MET/Run2015D-05Oct2015-v1/MINIAOD',
@@ -95,7 +99,6 @@ datasets["rmeyer"] = [
 ]
 datasets["SMS-T5gg-private"] = searchUserDatasets( "/SMS-T5gg/kiesel-*/USER" )
 
-
 # call with 'python crabConfig.py'
 if __name__ == '__main__':
     import getpass
@@ -103,7 +106,7 @@ if __name__ == '__main__':
 
     user=getpass.getuser()
     if user=="kiesel":
-        config.Data.outputDatasetTag = 'V04'
+        config.Data.outputDatasetTag = 'V05'
         config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
     elif user=="lange":
         config.Data.outputDatasetTag = 'v02'
@@ -135,6 +138,7 @@ if __name__ == '__main__':
             except: pass
 
         config.Data.splitting = 'FileBased' if isSim or isUser else 'LumiBased'
+        config.Data.unitsPerJob = 20 if isSim or isUser else 100
         if isSim:
             config.General.requestName = dataset.split('/')[1]
         else:
