@@ -40,15 +40,15 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.load("Configuration.StandardSequences.Geometry_cff")
 
 # determine global tag
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-from Configuration.AlCa.GlobalTag import GlobalTag
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 gtName = "auto:run2_data" if isRealData else "auto:run2_mc"
 
 # for further global tags, see here:
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD
-if re.match( "/.*/Run2015.*05Oct2015.*/MINIAOD", options.dataset ): gtName = "74X_dataRun2_reMiniAOD_v0,frontier://FrontierArc/CMS_CONDITIONS_EJ06"
-if re.match( "/.*/Run2015D-PromptReco-v4/MINIAOD", options.dataset ): gtName = "74X_dataRun2_Prompt_v4,frontier://FrontierArc/CMS_CONDITIONS_EJ06"
-if re.match( "/.*/.*RunIISpring15MiniAODv2.*/MINIAODSIM", options.dataset ): gtName = "74X_mcRun2_asymptotic_v2,frontier://FrontierArc/CMS_CONDITIONS_EJ06"
+if re.match( "/.*/Run2015.*05Oct2015.*/MINIAOD", options.dataset ): gtName = "74X_dataRun2_reMiniAOD_v0"
+if re.match( "/.*/Run2015D-PromptReco-v4/MINIAOD", options.dataset ): gtName = "74X_dataRun2_Prompt_v4"
+if re.match( "/.*/.*RunIISpring15MiniAODv2.*/MINIAODSIM", options.dataset ): gtName = "74X_mcRun2_asymptotic_v2"
 process.GlobalTag = GlobalTag(process.GlobalTag, gtName, '')
 
 hardPUveto=True if options.dataset.startswith("/QCD_HT100to200") else False
