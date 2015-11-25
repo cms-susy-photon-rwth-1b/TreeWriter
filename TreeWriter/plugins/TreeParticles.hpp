@@ -50,6 +50,7 @@ namespace tree
       bool hasPhotonMatch;
       bool hasElectronMatch;
       float bDiscriminator;
+      float pileUpDiscriminator;
    };
 
    struct Muon: public Particle
