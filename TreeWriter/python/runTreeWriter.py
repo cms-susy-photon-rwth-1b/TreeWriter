@@ -81,6 +81,16 @@ process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
 process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion=cms.bool(False)
 process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
 
+
+######################
+# Jets               #
+######################
+pfJetIDSelector = cms.PSet(
+    version = cms.string('FIRSTDATA'),
+    quality = cms.string('LOOSE')
+)
+
+
 ################################
 # The actual TreeWriter module #
 ################################
@@ -121,7 +131,8 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     # triggers to be saved
                                     # Warning: To be independent of the version number, the trigger result is saved if the trigger name begins
                                     # with the strings given here. E.g. "HLT" would always be true if any of the triggers fired.
-                                    triggerNames=cms.vstring()
+                                    triggerNames=cms.vstring(),
+                                    pfJetIDSelector=pfJetIDSelector,
 )
 
 # determine user if not set by crab

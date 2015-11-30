@@ -10,27 +10,6 @@
 
 #include "TreeWriter.hpp"
 
-// jet ID
-static bool isLooseJet(const pat::Jet& jet)
-{
-   bool pass = true
-      && jet.neutralHadronEnergyFraction() < .99
-      && jet.neutralEmEnergyFraction()     < .99
-      && jet.nConstituents()               > 1
-      && jet.muonEnergyFraction()          < .8
-      && jet.chargedEmEnergyFraction()     < .9
-      ;
-   // additional forward requirements:
-   if (fabs(jet.eta()) > 2.4){
-      pass = pass
-         && jet.chargedHadronEnergyFraction() > 0
-         && jet.chargedMultiplicity()         > 0
-         && jet.chargedEmEnergyFraction()     < .99
-         ;
-   }
-   return pass;
-}
-
 // compute HT using RECO objects to "reproduce" the trigger requirements
 static double computeHT(const std::vector<tree::Jet>& jets)
 {
@@ -101,6 +80,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , HBHENoiseFilterResult_(consumes<bool> (iConfig.getParameter<edm::InputTag>("HBHENoiseFilterResult")))
    , HBHEIsoNoiseFilterResult_(consumes<bool> (iConfig.getParameter<edm::InputTag>("HBHEIsoNoiseFilterResult")))
    , hardPUveto_(iConfig.getUntrackedParameter<bool>("hardPUveto"))
+   , jetIdSelector(iConfig.getParameter<edm::ParameterSet>("pfJetIDSelector"))
    , triggerNames_(iConfig.getParameter<std::vector<std::string>>("triggerNames"))
 {
 
@@ -401,7 +381,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trJet.p.SetPtEtaPhi(jet.pt(),jet.eta(),jet.phi());
       trJet.pileUpDiscriminator=jet.userFloat("pileupJetId:fullDiscriminant");
       trJet.bDiscriminator=jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-      trJet.isLoose=isLooseJet(jet);
+      trJet.isLoose=jetIdSelector(jet);
       // object matching
       trJet.hasPhotonMatch=false;
       for (tree::Photon const &ph: vPhotons_){

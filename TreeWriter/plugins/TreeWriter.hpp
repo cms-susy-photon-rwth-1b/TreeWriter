@@ -125,6 +125,8 @@ private:
    edm::EDGetTokenT<bool> HBHEIsoNoiseFilterResult_;
    const bool hardPUveto_;
 
+   PFJetIDSelectionFunctor jetIdSelector;
+
    // === TREE DATA ===
    TTree *eventTree_;
 
