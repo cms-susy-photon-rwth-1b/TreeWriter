@@ -93,6 +93,7 @@ datasets["lange"] = [
     '/SingleMuon/Run2015D-05Oct2015-v1/MINIAOD',
     '/MET/Run2015D-PromptReco-v4/MINIAOD',
     '/SingleMuon/Run2015D-PromptReco-v4/MINIAOD',
+    '/SMS-T5gg/kiesel-SMS-T5gg_mGluino-1400_mNeutralino-1200-3d7be4403ea17498be45eb057fcb0278/USER'
 ]
 datasets["rmeyer"] = [
     '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
