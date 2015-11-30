@@ -184,7 +184,7 @@ elif user=="rmeyer":
     ]
 else:
     print "you shall not pass!"
-    print "(unkown user '%s')"%user["name"]
+    print "(unkown user '%s')"%user
     exit()
 
 if options.fastSim:
