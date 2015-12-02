@@ -107,7 +107,7 @@ if __name__ == '__main__':
 
     user=getpass.getuser()
     if user=="kiesel":
-        config.Data.outputDatasetTag = 'V05'
+        config.Data.outputDatasetTag = 'V06'
         config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
     elif user=="lange":
         config.Data.outputDatasetTag = 'v02'
@@ -139,7 +139,7 @@ if __name__ == '__main__':
             except: pass
 
         config.Data.splitting = 'FileBased' if isSim or isUser else 'LumiBased'
-        config.Data.unitsPerJob = 20 if isSim or isUser else 100
+        config.Data.unitsPerJob = 5 if isSim or isUser else 40
         if isSim:
             config.General.requestName = dataset.split('/')[1]
         else:
