@@ -93,6 +93,21 @@ pfJetIDSelector = cms.PSet(
     quality = cms.string('LOOSE')
 )
 
+jecLevels = [ 'L1FastJet','L2Relative','L3Absolute' ]
+if isRealData: jecLevels.append( 'L2L3Residual' )
+
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+  src = cms.InputTag("slimmedJets"),
+  levels = jecLevels,
+  payload = 'AK4PFchs'
+)
+
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+process.patJetsReapplyJEC = patJetsUpdated.clone(
+  jetSource = cms.InputTag("slimmedJets"),
+  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+)
 
 ################################
 # The actual TreeWriter module #
@@ -104,7 +119,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     isolatedPhotons=cms.untracked.bool(True),
                                     # physics objects
                                     photons = cms.InputTag("slimmedPhotons"),
-                                    jets = cms.InputTag("slimmedJets"),
+                                    jets = cms.InputTag("patJetsReapplyJEC"),
                                     muons = cms.InputTag("slimmedMuons"),
                                     genJets=cms.InputTag("slimmedGenJets"),
                                     electrons = cms.InputTag("slimmedElectrons"),
@@ -229,6 +244,7 @@ process.p = cms.Path(
     *process.egmGsfElectronIDSequence
     *process.egmPhotonIDSequence
     )
+process.p += cms.Sequence( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC )
 if not options.fastSim:
     process.p*=process.HBHENoiseFilterResultProducer #produces HBHE bools (applied in TreeWriter manually)
 process.p*=process.TreeWriter
