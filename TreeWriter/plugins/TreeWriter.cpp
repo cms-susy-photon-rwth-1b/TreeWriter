@@ -405,6 +405,13 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             break;
          }
       }
+      trJet.hasMuonMatch=false;
+      for (tree::Muon const &mu: vMuons_){
+         if (trJet.p.DeltaR(mu.p) < 0.4){
+            trJet.hasMuonMatch=true;
+            break;
+         }
+      }
       vJets_.push_back(trJet);
    } // jet loop
    sort(vJets_.begin(), vJets_.end(), tree::PtGreater);

@@ -49,6 +49,7 @@ namespace tree
       bool isLoose;
       bool hasPhotonMatch;
       bool hasElectronMatch;
+      bool hasMuonMatch;
       float bDiscriminator;
       float pileUpDiscriminator;
       float chf;
