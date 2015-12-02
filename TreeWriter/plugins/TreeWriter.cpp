@@ -384,6 +384,12 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trJet.pileUpDiscriminator=jet.userFloat("pileupJetId:fullDiscriminant");
       trJet.bDiscriminator=jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
       trJet.isLoose=jetIdSelector(jet);
+      trJet.chf = jet.chargedHadronEnergyFraction();
+      trJet.nhf = jet.neutralHadronEnergyFraction();
+      trJet.cef = jet.chargedEmEnergyFraction();
+      trJet.nef = jet.neutralEmEnergyFraction();
+      trJet.nch = jet.chargedMultiplicity();
+      trJet.nconstituents = jet.numberOfDaughters();
       // object matching
       trJet.hasPhotonMatch=false;
       for (tree::Photon const &ph: vPhotons_){

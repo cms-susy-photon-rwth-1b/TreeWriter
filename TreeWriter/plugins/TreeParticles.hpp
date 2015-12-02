@@ -51,6 +51,12 @@ namespace tree
       bool hasElectronMatch;
       float bDiscriminator;
       float pileUpDiscriminator;
+      float chf;
+      float nhf;
+      float cef;
+      float nef;
+      int nch;
+      int nconstituents;
    };
 
    struct Muon: public Particle
