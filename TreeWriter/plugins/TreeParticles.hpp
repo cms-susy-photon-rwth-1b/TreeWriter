@@ -76,6 +76,7 @@ namespace tree
    {
       TVector3 p_raw;
       Float_t  uncertainty;
+      Float_t  sig; // MET significance
    };
 
    inline bool PtGreater(const tree::Particle p1, const tree::Particle p2) {
