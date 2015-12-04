@@ -77,7 +77,6 @@ namespace tree
       TVector3 p_raw;
       Float_t  uncertainty;
       Float_t  sig; // MET significance
-      Float_t  sigEarlyRun1; // as currently stored in MiniAOD
    };
 
    inline bool PtGreater(const tree::Particle p1, const tree::Particle p2) {

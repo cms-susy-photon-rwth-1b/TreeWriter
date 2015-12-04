@@ -452,7 +452,6 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    double metPt=met.pt();
    met_.p.SetPtEtaPhi(metPt,met.eta(),met.phi());
    met_.p_raw.SetPtEtaPhi(metRaw.pt(),metRaw.eta(),metRaw.phi());
-   met_.sigEarlyRun1=met.metSignificance();
    edm::Handle<double> METSignificance;
    iEvent.getByToken(METSignificance_, METSignificance);
    met_.sig=float(*METSignificance);
