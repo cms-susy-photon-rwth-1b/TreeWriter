@@ -65,6 +65,11 @@ process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring(
     options.inputFiles
 ))
 
+######################
+# MET Significance   #
+######################
+# https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETSignificance
+process.load("RecoMET/METProducers.METSignificance_cfi")
 
 ###############################
 # Define MET Filters to apply #
@@ -83,7 +88,6 @@ process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
 process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
 process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion=cms.bool(False)
 process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
-
 
 ######################
 # Jets               #
@@ -129,6 +133,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     prunedGenParticles = cms.InputTag("prunedGenParticles"),
                                     pileUpSummary = cms.InputTag('slimmedAddPileupInfo'),
                                     lheEventProduct = cms.InputTag('externalLHEProducer'),
+                                    metSig=cms.InputTag("METSignificance","METSignificance"),
                                     # electron IDs
                                     electronVetoIdMap   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-veto"),
                                     electronLooseIdMap  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-loose"),
@@ -246,7 +251,8 @@ for idmod in ph_id_modules:
 ####################
 
 process.p = cms.Path(
-    process.photonIDValueMapProducer
+    process.METSignificance
+    *process.photonIDValueMapProducer
     *process.egmGsfElectronIDSequence
     *process.egmPhotonIDSequence
     )
