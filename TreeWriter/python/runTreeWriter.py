@@ -163,9 +163,10 @@ if user=="kiesel":
     process.TreeWriter.isolatedPhotons=False
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT500_v",
-        "HLT_Photon90_v",
+        "HLT_Photon90_v", #prescale: 90
         "HLT_PFHT600_v",
         "HLT_Photon175_v",
+        "HLT_PFHT475_v", #prescale: 60
     ]
 elif user=="lange":
     process.TreeWriter.triggerNames=[
