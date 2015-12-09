@@ -49,6 +49,7 @@ namespace tree
       bool isLoose;
       bool hasPhotonMatch;
       bool hasElectronMatch;
+      bool hasMuonMatch;
       float bDiscriminator;
       float pileUpDiscriminator;
       float chf;
@@ -75,6 +76,7 @@ namespace tree
    {
       TVector3 p_raw;
       Float_t  uncertainty;
+      Float_t  sig; // MET significance
    };
 
    inline bool PtGreater(const tree::Particle p1, const tree::Particle p2) {

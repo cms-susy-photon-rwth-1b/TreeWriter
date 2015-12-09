@@ -62,6 +62,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , prunedGenToken_         (consumes<edm::View<reco::GenParticle> >(iConfig.getParameter<edm::InputTag>("prunedGenParticles")))
    , pileUpSummaryToken_     (consumes<PileupSummaryInfoCollection>(iConfig.getParameter<edm::InputTag>("pileUpSummary")))
    , LHEEventToken_          (consumes<LHEEventProduct>(iConfig.getParameter<edm::InputTag>("lheEventProduct")))
+   , METSignificance_        (consumes<double> (iConfig.getParameter<edm::InputTag>("metSig")))
    // electron id
    , electronVetoIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronVetoIdMap"   )))
    , electronLooseIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronLooseIdMap"  )))
@@ -405,6 +406,13 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             break;
          }
       }
+      trJet.hasMuonMatch=false;
+      for (tree::Muon const &mu: vMuons_){
+         if (trJet.p.DeltaR(mu.p) < 0.4){
+            trJet.hasMuonMatch=true;
+            break;
+         }
+      }
       vJets_.push_back(trJet);
    } // jet loop
    sort(vJets_.begin(), vJets_.end(), tree::PtGreater);
@@ -444,6 +452,9 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    double metPt=met.pt();
    met_.p.SetPtEtaPhi(metPt,met.eta(),met.phi());
    met_.p_raw.SetPtEtaPhi(metRaw.pt(),metRaw.eta(),metRaw.phi());
+   edm::Handle<double> METSignificance;
+   iEvent.getByToken(METSignificance_, METSignificance);
+   met_.sig=float(*METSignificance);
 
    // jet resolution shift is set to 0 for 74X
    met_.uncertainty=0;

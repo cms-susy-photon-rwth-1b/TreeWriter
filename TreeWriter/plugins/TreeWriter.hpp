@@ -102,6 +102,8 @@ private:
    edm::EDGetTokenT<PileupSummaryInfoCollection>  pileUpSummaryToken_;
    edm::EDGetTokenT<LHEEventProduct>           LHEEventToken_;
 
+   edm::EDGetTokenT<double> METSignificance_;
+
    // electron id
    edm::EDGetTokenT<edm::ValueMap<bool> > electronVetoIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool> > electronLooseIdMapToken_;
