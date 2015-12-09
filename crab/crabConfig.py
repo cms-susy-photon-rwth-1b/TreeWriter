@@ -163,6 +163,8 @@ if __name__ == '__main__':
             config.General.requestName = dataset.split('/')[1]
         else:
             config.General.requestName = '_'.join(dataset.split('/')[1:3])
+         # CRABClient.ClientExceptions.ConfigurationException: Invalid CRAB configuration: Parameter General.requestName should not be longer than 100 characters.
+        config.General.requestName = config.General.requestName[:100]
 
         config.JobType.pyCfgParams = [ "dataset="+dataset, "user="+user, "fastSim="+isFastSim]
 
