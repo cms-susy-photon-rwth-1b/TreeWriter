@@ -192,6 +192,7 @@ elif user=="lange":
         "HLT_Photon50_v",
         "HLT_Photon36_R9Id90_HE10_IsoM_v",
         "HLT_Photon165_R9Id90_HE10_IsoM_v",
+        "HLT_Photon165_HE10",
         "HLT_Photon135_PFMET100_v",
         'HLT_Photon135_PFMET100_NoiseCleaned_v',
         "HLT_Photon175_v",
