@@ -87,9 +87,12 @@ datasets["kiesel"] = [
     '/SMS-T5gg/kiesel-SMS-T5gg_mGluino-1400_mNeutralino-1200-3d7be4403ea17498be45eb057fcb0278/USER',
 ]
 datasets["lange"] = [
-    '/SinglePhoton/Run2015C_25ns-05Oct2015-v1/MINIAOD',
     '/SinglePhoton/Run2015D-05Oct2015-v1/MINIAOD',
     '/SinglePhoton/Run2015D-PromptReco-v4/MINIAOD',
+    '/MET/Run2015D-05Oct2015-v1/MINIAOD',
+    '/MET/Run2015D-PromptReco-v4/MINIAOD',
+    '/SingleMuon/Run2015D-05Oct2015-v1/MINIAOD',
+    '/SingleMuon/Run2015D-PromptReco-v4/MINIAOD',
     '/GJets_HT-40To100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
@@ -108,10 +111,6 @@ datasets["lange"] = [
     '/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
-    '/MET/Run2015D-05Oct2015-v1/MINIAOD',
-    '/SingleMuon/Run2015D-05Oct2015-v1/MINIAOD',
-    '/MET/Run2015D-PromptReco-v4/MINIAOD',
-    '/SingleMuon/Run2015D-PromptReco-v4/MINIAOD',
     '/SMS-T5gg/kiesel-SMS-T5gg_mGluino-1400_mNeutralino-1200-3d7be4403ea17498be45eb057fcb0278/USER'
 ]
 datasets["rmeyer"] = [
