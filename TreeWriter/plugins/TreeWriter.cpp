@@ -308,6 +308,9 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       trPho.mvaValue=(*mva_value)[phoPtr];
 
+      trPho.ecalPFClIso=pho->ecalPFClusterIso();
+      trPho.hcalPFClIso=pho->hcalPFClusterIso();
+      trPho.trackIso=pho->trackIso();
 
       // MC match
       if (!isRealData){
