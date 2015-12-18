@@ -85,6 +85,7 @@ datasets["kiesel"] = [
     '/QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/SMS-T5gg/kiesel-SMS-T5gg_mGluino-1400_mNeutralino-200-3d7be4403ea17498be45eb057fcb0278/USER',
     '/SMS-T5gg/kiesel-SMS-T5gg_mGluino-1400_mNeutralino-1200-3d7be4403ea17498be45eb057fcb0278/USER',
+    '/GJet_Pt-15ToInf_TuneCUETP8M1_13TeV-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 ]
 datasets["lange"] = [
     '/SinglePhoton/Run2015C_25ns-05Oct2015-v1/MINIAOD',
