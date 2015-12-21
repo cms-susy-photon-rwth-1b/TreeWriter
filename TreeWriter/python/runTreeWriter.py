@@ -119,8 +119,9 @@ process.patJetsReapplyJEC = patJetsUpdated.clone(
 process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     # selection configuration
                                     HT_cut=cms.untracked.double(0),
-                                    photon_pT_cut=cms.untracked.double(20),
-                                    isolatedPhotons=cms.untracked.bool(True),
+                                    photon_pT_cut=cms.untracked.double(20), # for leading photon
+                                    isolatedPhotons=cms.untracked.bool(True), # for all photons in the collection
+                                    minNumberPhotons_cut=cms.untracked.uint32(1),
                                     # physics objects
                                     photons = cms.InputTag("slimmedPhotons"),
                                     jets = cms.InputTag("patJetsReapplyJEC"),

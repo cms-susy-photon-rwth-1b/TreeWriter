@@ -51,6 +51,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    : dHT_cut_(iConfig.getUntrackedParameter<double>("HT_cut"))
    , dPhoton_pT_cut_(iConfig.getUntrackedParameter<double>("photon_pT_cut"))
    , isolatedPhotons_(iConfig.getUntrackedParameter<bool>("isolatedPhotons"))
+   , minNumberPhotons_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberPhotons_cut"))
    , vtxToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices")))
    , photonCollectionToken_  (consumes<edm::View<pat::Photon> >(iConfig.getParameter<edm::InputTag>("photons")))
    , jetCollectionToken_     (consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("jets")))
@@ -328,8 +329,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       vPhotons_.push_back(trPho);
    } // photon loop
 
-   if (vPhotons_.empty() || vPhotons_.at(0).p.Pt()<dPhoton_pT_cut_) return;
    sort(vPhotons_.begin(), vPhotons_.end(), tree::PtGreater);
+   if (minNumberPhotons_cut_ && (vPhotons_.size()<minNumberPhotons_cut_|| vPhotons_.at(0).p.Pt()<dPhoton_pT_cut_)) return;
    hCutFlow_->Fill("photons",mc_weight_*pu_weight_);
 
    // Muons
