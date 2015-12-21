@@ -29,16 +29,10 @@ namespace tree
       Int_t passElectronVeto;
       Float_t r9;
 
-      // offline isolations
       Float_t isoChargedHadronsEA;
       Float_t isoNeutralHadronsEA;
       Float_t isoPhotonsEA;
       Float_t isoWorstChargedHadrons;
-
-      // trigger(-like) isolations
-      Float_t ecalPFClIso;
-      Float_t hcalPFClIso;
-      Float_t trackIso; // this is a solid cone Iso, HLT uses hollow cone
 
       Int_t isTrue;
       Int_t isTrueAlternative;
