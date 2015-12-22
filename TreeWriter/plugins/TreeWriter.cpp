@@ -32,14 +32,6 @@ template <typename T> int sign(T val) {
 //
 
 
-double dR_leadingJet_gen_reco( const reco::GenJetCollection& genJets, const pat::JetCollection& recoJets ) {
-    double dR = -1.;
-    if( genJets.size() && recoJets.size() ) {
-        dR = deltaR<reco::GenJet,pat::Jet>( genJets.at(0), recoJets.at(0) );
-    }
-    return dR;
-}
-
 //
 // static data member definitions
 //
@@ -103,7 +95,6 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("pu_weight"     , &pu_weight_     , "pu_weight/F");
    eventTree_->Branch("mc_weight"     , &mc_weight_     , "mc_weight/B");
 
-   eventTree_->Branch("dR_recoGenJet" , &dR_recoGenJet_ , "dR_recoGenJet/F");
    eventTree_->Branch("genLeptonsFromW" , &genLeptonsFromW_ , "genLeptonsFromW/I");
    eventTree_->Branch("genHt" , &genHt_ , "genHt/F");
 
@@ -535,11 +526,6 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          }
       }
       sort(vGenParticles_.begin(), vGenParticles_.end(), tree::PtGreater);
-   }
-
-   dR_recoGenJet_ = -1;
-   if(!isRealData ) {
-      dR_recoGenJet_ = dR_leadingJet_gen_reco( *genJetColl, *jetColl );
    }
 
 
