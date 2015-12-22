@@ -103,7 +103,6 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("pu_weight"     , &pu_weight_     , "pu_weight/F");
    eventTree_->Branch("mc_weight"     , &mc_weight_     , "mc_weight/B");
 
-   eventTree_->Branch("dummyFloat" , &dummyFloat_ , "dummyFloat/F");
    eventTree_->Branch("dR_recoGenJet" , &dR_recoGenJet_ , "dR_recoGenJet/F");
    eventTree_->Branch("genLeptonsFromW" , &genLeptonsFromW_ , "genLeptonsFromW/I");
    eventTree_->Branch("genHt" , &genHt_ , "genHt/F");
