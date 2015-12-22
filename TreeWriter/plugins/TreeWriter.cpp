@@ -303,9 +303,9 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trPho.r9  = pho->r9();
 
       vid::CutFlowResult cutFlow = (*loose_id_cutflow)[phoPtr];
-      trPho.isoChargedHadronsEA = cutFlow.getValueCutUpon(4);
-      trPho.isoNeutralHadronsEA = cutFlow.getValueCutUpon(5);
-      trPho.isoPhotonsEA        = cutFlow.getValueCutUpon(6);
+      trPho.cIso = cutFlow.getValueCutUpon(4);
+      trPho.nIso = cutFlow.getValueCutUpon(5);
+      trPho.pIso = cutFlow.getValueCutUpon(6);
 
       trPho.mvaValue=(*mva_value)[phoPtr];
 

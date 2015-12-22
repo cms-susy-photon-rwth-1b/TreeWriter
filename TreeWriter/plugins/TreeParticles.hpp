@@ -29,10 +29,10 @@ namespace tree
       Int_t passElectronVeto;
       Float_t r9;
 
-      Float_t isoChargedHadronsEA;
-      Float_t isoNeutralHadronsEA;
-      Float_t isoPhotonsEA;
-      Float_t isoWorstChargedHadrons;
+      Float_t cIso;
+      Float_t nIso;
+      Float_t pIso;
+      Float_t cIsoWorst;
 
       Int_t isTrue;
       Int_t isTrueAlternative;
