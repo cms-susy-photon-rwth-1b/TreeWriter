@@ -306,6 +306,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trPho.cIso = cutFlow.getValueCutUpon(4);
       trPho.nIso = cutFlow.getValueCutUpon(5);
       trPho.pIso = cutFlow.getValueCutUpon(6);
+      trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
 
       trPho.mvaValue=(*mva_value)[phoPtr];
 
