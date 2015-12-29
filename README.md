@@ -4,10 +4,9 @@
 Get CMSSW environment 74X
 
 ```
-cmsrel CMSSW_7_4_14
-cd CMSSW_7_4_14/src/
+cmsrel CMSSW_7_4_16
+cd CMSSW_7_4_16/src/
 cmsenv
-git cms-merge-topic ikrav:egm_id_7.4.12_v1
 ```
 Get and build the TreeWriter
 
