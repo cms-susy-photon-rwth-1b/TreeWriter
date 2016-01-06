@@ -36,7 +36,7 @@ else: # running locally
     isRealData=("SIM" not in options.inputFiles[0])
 
 options.fastSim = (options.fastSim
-                   or re.match( "/SMS-.*/.*/USER", options.dataset ) # signal scan
+                   or bool(re.match( "/SMS-.*/.*/USER", options.dataset )) # signal scan
                    )
 
 # the actual TreeWriter module
