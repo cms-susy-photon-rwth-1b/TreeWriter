@@ -35,6 +35,10 @@ if options.dataset: # crab sumission
 else: # running locally
     isRealData=("SIM" not in options.inputFiles[0])
 
+options.fastSim = (options.fastSim
+                   or re.match( "/SMS-.*/.*/USER", options.dataset ) # signal scan
+                   )
+
 # the actual TreeWriter module
 process = cms.Process("TreeWriter")
 
@@ -216,10 +220,6 @@ else:
     exit()
 
 if options.fastSim:
-    process.TreeWriter.metFilterNames = [] # no met filters for fastsim
-    process.TreeWriter.pileUpSummary = "addPileupInfo" # for miniaod v1
-elif re.match( "/SMS-.*/.*/USER", options.dataset ):
-    # signal scan
     process.TreeWriter.metFilterNames = [] # no met filters for fastsim
     process.TreeWriter.pileUpSummary = "addPileupInfo" # for miniaod v1
 
