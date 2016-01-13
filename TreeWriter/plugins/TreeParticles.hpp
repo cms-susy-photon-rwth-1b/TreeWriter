@@ -19,6 +19,7 @@ namespace tree
    struct GenParticle: public Particle
    {
       Int_t pdgId=0;
+      bool isPrompt;
    };
 
    struct Photon : public Particle
