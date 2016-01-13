@@ -497,6 +497,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
    // Generated Particles
+   // status flags: https://indico.cern.ch/event/459797/contribution/2/attachments/1181555/1710844/mcaod-Nov4-2015.pdf
    genLeptonsFromW_ = 0;
    vGenParticles_.clear();
    tree::GenParticle trP;
@@ -506,9 +507,9 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       for (const reco::GenParticle &genP: *prunedGenParticles){
 
-         // count generetad leptons from W bosons
-         auto id = abs(genP.pdgId());
-         if( id == 11 || id == 13 || id == 15 ) { // charged leptons
+         // count generated leptons from W bosons
+         auto absId = abs(genP.pdgId());
+         if( absId == 11 || absId == 13 || absId == 15 ) { // charged leptons
            bool WAsMother = false;
            for( unsigned i=0;i<genP.numberOfMothers(); i++ ) {
              if( abs(genP.mother(i)->pdgId() ) == 24 ) { WAsMother = true; }
@@ -519,7 +520,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          // save particles
          if (genP.status() != 1) continue; // only final state particles
          if (genP.pt() < 30)     continue;
-         if (id == 11 || id == 22) { // e+-, photon
+         if (absId == 11 || absId == 22) { // e+-, photon
             trP.pdgId = genP.pdgId();
             trP.p.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
             vGenParticles_.push_back(trP);
