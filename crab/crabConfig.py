@@ -127,6 +127,9 @@ datasets["lange"] = [
     '/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/SMS-T5gg/kiesel-SMS-T5gg_mGluino-1400_mNeutralino-1200-3d7be4403ea17498be45eb057fcb0278/USER'
 ]
+
+datasets["jschulz"] = datasets["lange"]
+
 datasets["rmeyer"] = [
     '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 ]
@@ -142,8 +145,11 @@ if __name__ == '__main__':
         config.Data.outputDatasetTag = 'V07'
         config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
     elif user=="lange":
-        config.Data.outputDatasetTag = 'v05'
+        config.Data.outputDatasetTag = 'v06'
         config.Data.outLFNDirBase = "/store/user/jolange/run2/"
+    elif user=="jschulz":
+        config.Data.outputDatasetTag = 'v06'
+        config.Data.outLFNDirBase = "/store/user/jschulz/run2/"
     elif user=="rmeyer":
         config.Data.outputDatasetTag = 'V01'
         config.Data.outLFNDirBase = "/store/user/rmeyer/13TeV/nTuples/"
