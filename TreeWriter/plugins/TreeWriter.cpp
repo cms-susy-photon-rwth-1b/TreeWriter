@@ -42,6 +42,7 @@ template <typename T> int sign(T val) {
 TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    : dHT_cut_(iConfig.getUntrackedParameter<double>("HT_cut"))
    , dPhoton_pT_cut_(iConfig.getUntrackedParameter<double>("photon_pT_cut"))
+   , dJet_pT_cut_(iConfig.getUntrackedParameter<double>("jet_pT_cut"))
    , isolatedPhotons_(iConfig.getUntrackedParameter<bool>("isolatedPhotons"))
    , minNumberPhotons_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberPhotons_cut"))
    , vtxToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices")))
@@ -372,7 +373,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    vJets_.clear();
    tree::Jet trJet;
    for (const pat::Jet& jet : *jetColl){
-      if (jet.pt()<30) continue;
+      if (jet.pt()<dJet_pT_cut_) continue;
       trJet.p.SetPtEtaPhi(jet.pt(),jet.eta(),jet.phi());
       trJet.pileUpDiscriminator=jet.userFloat("pileupJetId:fullDiscriminant");
       trJet.bDiscriminator=jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");

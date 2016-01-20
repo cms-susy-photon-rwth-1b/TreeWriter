@@ -88,6 +88,7 @@ private:
    // ----------member data ---------------------------
    double dHT_cut_;
    double dPhoton_pT_cut_;
+   double dJet_pT_cut_;
    bool isolatedPhotons_;
    unsigned minNumberPhotons_cut_;
 

@@ -124,6 +124,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     # selection configuration
                                     HT_cut=cms.untracked.double(0),
                                     photon_pT_cut=cms.untracked.double(20), # for leading photon
+                                    jet_pT_cut=cms.untracked.double(30), # for all jets
                                     isolatedPhotons=cms.untracked.bool(True), # for all photons in the collection
                                     minNumberPhotons_cut=cms.untracked.uint32(1),
                                     # physics objects
@@ -179,6 +180,7 @@ if user=="kiesel":
         "HLT_PFHT475_v", #prescale: 60
     ]
 elif user=="lange" or user=="jschulz":
+    process.TreeWriter.jet_pT_cut=20.
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT500_v",
         "HLT_Photon90_v",
