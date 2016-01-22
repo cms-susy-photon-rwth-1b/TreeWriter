@@ -584,6 +584,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          if (absId == 11 || absId == 22) { // e+-, photon
             trP.pdgId = genP.pdgId();
             trP.isPrompt = genP.statusFlags().isPrompt();
+            trP.fromHardProcess = genP.statusFlags().fromHardProcess();
             trP.p.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
             vGenParticles_.push_back(trP);
          }

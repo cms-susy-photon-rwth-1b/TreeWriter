@@ -20,6 +20,7 @@ namespace tree
    {
       Int_t pdgId=0;
       bool isPrompt;
+      bool fromHardProcess;
    };
 
    struct IntermediateGenParticle: public GenParticle
