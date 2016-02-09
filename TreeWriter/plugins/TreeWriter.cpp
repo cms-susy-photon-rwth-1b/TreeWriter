@@ -78,6 +78,10 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , jetIdSelector(iConfig.getParameter<edm::ParameterSet>("pfJetIDSelector"))
    , triggerNames_(iConfig.getParameter<std::vector<std::string>>("triggerNames"))
 {
+   // declare consumptions that are used "byLabel" in analyze()
+   consumes<GenEventInfoProduct>(edm::InputTag("generator"));
+   consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","","HLT"));
+   consumes<edm::TriggerResults>(edm::InputTag("TriggerResults",""));
 
    edm::Service<TFileService> fs;
    eventTree_ = fs->make<TTree> ("eventTree", "event data");
