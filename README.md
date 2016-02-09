@@ -8,6 +8,11 @@ cmsrel CMSSW_7_6_3_patch2
 cd CMSSW_7_6_3_patch2/src/
 cmsenv
 ```
+get MET Significance Recipe
+
+```
+git-cms-merge-topic -u cms-met:76X-METSignificance-patch0
+```
 Get and build the TreeWriter
 
 ```
@@ -44,6 +49,10 @@ python2 crabConfig.py
 in the python config, set
 - `HT_cut`: minimum HT
 - `photon_pT_cut`: minimum leading-photon pT
+
+## Input files ##
+located in `TreeWriter/data`:
+- `Summer15_25nsV6.db` for JER (used for MET Significance), taken from [cms-met](https://github.com/cms-met/cmssw/blob/f0ac9b3e56e85d03c8dbe6e5cb101274fb356520/RecoMET/METProducers/test/Summer15_25nsV6.db) which is [this](https://github.com/cms-jet/JRDatabase/blob/aa321717d57773d074b5d328c5e71d473e7cf836/SQLiteFiles/Summer15_25nsV6_MC.db)
 
 ## Objects ##
 ### Photons ###

@@ -1,7 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
-import re
+import os,re
 import getpass
+
+cmssw_src=os.environ['CMSSW_BASE']+'/src/'
 
 options = VarParsing ('analysis')
 options.register ('dataset',
@@ -69,12 +71,6 @@ process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring(
     options.inputFiles
 ))
 
-######################
-# MET Significance   #
-######################
-# https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETSignificance
-process.load("RecoMET/METProducers.METSignificance_cfi")
-
 ###############################
 # Define MET Filters to apply #
 ###############################
@@ -116,6 +112,43 @@ process.patJetsReapplyJEC = patJetsUpdated.clone(
   jetSource = cms.InputTag("slimmedJets"),
   jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
 )
+
+######################
+# MET Significance   #
+######################
+# https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETSignificance
+process.load("RecoMET/METProducers.METSignificance_cfi")
+process.load("RecoMET/METProducers.METSignificanceParams_cfi")
+
+process.load('Configuration.StandardSequences.Services_cff')
+process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
+from CondCore.DBCommon.CondDBSetup_cfi import *
+process.jer = cms.ESSource("PoolDBESSource",
+                           CondDBSetup,
+                           toGet = cms.VPSet(
+                               # Pt Resolution
+                               cms.PSet(
+                                   record = cms.string('JetResolutionRcd'),
+                                   tag    = cms.string('JR_MC_PtResolution_Summer15_25nsV6_AK4PFchs'),
+                                   label  = cms.untracked.string('AK4PFchs_pt')
+                               ),
+                               # Phi Resolution
+                               cms.PSet(
+                                   record = cms.string('JetResolutionRcd'),
+                                   tag    = cms.string('JR_MC_PhiResolution_Summer15_25nsV6_AK4PFchs'),
+                                   label  = cms.untracked.string('AK4PFchs_phi')
+                               ),
+                               # Scale factors
+                               cms.PSet(
+                                   record = cms.string('JetResolutionScaleFactorRcd'),
+                                   tag    = cms.string('JR_DATAMCSF_Summer15_25nsV6_AK4PFchs'),
+                                   label  = cms.untracked.string('AK4PFchs')
+                               ),
+                           ),
+                           connect = cms.string('sqlite_file:'+cmssw_src+'/TreeWriter/TreeWriter/data/Summer15_25nsV6.db')
+)
+process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
+
 
 ################################
 # The actual TreeWriter module #
