@@ -1,11 +1,11 @@
 **TreeWriter** to build a ROOT tree from MiniAOD. Photon Cut- and MVA-IDs are computed.
 
 ## Building and Running ##
-Get CMSSW environment 74X
+Get CMSSW environment 76X
 
 ```
-cmsrel CMSSW_7_4_16
-cd CMSSW_7_4_16/src/
+cmsrel CMSSW_7_6_3_patch2
+cd CMSSW_7_6_3_patch2/src/
 cmsenv
 ```
 Get and build the TreeWriter
