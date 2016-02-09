@@ -52,7 +52,6 @@ namespace tree
       bool hasElectronMatch;
       bool hasMuonMatch;
       float bDiscriminator;
-      float pileUpDiscriminator;
       float chf;
       float nhf;
       float cef;
