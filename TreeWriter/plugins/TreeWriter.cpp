@@ -101,7 +101,6 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("pu_weight"     , &pu_weight_     , "pu_weight/F");
    eventTree_->Branch("mc_weight"     , &mc_weight_     , "mc_weight/B");
 
-   eventTree_->Branch("genLeptonsFromW" , &genLeptonsFromW_ , "genLeptonsFromW/I");
    eventTree_->Branch("genHt" , &genHt_ , "genHt/F");
 
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
@@ -505,7 +504,6 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    // Generated Particles
    // status flags: https://indico.cern.ch/event/459797/contribution/2/attachments/1181555/1710844/mcaod-Nov4-2015.pdf
-   genLeptonsFromW_ = 0;
    vGenParticles_.clear();
    vIntermediateGenParticles_.clear();
    tree::GenParticle trP;
@@ -532,13 +530,6 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                }
                vIntermediateGenParticles_.push_back(trIntermP);
             }
-         }
-         if( absId == 11 || absId == 13 || absId == 15 ) { // charged leptons
-           bool WAsMother = false;
-           for( unsigned i=0;i<genP.numberOfMothers(); i++ ) {
-             if( abs(genP.mother(i)->pdgId() ) == 24 ) { WAsMother = true; }
-           }
-           if( WAsMother ) { genLeptonsFromW_++; }
          }
 
          // save particles

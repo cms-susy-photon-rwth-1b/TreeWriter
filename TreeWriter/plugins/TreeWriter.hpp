@@ -143,7 +143,6 @@ private:
    Float_t dummyFloat_=0.;
    Float_t dR_recoGenJet_=-1;
 
-   Int_t genLeptonsFromW_=0.; // used e.g. to categrize ttbar decays
    Float_t genHt_;
 
    ULong64_t evtNo_;
