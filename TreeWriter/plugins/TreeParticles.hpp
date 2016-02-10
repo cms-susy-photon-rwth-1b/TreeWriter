@@ -63,6 +63,9 @@ namespace tree
    struct Muon: public Particle
    {
       bool isTight;
+      // PF-based combined relative isolation with Δβ correction:
+      // (∑pT(ch.had from PV) + max(0, ∑ET(neut.had) + ∑ET(phot) − 0.5*∑pT(ch.had from PU)))/pT(μ)
+      float rIso;
    };
 
    struct Electron: public Particle

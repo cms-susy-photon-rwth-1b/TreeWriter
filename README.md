@@ -70,6 +70,7 @@ located in `TreeWriter/data`:
 ### Muons ###
 - fulfilling loose id
 - tight id boolean flag
+- relative isolation is stored
 
 ### Electrons ###
 - fulfilling "veto" id

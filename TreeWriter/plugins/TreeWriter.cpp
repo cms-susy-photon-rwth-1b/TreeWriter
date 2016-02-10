@@ -339,6 +339,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (!mu.isLooseMuon()) continue;
       trMuon.p.SetPtEtaPhi(mu.pt(),mu.eta(),mu.phi());
       trMuon.isTight=mu.isTightMuon(firstGoodVertex);
+      auto const& pfIso=mu.pfIsolationR04();
+      trMuon.rIso=(pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/mu.pt();
       vMuons_.push_back(trMuon);
    } // muon loop
    sort(vMuons_.begin(), vMuons_.end(), tree::PtGreater);
