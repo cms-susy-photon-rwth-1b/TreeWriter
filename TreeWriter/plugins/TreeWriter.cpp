@@ -93,6 +93,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("muons"    , &vMuons_);
    eventTree_->Branch("met"      , &met_);
    eventTree_->Branch("genParticles", &vGenParticles_);
+   eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
    eventTree_->Branch("nGoodVertices" , &nGoodVertices_ , "nGoodVertices/I");
    eventTree_->Branch("rho"           , &rho_           , "rho/F");
@@ -506,15 +507,32 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // status flags: https://indico.cern.ch/event/459797/contribution/2/attachments/1181555/1710844/mcaod-Nov4-2015.pdf
    genLeptonsFromW_ = 0;
    vGenParticles_.clear();
+   vIntermediateGenParticles_.clear();
    tree::GenParticle trP;
+   tree::IntermediateGenParticle trIntermP;
    if (!isRealData){
       // Get generator level info
       // Pruned particles are the one containing "important" stuff
-
       for (const reco::GenParticle &genP: *prunedGenParticles){
-
          // count generated leptons from W bosons
          auto absId = abs(genP.pdgId());
+         if (absId==23||absId==24){ // store intermediate bosons
+            int iNdaugh=genP.numberOfDaughters();
+            if (iNdaugh>1){ // skip "decays" V->V
+               trIntermP.pdgId = genP.pdgId();
+               trIntermP.isPrompt = genP.statusFlags().isPrompt();
+               trIntermP.p.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
+               trIntermP.daughters.clear();
+               for (int i=0; i<iNdaugh; i++){ // store the decay products
+                  reco::Candidate const &daugh=*genP.daughter(i);
+                  trP.pdgId = daugh.pdgId();
+                  trP.isPrompt = false;
+                  trP.p.SetPtEtaPhi(daugh.pt(),daugh.eta(),daugh.phi());
+                  trIntermP.daughters.push_back(trP);
+               }
+               vIntermediateGenParticles_.push_back(trIntermP);
+            }
+         }
          if( absId == 11 || absId == 13 || absId == 15 ) { // charged leptons
            bool WAsMother = false;
            for( unsigned i=0;i<genP.numberOfMothers(); i++ ) {

@@ -22,6 +22,11 @@ namespace tree
       bool isPrompt;
    };
 
+   struct IntermediateGenParticle: public GenParticle
+   {
+      std::vector<GenParticle> daughters;
+   };
+
    struct Photon : public Particle
    {
       Float_t sigmaIetaIeta; // full 5x5

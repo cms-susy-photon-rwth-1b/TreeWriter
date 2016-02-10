@@ -165,6 +165,7 @@ private:
    std::vector<tree::Particle> vGenPhotons_;
 
    std::vector<tree::GenParticle> vGenParticles_;
+   std::vector<tree::IntermediateGenParticle> vIntermediateGenParticles_;
    // === ========  ===
 
    // histogram to store #evts after each "cut"
