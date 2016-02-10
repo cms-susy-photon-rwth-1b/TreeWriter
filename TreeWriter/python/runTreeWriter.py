@@ -97,6 +97,27 @@ pfJetIDSelector = cms.PSet(
     quality = cms.string('LOOSE')
 )
 
+process.load("CondCore.DBCommon.CondDBCommon_cfi")
+from CondCore.DBCommon.CondDBSetup_cfi import *
+
+process.jec = cms.ESSource("PoolDBESSource",
+                           DBParameters = cms.PSet(messageLevel = cms.untracked.int32(0)),
+                           timetype = cms.string('runnumber'),
+                           toGet = cms.VPSet(
+                               cms.PSet(
+                                   record = cms.string('JetCorrectionsRecord'),
+                                   tag    = (cms.string('JetCorrectorParametersCollection_Summer15_25nsV7_DATA_AK4PFchs') if isRealData
+                                             else cms.string('JetCorrectorParametersCollection_Summer15_25nsV7_MC_AK4PFchs')
+                                   ),
+                                   label  = cms.untracked.string('AK4PFchs')
+                               ),
+                           ),
+                           connect = (cms.string('sqlite_file:'+cmssw_src+'/TreeWriter/TreeWriter/data/Summer15_25nsV7_DATA.db') if isRealData
+                                      else cms.string('sqlite_file:'+cmssw_src+'/TreeWriter/TreeWriter/data/Summer15_25nsV7_MC.db'))
+)
+## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
+process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
+
 jecLevels = [ 'L1FastJet','L2Relative','L3Absolute' ]
 if isRealData: jecLevels.append( 'L2L3Residual' )
 
