@@ -30,9 +30,11 @@ options.fastSim=False
 # get and parse the command line arguments
 options.parseArguments()
 
+isCrabSubmission=bool(options.dataset) # only set for crab sumission
+
 # determine if Data or Simulation
 isRealData=True
-if options.dataset: # crab sumission
+if isCrabSubmission:
     isRealData=(not options.dataset.endswith("SIM"))
 else: # running locally
     isRealData=("SIM" not in options.inputFiles[0])
