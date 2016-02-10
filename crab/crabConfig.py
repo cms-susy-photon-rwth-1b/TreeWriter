@@ -122,7 +122,7 @@ datasets["lange"] = [
     '/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     # signal
-    '/SMS-T5gg/kiesel-SMS-T5gg_mGluino-1400_mNeutralino-1200-3d7be4403ea17498be45eb057fcb0278/USER'
+    '/SMS-T5gg/kiesel-SMS-T5gg_mGluino-1400_mNeutralino-1200-3d7be4403ea17498be45eb057fcb0278/USER',
     # for e-fake studies
     '/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM',
     '/WWTo2L2Nu_13TeV-powheg/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM',
