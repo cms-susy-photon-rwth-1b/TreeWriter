@@ -140,9 +140,6 @@ private:
    Float_t pu_weight_; // pileup weight
    Char_t mc_weight_; // +1 or -1 event weights (take care when reading with python, this is a character!)
 
-   Float_t dummyFloat_=0.;
-   Float_t dR_recoGenJet_=-1;
-
    Float_t genHt_;
 
    ULong64_t evtNo_;
