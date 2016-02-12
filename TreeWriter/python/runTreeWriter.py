@@ -242,7 +242,7 @@ if user=="kiesel":
         "HLT_Photon175_v",
         "HLT_PFHT475_v", #prescale: 60
     ]
-    if "DY" in dataset or "DoubleEG" in dataset:
+    if "DY" in options.dataset or "DoubleEG" in options.dataset:
         process.TreeWriter.minNumberPhotons_cut=2
         process.TreeWriter.photon_pT_cut=40.
         process.TreeWriter.HT_cut=0
