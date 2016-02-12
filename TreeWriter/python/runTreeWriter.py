@@ -277,7 +277,7 @@ else:
 
 if options.fastSim:
     process.TreeWriter.metFilterNames = [] # no met filters for fastsim
-    process.TreeWriter.pileUpSummary = "addPileupInfo" # for miniaod v1
+    process.TreeWriter.lheEventProduct = "source"
 
 process.TFileService = cms.Service("TFileService",fileName = cms.string(options.outputFile))
 

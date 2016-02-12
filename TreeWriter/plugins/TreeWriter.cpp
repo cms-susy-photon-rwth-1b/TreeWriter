@@ -106,6 +106,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
    eventTree_->Branch("runNo", &runNo_, "runNo/i");
    eventTree_->Branch("lumNo", &lumNo_, "lumNo/i");
+   eventTree_->Branch("modelName", &modelName_);
 
    // Fill trigger maps
    for( const auto& n : triggerNames_ ){
@@ -468,15 +469,17 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
    met_.uncertainty=TMath::Sqrt(met_.uncertainty);
 
-   // generated HT
+   // generated HT and fill model name
    // stolen from https://github.com/Aachen-3A/PxlSkimmer/blob/master/Skimming/src/PxlSkimmer_miniAOD.cc#L590
    genHt_ = -1;
+   modelName_ = "";
    if( !isRealData ) {
 
       edm::Handle<LHEEventProduct> lheInfoHandle;
       iEvent.getByToken(LHEEventToken_, lheInfoHandle);
 
       if (lheInfoHandle.isValid()) {
+         if (lheInfoHandle->comments_size()) modelName_=lheInfoHandle->getComment(0);
          lhef::HEPEUP lheParticleInfo = lheInfoHandle->hepeup();
          // get the five vector
          // (Px, Py, Pz, E and M in GeV)

@@ -146,6 +146,8 @@ private:
    UInt_t    runNo_;
    UInt_t    lumNo_;
 
+   std::string modelName_;
+
    // Trigger decisions
    std::vector<std::string> triggerNames_;
    std::map<std::string, Bool_t > triggerDecision_;
