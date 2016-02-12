@@ -30,9 +30,11 @@ options.fastSim=False
 # get and parse the command line arguments
 options.parseArguments()
 
+isCrabSubmission=bool(options.dataset) # only set for crab sumission
+
 # determine if Data or Simulation
 isRealData=True
-if options.dataset: # crab sumission
+if isCrabSubmission:
     isRealData=(not options.dataset.endswith("SIM"))
 else: # running locally
     isRealData=("SIM" not in options.inputFiles[0])
@@ -40,6 +42,10 @@ else: # running locally
 options.fastSim = (options.fastSim
                    or bool(re.match( "/SMS-.*/.*/USER", options.dataset )) # signal scan
                    )
+
+# where .db files are placed (e.g. for JEC, JER)
+localDataBasePath=('sqlite_file:src/TreeWriter/TreeWriter/data/' if isCrabSubmission
+                   else 'sqlite_file:'+cmssw_src+'/TreeWriter/TreeWriter/data/')
 
 # the actual TreeWriter module
 process = cms.Process("TreeWriter")
@@ -112,8 +118,8 @@ process.jec = cms.ESSource("PoolDBESSource",
                                    label  = cms.untracked.string('AK4PFchs')
                                ),
                            ),
-                           connect = (cms.string('sqlite_file:'+cmssw_src+'/TreeWriter/TreeWriter/data/Summer15_25nsV7_DATA.db') if isRealData
-                                      else cms.string('sqlite_file:'+cmssw_src+'/TreeWriter/TreeWriter/data/Summer15_25nsV7_MC.db'))
+                           connect = (cms.string(localDataBasePath+'Summer15_25nsV7_DATA.db') if isRealData
+                                      else cms.string(localDataBasePath+'Summer15_25nsV7_MC.db'))
 )
 ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
@@ -166,7 +172,7 @@ process.jer = cms.ESSource("PoolDBESSource",
                                    label  = cms.untracked.string('AK4PFchs')
                                ),
                            ),
-                           connect = cms.string('sqlite_file:'+cmssw_src+'/TreeWriter/TreeWriter/data/Summer15_25nsV6.db')
+                           connect = cms.string(localDataBasePath+'Summer15_25nsV6.db')
 )
 process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
