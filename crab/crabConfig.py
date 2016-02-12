@@ -164,9 +164,7 @@ if __name__ == '__main__':
 
         isSim = 'SIM' in dataset
         isUser = dataset.endswith("/USER")
-        isFastSim="False"
-        # TODO check for fastsim and pass option to cmssw config
-        # if "something" in dataset: isFastSim="True"
+        isFastSim = "Fast" in dataset
 
         config.Data.inputDBS = 'phys03' if isUser else 'global'
 
