@@ -84,6 +84,10 @@ datasets["kiesel"] = [
     '/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/ZJetsToNuNu_HT-400To600_13TeV-madgraph/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/ZJetsToNuNu_HT-600ToInf_13TeV-madgraph/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v2/MINIAODSIM',
+    '/DoubleEG/Run2015C-25ns-05Oct2015-v1/MINIAOD',
+    '/DoubleEG/Run2015D-05Oct2015-v1/MINIAOD',
+    '/DoubleEG/Run2015D-PromptReco-v4/MINIAOD',
+    '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 ]
 datasets["kiesel"].extend([datasets["T5Wg"], datasets["T5gg"]])
 datasets["lange"] = [
