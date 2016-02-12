@@ -21,12 +21,18 @@ options.register ('fastSim',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.bool,
                   "Whether the sample is simulated with fast-sim. (Default: False)")
+options.register ('miniAODv',
+                  '',
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "The MiniAOD version. (Default: 2)")
 
 # defaults
 options.inputFiles = 'root://xrootd.unl.edu//store/mc/RunIISpring15MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/0CB41EBB-CA6D-E511-A28E-002618943C3A.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
 options.fastSim=False
+options.miniAODv=2
 # get and parse the command line arguments
 options.parseArguments()
 
@@ -281,6 +287,8 @@ else:
 if options.fastSim:
     process.TreeWriter.metFilterNames = [] # no met filters for fastsim
     process.TreeWriter.lheEventProduct = "source"
+if options.miniAODv==1:
+    process.TreeWriter.pileUpSummary = "addPileupInfo"
 
 process.TFileService = cms.Service("TFileService",fileName = cms.string(options.outputFile))
 
