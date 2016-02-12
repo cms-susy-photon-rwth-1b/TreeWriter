@@ -225,7 +225,8 @@ user=options.user or getpass.getuser()
 if user=="kiesel":
     process.TreeWriter.HT_cut=500.
     process.TreeWriter.photon_pT_cut=90.
-    process.TreeWriter.isolatedPhotons=False
+    process.TreeWriter.minNumberPhotons_cut=0
+    process.TreeWriter.jet_pT_cut=40
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT500_v",
         "HLT_Photon90_v", #prescale: 90
