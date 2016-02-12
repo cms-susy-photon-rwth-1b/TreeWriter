@@ -21,12 +21,18 @@ options.register ('fastSim',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.bool,
                   "Whether the sample is simulated with fast-sim. (Default: False)")
+options.register ('miniAODv',
+                  '',
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "The MiniAOD version. (Default: 2)")
 
 # defaults
 options.inputFiles = 'root://xrootd.unl.edu//store/mc/RunIISpring15MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/0CB41EBB-CA6D-E511-A28E-002618943C3A.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
 options.fastSim=False
+options.miniAODv=2
 # get and parse the command line arguments
 options.parseArguments()
 
@@ -59,12 +65,8 @@ process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 gtName = "auto:run2_data" if isRealData else "auto:run2_mc"
-
 # for further global tags, see here:
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD
-if re.match( "/.*/Run2015.*05Oct2015.*/MINIAOD", options.dataset ) \
-    or re.match( "/.*/Run2015D-PromptReco-v4/MINIAOD", options.dataset ): gtName = "74X_dataRun2_v5"
-if re.match( "/.*/.*RunIISpring15MiniAODv2.*/MINIAODSIM", options.dataset ): gtName = "74X_mcRun2_asymptotic_v4"
 process.GlobalTag = GlobalTag(process.GlobalTag, gtName, '')
 
 hardPUveto=True if options.dataset.startswith("/QCD_HT100to200") else False
@@ -295,6 +297,8 @@ else:
 if options.fastSim:
     process.TreeWriter.metFilterNames = [] # no met filters for fastsim
     process.TreeWriter.lheEventProduct = "source"
+if options.miniAODv==1:
+    process.TreeWriter.pileUpSummary = "addPileupInfo"
 
 process.TFileService = cms.Service("TFileService",fileName = cms.string(options.outputFile))
 
