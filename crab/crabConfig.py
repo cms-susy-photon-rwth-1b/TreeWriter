@@ -89,7 +89,8 @@ datasets["kiesel"] = [
     '/DoubleEG/Run2015D-PromptReco-v4/MINIAOD',
     '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 ]
-datasets["kiesel"].extend([datasets["T5Wg"], datasets["T5gg"]])
+datasets["kiesel"] += datasets["T5Wg"]
+datasets["kiesel"] += datasets["T5gg"]
 datasets["lange"] = [
     # data
     '/SinglePhoton/Run2015D-05Oct2015-v1/MINIAOD',
