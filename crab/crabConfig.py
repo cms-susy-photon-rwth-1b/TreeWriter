@@ -165,8 +165,10 @@ if __name__ == '__main__':
         isSim = 'SIM' in dataset
         isUser = dataset.endswith("/USER")
         isFastSim = "False"
+        miniAODv="2"
         if "Fast" in dataset or isUser:
             isFastSim="True"
+            miniAODv="1"
 
         config.Data.inputDBS = 'phys03' if isUser else 'global'
 
@@ -187,7 +189,7 @@ if __name__ == '__main__':
          # CRABClient.ClientExceptions.ConfigurationException: Invalid CRAB configuration: Parameter General.requestName should not be longer than 100 characters.
         config.General.requestName = config.General.requestName[:100]
 
-        config.JobType.pyCfgParams = [ "dataset="+dataset, "user="+user, "fastSim="+isFastSim]
+        config.JobType.pyCfgParams = ["dataset="+dataset,"user="+user,"fastSim="+isFastSim,"miniAODv="+miniAODv]
 
         config.Data.inputDataset = dataset
         crabCommand('submit', config = config)
