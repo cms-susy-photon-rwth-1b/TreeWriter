@@ -168,6 +168,7 @@ private:
 
    // histogram to store #evts after each "cut"
    TH1F* hCutFlow_;
+   std::map<std::string,TH1F*> hCutFlowMap_;
 
    // Pileup histogram(s)
    TH1F hPU_;

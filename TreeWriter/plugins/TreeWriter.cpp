@@ -146,9 +146,32 @@ TreeWriter::~TreeWriter(){}
 void
 TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   hCutFlow_->Fill("initial_unweighted",1);
    Bool_t  isRealData; // data or MC
    isRealData=iEvent.isRealData();
+
+   // get model name
+   modelName_ = "";
+   if( !isRealData ) {
+      edm::Handle<LHEEventProduct> lheInfoHandle;
+      iEvent.getByToken(LHEEventToken_, lheInfoHandle);
+      if (lheInfoHandle.isValid()) {
+         if (lheInfoHandle->comments_size()){
+           modelName_=lheInfoHandle->getComment(0);
+           // Typical model name is '# model T5Wg_1100_1000\n'
+           // cut out only interesting part
+           if (modelName_.size()>8) modelName_=modelName_.substr(8,modelName_.size()-9);
+         }
+      }
+   }
+   if (!hCutFlowMap_.count(modelName_)) {
+     edm::Service<TFileService> fs;
+     hCutFlowMap_[modelName_] = fs->make<TH1F>(*(TH1F*)hCutFlow_->Clone(("hCutFlow"+modelName_).c_str()));
+     hCutFlowMap_.at(modelName_)->Reset("ICESM"); // all
+   }
+   hCutFlow_ = hCutFlowMap_.at(modelName_);
+
+
+   hCutFlow_->Fill("initial_unweighted",1);
 
    // PileUp weights
    if (!isRealData){
@@ -469,17 +492,15 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
    met_.uncertainty=TMath::Sqrt(met_.uncertainty);
 
-   // generated HT and fill model name
+   // generated HT
    // stolen from https://github.com/Aachen-3A/PxlSkimmer/blob/master/Skimming/src/PxlSkimmer_miniAOD.cc#L590
    genHt_ = -1;
-   modelName_ = "";
    if( !isRealData ) {
 
       edm::Handle<LHEEventProduct> lheInfoHandle;
       iEvent.getByToken(LHEEventToken_, lheInfoHandle);
 
       if (lheInfoHandle.isValid()) {
-         if (lheInfoHandle->comments_size()) modelName_=lheInfoHandle->getComment(0);
          lhef::HEPEUP lheParticleInfo = lheInfoHandle->hepeup();
          // get the five vector
          // (Px, Py, Pz, E and M in GeV)
