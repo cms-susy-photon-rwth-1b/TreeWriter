@@ -93,3 +93,4 @@ target/
 *.root
 # === CRAB Files === #
 crab/crab_*/
+/TreeWriter/python/__init__.py
