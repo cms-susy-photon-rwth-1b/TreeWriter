@@ -397,6 +397,11 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    sort(vElectrons_.begin(), vElectrons_.end(), tree::PtGreater);
 
    // Jets
+   edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
+   iSetup.get<JetCorrectionsRecord>().get("AK5PFchs",JetCorParColl);
+   JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
+   JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty(JetCorPar);
+
    edm::Handle<pat::JetCollection> jetColl;
    iEvent.getByToken(jetCollectionToken_, jetColl);
 
@@ -407,6 +412,9 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trJet.p.SetPtEtaPhi(jet.pt(),jet.eta(),jet.phi());
       trJet.bDiscriminator=jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
       trJet.isLoose=jetIdSelector(jet);
+      jecUnc->setJetEta(jet.eta());
+      jecUnc->setJetPt(jet.pt());
+      trJet.uncert = jecUnc->getUncertainty(true);
       trJet.chf = jet.chargedHadronEnergyFraction();
       trJet.nhf = jet.neutralHadronEnergyFraction();
       trJet.cef = jet.chargedEmEnergyFraction();
