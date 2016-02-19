@@ -169,11 +169,8 @@ if __name__ == '__main__':
 
         isSim = 'SIM' in dataset
         isUser = dataset.endswith("/USER")
-        isFastSim = "False"
-        miniAODv="2"
-        if "Fast" in dataset or isUser:
-            isFastSim="True"
-            miniAODv="1"
+        isFastSim = "True" if "Fast" in dataset else "False"
+        miniAODv="1" if dataset.endswith("3d7be4403ea17498be45eb057fcb0278/USER") else "2"
 
         config.Data.inputDBS = 'phys03' if isUser else 'global'
 
