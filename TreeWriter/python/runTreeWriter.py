@@ -253,7 +253,7 @@ if user=="kiesel":
             "HLT_Diphoton30PV_18PV_R9Id_AND_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v",
         ])
 elif user=="lange" or user=="jschulz":
-    process.TreeWriter.jet_pT_cut=20.
+    process.TreeWriter.jet_pT_cut=30.
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT500_v",
         "HLT_Photon90_v",
