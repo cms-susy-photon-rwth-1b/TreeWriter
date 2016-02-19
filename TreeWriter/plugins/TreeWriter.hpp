@@ -40,7 +40,7 @@
 
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
 
-#include <SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h>
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 
