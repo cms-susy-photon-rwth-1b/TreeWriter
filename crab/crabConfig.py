@@ -84,13 +84,11 @@ datasets["kiesel"] = [
     '/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/ZJetsToNuNu_HT-400To600_13TeV-madgraph/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/ZJetsToNuNu_HT-600ToInf_13TeV-madgraph/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v2/MINIAODSIM',
-    '/DoubleEG/Run2015C_25ns-05Oct2015-v1/MINIAOD',
-    '/DoubleEG/Run2015D-05Oct2015-v1/MINIAOD',
-    '/DoubleEG/Run2015D-PromptReco-v4/MINIAOD',
     '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
+    '/SMS-T5Wg_mGl-1550_mNLSP-0to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 ]
-datasets["kiesel"] += datasets["T5Wg"]
-datasets["kiesel"] += datasets["T5gg"]
+#datasets["kiesel"] += datasets["T5Wg"]
+#datasets["kiesel"] += datasets["T5gg"]
 datasets["lange"] = [
     # data
     '/SinglePhoton/Run2015D-05Oct2015-v1/MINIAOD',
@@ -149,7 +147,7 @@ if __name__ == '__main__':
 
     user=getpass.getuser()
     if user=="kiesel":
-        config.Data.outputDatasetTag = 'v08'
+        config.Data.outputDatasetTag = 'v09'
         config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
     elif user=="lange":
         config.Data.outputDatasetTag = 'v07'

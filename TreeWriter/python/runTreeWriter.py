@@ -242,16 +242,6 @@ if user=="kiesel":
         "HLT_Photon175_v",
         "HLT_PFHT475_v", #prescale: 60
     ]
-    if "DY" in options.dataset or "DoubleEG" in options.dataset:
-        process.TreeWriter.minNumberPhotons_cut=2
-        process.TreeWriter.photon_pT_cut=40.
-        process.TreeWriter.HT_cut=0
-        process.TreeWriter.triggerNames.extend([
-            "HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95_v",
-            "HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_DoublePixelSeedMatch_Mass70_v",
-            "HLT_Diphoton30EB_18EB_R9Id_OR_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v",
-            "HLT_Diphoton30PV_18PV_R9Id_AND_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v",
-        ])
 elif user=="lange" or user=="jschulz":
     process.TreeWriter.jet_pT_cut=20.
     process.TreeWriter.triggerNames=[
