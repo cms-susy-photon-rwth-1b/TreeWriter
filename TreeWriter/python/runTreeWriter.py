@@ -243,7 +243,7 @@ if user=="kiesel":
         "HLT_PFHT475_v", #prescale: 60
     ]
 elif user=="lange" or user=="jschulz":
-    process.TreeWriter.jet_pT_cut=20.
+    process.TreeWriter.jet_pT_cut=30.
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT500_v",
         "HLT_Photon90_v",
