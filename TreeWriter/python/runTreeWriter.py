@@ -263,8 +263,9 @@ elif user=="lange" or user=="jschulz":
         "HLT_Photon36_R9Id90_HE10_IsoM_v",
         "HLT_Photon165_R9Id90_HE10_IsoM_v",
         "HLT_Photon165_HE10_v",
-        "HLT_Photon135_PFMET100_v",
-        'HLT_Photon135_PFMET100_NoiseCleaned_v',
+        "HLT_Photon135_PFMET100_JetIdCleaned_v", # used in early data taking
+        "HLT_Photon135_PFMET100_v",              # used in later data taking
+        "HLT_Photon135_PFMET100_NoiseCleaned_v", # used for MC
         "HLT_Photon175_v",
         "HLT_Photon500_v",
         "HLT_PFMET170_v",
