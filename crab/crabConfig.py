@@ -154,10 +154,10 @@ if __name__ == '__main__':
         config.Data.outputDatasetTag = 'v08'
         config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
     elif user=="lange":
-        config.Data.outputDatasetTag = 'v07'
+        config.Data.outputDatasetTag = 'v08'
         config.Data.outLFNDirBase = "/store/user/jolange/run2/"
     elif user=="jschulz":
-        config.Data.outputDatasetTag = 'v07'
+        config.Data.outputDatasetTag = 'v08'
         config.Data.outLFNDirBase = "/store/user/jschulz/run2/"
     elif user=="rmeyer":
         config.Data.outputDatasetTag = 'V01'
