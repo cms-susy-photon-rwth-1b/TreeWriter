@@ -11,7 +11,11 @@ cmsenv
 get MET Significance Recipe
 
 ```
-git-cms-merge-topic -u cms-met:76X-METSignificance-patch0
+# git-cms-merge-topic -u cms-met:76X-METSignificance-patch0
+# memory leak fixed in:
+git-cms-merge-topic -u jolange:76X-METSignificance-patch0
+# further memory leak fix
+git cms-merge-topic -u jolange:memLeakFix
 ```
 Get and build the TreeWriter
 
