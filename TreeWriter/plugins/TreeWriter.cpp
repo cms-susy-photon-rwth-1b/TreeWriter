@@ -159,7 +159,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
            modelName_=lheInfoHandle->getComment(0);
            // Typical model name is '# model T5Wg_1100_1000\n'
            // cut out only interesting part
-           if (modelName_.size()>8) modelName_=modelName_.substr(8,modelName_.size()-9);
+           if (modelName_.find("# model")!=0) modelName_="";
+           else if (modelName_.size()>8) modelName_=modelName_.substr(8,modelName_.size()-9);
          }
       }
    }
