@@ -57,6 +57,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , pileUpSummaryToken_     (consumes<PileupSummaryInfoCollection>(iConfig.getParameter<edm::InputTag>("pileUpSummary")))
    , LHEEventToken_          (consumes<LHEEventProduct>(iConfig.getParameter<edm::InputTag>("lheEventProduct")))
    , METSignificance_        (consumes<double> (iConfig.getParameter<edm::InputTag>("metSig")))
+   , packedCandidateToken_   (consumes<std::vector<pat::PackedCandidate>> (iConfig.getParameter<edm::InputTag>("packedCandidates")))
    // electron id
    , electronVetoIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronVetoIdMap"   )))
    , electronLooseIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronLooseIdMap"  )))
@@ -96,6 +97,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
    eventTree_->Branch("nGoodVertices" , &nGoodVertices_ , "nGoodVertices/I");
+   eventTree_->Branch("nTracksPV"     , &nTracksPV_     , "nTracksPV/I");
    eventTree_->Branch("rho"           , &rho_           , "rho/F");
 
    eventTree_->Branch("pu_weight"     , &pu_weight_     , "pu_weight/F");
@@ -572,6 +574,11 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       sort(vGenParticles_.begin(), vGenParticles_.end(), tree::PtGreater);
    }
 
+   // number of tracks
+   edm::Handle<std::vector<pat::PackedCandidate>> packedCandidates;
+   iEvent.getByToken(packedCandidateToken_, packedCandidates);
+   nTracksPV_ = std::count_if(packedCandidates->begin(),packedCandidates->end(), []( const pat::PackedCandidate& cand ) {
+      return cand.pt()>.9 && cand.charge() && cand.pvAssociationQuality() == pat::PackedCandidate::UsedInFitTight;});
 
    hCutFlow_->Fill("final",mc_weight_*pu_weight_);
    // store event identity

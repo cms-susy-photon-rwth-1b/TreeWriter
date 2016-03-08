@@ -202,6 +202,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     pileUpSummary = cms.InputTag('slimmedAddPileupInfo'),
                                     lheEventProduct = cms.InputTag('externalLHEProducer'),
                                     metSig=cms.InputTag("METSignificance","METSignificance"),
+                                    packedCandidates=cms.InputTag("packedPFCandidates"),
                                     # electron IDs
                                     electronVetoIdMap   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-veto"),
                                     electronLooseIdMap  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-loose"),
