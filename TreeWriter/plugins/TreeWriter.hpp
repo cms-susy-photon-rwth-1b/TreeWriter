@@ -91,6 +91,8 @@ private:
    void findFirstNonPhotonMother(const reco::Candidate *particle,
                                  int &ancestorPID, int &ancestorStatus);
 
+   TH1F* createCutFlowHist(std::string modelName = "");
+
    // ----------member data ---------------------------
    double dHT_cut_;
    double dPhoton_pT_cut_;
@@ -171,6 +173,9 @@ private:
    std::vector<tree::GenParticle> vGenParticles_;
    std::vector<tree::IntermediateGenParticle> vIntermediateGenParticles_;
    // === ========  ===
+
+   // File Service to store things to a root file
+   edm::Service<TFileService> fs_;
 
    // histogram to store #evts after each "cut"
    TH1F* hCutFlow_;

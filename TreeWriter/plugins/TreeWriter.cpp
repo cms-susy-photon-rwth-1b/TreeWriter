@@ -83,8 +83,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","","HLT"));
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults",""));
 
-   edm::Service<TFileService> fs;
-   eventTree_ = fs->make<TTree> ("eventTree", "event data");
+   eventTree_ = fs_->make<TTree> ("eventTree", "event data");
 
    eventTree_->Branch("photons"  , &vPhotons_);
    eventTree_->Branch("jets"     , &vJets_);
@@ -126,11 +125,15 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
       hPU_=*( (TH1F*)puFile.Get( pileupHistogramName_.c_str() ) );
    }
    puFile.Close();
+}
 
-   // create cut-flow histogram
+TH1F* TreeWriter::createCutFlowHist(std::string modelName)
+{
+   std::string const name("hCutFlow"+modelName);
    std::vector<TString> vCutBinNames{{"initial_unweighted","initial_mc_weighted","initial","METfilters","HBHENoiseFilter","HBHEIsoNoiseFilter","nGoodVertices", "photons","HT","final"}};
-   hCutFlow_ = fs->make<TH1F>("hCutFlow","hCutFlow",vCutBinNames.size(),0,vCutBinNames.size());
-   for (uint i=0;i<vCutBinNames.size();i++) hCutFlow_->GetXaxis()->SetBinLabel(i+1,vCutBinNames.at(i));
+   TH1F* h = fs_->make<TH1F>(name.c_str(),name.c_str(),vCutBinNames.size(),0,vCutBinNames.size());
+   for (uint i=0;i<vCutBinNames.size();i++) h->GetXaxis()->SetBinLabel(i+1,vCutBinNames.at(i));
+   return h;
 }
 
 
@@ -162,13 +165,13 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          }
       }
    }
+   // create the cutflow histogram for the model if not there yet
+   // (modelName="" for non-signal samples)
    if (!hCutFlowMap_.count(modelName_)) {
-     edm::Service<TFileService> fs;
-     hCutFlowMap_[modelName_] = fs->make<TH1F>(*(TH1F*)hCutFlow_->Clone(("hCutFlow"+modelName_).c_str()));
-     hCutFlowMap_.at(modelName_)->Reset("ICESM"); // all
+      hCutFlowMap_[modelName_] = createCutFlowHist(modelName_);
    }
+   // point to the right cut flow histogram
    hCutFlow_ = hCutFlowMap_.at(modelName_);
-
 
    hCutFlow_->Fill("initial_unweighted",1);
 
