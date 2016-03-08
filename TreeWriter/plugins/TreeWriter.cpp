@@ -83,6 +83,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    consumes<GenEventInfoProduct>(edm::InputTag("generator"));
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","","HLT"));
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults",""));
+   consumes<std::vector<pat::TriggerObjectStandAlone>>(edm::InputTag("selectedPatTrigger"));
 
    edm::Service<TFileService> fs;
    eventTree_ = fs->make<TTree> ("eventTree", "event data");
@@ -94,6 +95,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("muons"    , &vMuons_);
    eventTree_->Branch("met"      , &met_);
    eventTree_->Branch("genParticles", &vGenParticles_);
+   eventTree_->Branch("triggerObjects", &vTriggerObjects_);
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
    eventTree_->Branch("nGoodVertices" , &nGoodVertices_ , "nGoodVertices/I");
@@ -232,6 +234,20 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
    }
 
+   // fill trigger objects
+   edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
+   edm::InputTag triggerObjects_("selectedPatTrigger");
+   iEvent.getByLabel(triggerObjects_, triggerObjects);
+
+   vTriggerObjects_.clear();
+   tree::Particle trObj;
+   for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
+//      obj.unpackPathNames(names);
+      auto ids = obj.filterIds();
+      if (std::find(ids.begin(),ids.end(), trigger::TriggerElectron ) == ids.end()) continue;
+      trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
+      vTriggerObjects_.push_back(trObj);
+   }
 
    // MET Filters
    edm::Handle<edm::TriggerResults> metFilterBits;

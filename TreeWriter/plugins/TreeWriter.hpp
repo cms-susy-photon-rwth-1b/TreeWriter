@@ -171,6 +171,7 @@ private:
    std::vector<tree::Muon>     vMuons_;
    tree::MET                   met_;
    std::vector<tree::Particle> vGenPhotons_;
+   std::vector<tree::Particle> vTriggerObjects_;
 
    std::vector<tree::GenParticle> vGenParticles_;
    std::vector<tree::IntermediateGenParticle> vIntermediateGenParticles_;
