@@ -32,6 +32,8 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 
@@ -113,6 +115,7 @@ private:
    edm::EDGetTokenT<LHEEventProduct>           LHEEventToken_;
 
    edm::EDGetTokenT<double> METSignificance_;
+   edm::EDGetTokenT<std::vector<pat::PackedCandidate>> packedCandidateToken_;
 
    // electron id
    edm::EDGetTokenT<edm::ValueMap<bool> > electronVetoIdMapToken_;
@@ -143,6 +146,7 @@ private:
    TTree *eventTree_;
 
    Int_t   nGoodVertices_;
+   Int_t   nTracksPV_;
    Float_t rho_;   // the rho variable
 
    Float_t pu_weight_; // pileup weight
@@ -169,6 +173,7 @@ private:
    std::vector<tree::Muon>     vMuons_;
    tree::MET                   met_;
    std::vector<tree::Particle> vGenPhotons_;
+   std::vector<tree::Particle> vTriggerObjects_;
 
    std::vector<tree::GenParticle> vGenParticles_;
    std::vector<tree::IntermediateGenParticle> vIntermediateGenParticles_;
