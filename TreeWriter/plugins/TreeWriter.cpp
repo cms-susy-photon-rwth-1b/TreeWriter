@@ -115,8 +115,6 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
       eventTree_->Branch( n.c_str(), &triggerDecision_[n], (n+"/O").c_str() );
    }
 
-
-
    // get pileup histogram(s)
    std::string cmssw_base_src = getenv("CMSSW_BASE");
    cmssw_base_src += "/src/";
@@ -401,7 +399,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
    iSetup.get<JetCorrectionsRecord>().get("AK5PFchs",JetCorParColl);
    JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
-   JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty(JetCorPar);
+   JetCorrectionUncertainty jecUnc(JetCorPar);
 
    edm::Handle<pat::JetCollection> jetColl;
    iEvent.getByToken(jetCollectionToken_, jetColl);
@@ -413,9 +411,9 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trJet.p.SetPtEtaPhi(jet.pt(),jet.eta(),jet.phi());
       trJet.bDiscriminator=jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
       trJet.isLoose=jetIdSelector(jet);
-      jecUnc->setJetEta(jet.eta());
-      jecUnc->setJetPt(jet.pt());
-      trJet.uncert = jecUnc->getUncertainty(true);
+      jecUnc.setJetEta(jet.eta());
+      jecUnc.setJetPt(jet.pt());
+      trJet.uncert = jecUnc.getUncertainty(true);
       trJet.chf = jet.chargedHadronEnergyFraction();
       trJet.nhf = jet.neutralHadronEnergyFraction();
       trJet.cef = jet.chargedEmEnergyFraction();
