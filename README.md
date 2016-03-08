@@ -16,6 +16,8 @@ get MET Significance Recipe
 git-cms-merge-topic -u jolange:76X-METSignificance-patch0
 # further memory leak fix
 git cms-merge-topic -u jolange:memLeakFix
+git cms-addpkg RecoEgamma/ElectronIdentification
+git cms-addpkg RecoEgamma/PhotonIdentification
 ```
 Get and build the TreeWriter
 
