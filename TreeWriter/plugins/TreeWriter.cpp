@@ -245,7 +245,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
 //      obj.unpackPathNames(names);
       auto ids = obj.filterIds();
-      if (std::find(ids.begin(),ids.end(), trigger::TriggerElectron ) == ids.end()) continue;
+      if (obj.collection() != "hltEgammaCandidates::HLT") continue;
       trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
       vTriggerObjects_.push_back(trObj);
    }
