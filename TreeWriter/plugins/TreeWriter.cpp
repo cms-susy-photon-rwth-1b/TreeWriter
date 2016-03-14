@@ -420,7 +420,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    // Jets
    edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
-   iSetup.get<JetCorrectionsRecord>().get("AK5PFchs",JetCorParColl);
+   iSetup.get<JetCorrectionsRecord>().get("AK4PFchs",JetCorParColl);
    JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
    JetCorrectionUncertainty jecUnc(JetCorPar);
 
