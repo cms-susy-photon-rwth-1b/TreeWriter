@@ -178,6 +178,9 @@ process.jer = cms.ESSource("PoolDBESSource",
 )
 process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
+# rerun metcorrections and uncertainties
+from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+runMetCorAndUncFromMiniAOD(process,isData=isRealData,jetColl="slimmedJets")
 
 ################################
 # The actual TreeWriter module #
@@ -196,7 +199,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     muons = cms.InputTag("slimmedMuons"),
                                     genJets=cms.InputTag("slimmedGenJets"),
                                     electrons = cms.InputTag("slimmedElectrons"),
-                                    mets = cms.InputTag("slimmedMETs"),
+                                    mets = cms.InputTag("slimmedMETs","","TreeWriter"),
                                     rho = cms.InputTag("fixedGridRhoFastjetAll"),
                                     vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
                                     prunedGenParticles = cms.InputTag("prunedGenParticles"),
@@ -342,3 +345,4 @@ if not options.fastSim:
     process.p*=process.HBHENoiseFilterResultProducer #produces HBHE bools (applied in TreeWriter manually)
 process.p*=process.TreeWriter
 
+process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
