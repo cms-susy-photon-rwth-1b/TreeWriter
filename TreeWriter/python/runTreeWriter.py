@@ -189,6 +189,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     jet_pT_cut=cms.untracked.double(30), # for all jets
                                     isolatedPhotons=cms.untracked.bool(True), # for all photons in the collection
                                     minNumberPhotons_cut=cms.untracked.uint32(1),
+                                    minNumberElectrons_cut=cms.untracked.uint32(0),
                                     # physics objects
                                     photons = cms.InputTag("slimmedPhotons"),
                                     jets = cms.InputTag("patJetsReapplyJEC"),
@@ -248,9 +249,8 @@ if user=="kiesel":
         "HLT_Ele27_eta2p1_WPLoose_Gsf_v",
     ]
     if "SingleElectron" in options.dataset or "DY" in options.dataset:
-        process.TreeWriter.photon_pT_cut=40.
         process.TreeWriter.HT_cut=0.
-        process.TreeWriter.minNumberPhotons_cut=1
+        process.TreeWriter.minNumberElectrons_cut=1
 
 elif user=="lange" or user=="jschulz":
     process.TreeWriter.jet_pT_cut=30.

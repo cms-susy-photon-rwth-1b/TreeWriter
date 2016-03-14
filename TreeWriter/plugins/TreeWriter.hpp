@@ -101,6 +101,7 @@ private:
    double dJet_pT_cut_;
    bool isolatedPhotons_;
    unsigned minNumberPhotons_cut_;
+   unsigned minNumberElectrons_cut_;
 
    edm::EDGetTokenT<reco::VertexCollection>    vtxToken_;
    edm::EDGetTokenT<edm::View<pat::Photon> >   photonCollectionToken_;
