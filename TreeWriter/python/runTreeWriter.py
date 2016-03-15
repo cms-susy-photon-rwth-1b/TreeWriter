@@ -92,10 +92,11 @@ applyMetFilters=cms.untracked.vstring(
 # checked in TreeWriter (otherwise the "initial" event count
 # is wrong)
 # TODO: remove, when fixed upstream
-process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
-process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
-process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion=cms.bool(False)
-process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
+if not options.fastSim:
+    process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
+    process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
+    process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion=cms.bool(False)
+    process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
 
 ######################
 # Jets               #
