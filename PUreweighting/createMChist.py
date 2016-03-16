@@ -2,7 +2,7 @@ import ROOT
 import sys
 
 def generateHistoFromList( list, name, title="pileup" ):
-    list = list + [0]*8 # extend list to ensure same binning as for data hist (needed for 8TeV data)
+    while len(list)<60: list += [0] # same binning as for data needed
     histo = ROOT.TH1F( name, title, len(list), 0, len(list) )
     for bin, content in enumerate( list ):
         histo.SetBinContent( bin+1, content ) # bin0 is underflow!
