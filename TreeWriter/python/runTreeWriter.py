@@ -221,7 +221,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     # met filters to apply
                                     metFilterNames=applyMetFilters,
                                     phoWorstChargedIsolation = cms.InputTag("photonIDValueMapProducer:phoWorstChargedIsolation"),
-                                    pileupHistogramName=cms.untracked.string( "pileupWeight_mix_2015_25ns_Startup_PoissonOOTPU" ),
+                                    pileupHistogramName=cms.untracked.string("pileupWeight_mix_2015_25ns_FallMC_matchData_PoissonOOTPU"),
                                     HBHENoiseFilterResult = cms.InputTag('HBHENoiseFilterResultProducer','HBHENoiseFilterResult'),
                                     HBHEIsoNoiseFilterResult = cms.InputTag('HBHENoiseFilterResultProducer','HBHEIsoNoiseFilterResult'),
                                     hardPUveto=cms.untracked.bool(hardPUveto),
@@ -235,6 +235,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
 # determine user if not set by crab
 user=options.user or getpass.getuser()
 
+if "RunIISpring15MiniAODv2" in option.dataset: process.TreeWriter.pileupHistogramName="pileupWeight_mix_2015_25ns_Startup_PoissonOOTPU"
 # user settings
 if user=="kiesel":
     process.TreeWriter.HT_cut=500.
