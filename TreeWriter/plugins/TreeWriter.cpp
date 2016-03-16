@@ -127,7 +127,13 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
       edm::LogError("File not found") << "create puWeights.root! (see README)";
       std::exit(84);
    } else {
-      hPU_=*( (TH1F*)puFile.Get( pileupHistogramName_.c_str() ) );
+      TH1F* hPU_ptr=(TH1F*)puFile.Get( pileupHistogramName_.c_str() );
+      if (hPU_ptr){
+         hPU_=*hPU_ptr;
+      } else {
+         edm::LogError("Pileup histogram not found") << "recreate puWeights.root! (see README)";
+         std::exit(84);
+      }
    }
    puFile.Close();
 }
