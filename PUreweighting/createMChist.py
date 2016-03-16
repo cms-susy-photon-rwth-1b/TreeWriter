@@ -33,6 +33,7 @@ if __name__ == "__main__":
 
     hists = []
     hists.append( generateHistoFromMixingModule( "mix_2015_25ns_Startup_PoissonOOTPU" ) )
+    hists.append( generateHistoFromMixingModule( "mix_2015_25ns_FallMC_matchData_PoissonOOTPU" ) )
 
     writeObjectsToFile( hists, filename )
 
