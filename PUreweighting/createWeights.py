@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     for hName in mcHistNames:
         mcH = readHisto( opts.mc, hName )
-        mcH.Scale( 1./h.Integral() )
+        mcH.Scale( 1./mcH.Integral() )
 
         pileupWeight = dataHist.Clone( "pileupWeight_"+hName )
         pileupWeightUp = dataHistUp.Clone( "pileupWeightUp_"+hName )
