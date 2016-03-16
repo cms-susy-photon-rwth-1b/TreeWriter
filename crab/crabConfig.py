@@ -67,16 +67,14 @@ datasets["QCD_HT"] = [
 ]
 
 datasets["kiesel"] = [
-    '/SinglePhoton/Run2015C_25ns-05Oct2015-v1/MINIAOD',
-    '/SinglePhoton/Run2015D-05Oct2015-v1/MINIAOD',
-    '/SinglePhoton/Run2015D-PromptReco-v4/MINIAOD',
+    '/SinglePhoton/Run2015C_25ns-16Dec2015-v1/MINIAOD',
+    '/SinglePhoton/Run2015D-16Dec2015-v1/MINIAOD',
     '/WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/WGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
     '/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
     '/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
-    '/JetHT/Run2015C_25ns-05Oct2015-v1/MINIAOD',
-    '/JetHT/Run2015D-05Oct2015-v1/MINIAOD',
-    '/JetHT/Run2015D-PromptReco-v4/MINIAOD',
+    '/JetHT/Run2015C_25ns-16Dec2015-v1/MINIAOD',
+    '/SingleMuon/Run2015D-16Dec2015-v1/MINIAOD',
     '/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
     '/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
@@ -90,21 +88,17 @@ datasets["kiesel"] = [
     '/ZJetsToNuNu_HT-400To600_13TeV-madgraph/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/ZJetsToNuNu_HT-600ToInf_13TeV-madgraph/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v2/MINIAODSIM',
     '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
-    '/SingleElectron/Run2015C_25ns-05Oct2015-v1/MINIAOD',
-    '/SingleElectron/Run2015D-05Oct2015-v1/MINIAOD',
-    '/SingleElectron/Run2015D-PromptReco-v4/MINIAOD',
+    '/SingleElectron/Run2015C_25ns-16Dec2015-v1/MINIAOD',
+    '/SingleElectron/Run2015D-16Dec2015-v1/MINIAOD',
     '/SMS-T5Wg_mGl-1550_mNLSP-0to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 ] + datasets["GJets_HT"] + datasets["QCD_HT"]
 #datasets["kiesel"] += datasets["T5Wg"]
 #datasets["kiesel"] += datasets["T5gg"]
 datasets["lange"] = [
     # data
-    '/SinglePhoton/Run2015D-05Oct2015-v1/MINIAOD',
-    '/SinglePhoton/Run2015D-PromptReco-v4/MINIAOD',
-    '/MET/Run2015D-05Oct2015-v1/MINIAOD',
-    '/MET/Run2015D-PromptReco-v4/MINIAOD',
-    '/SingleMuon/Run2015D-05Oct2015-v1/MINIAOD',
-    '/SingleMuon/Run2015D-PromptReco-v4/MINIAOD',
+    '/SinglePhoton/Run2015D-16Dec2015-v1/MINIAOD',
+    '/MET/Run2015D-16Dec2015-v1/MINIAOD',
+    '/SingleMuon/Run2015D-16Dec2015-v1/MINIAOD',
     # standard MC
     '/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
     '/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
