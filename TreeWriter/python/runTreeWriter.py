@@ -348,3 +348,14 @@ if not options.fastSim:
 process.p*=process.TreeWriter
 
 process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
+print "#########################################################"
+print "This is what I think I am processing..."
+print "  user           ",user
+print "  CRAB submission",isCrabSubmission
+print "  dataset        ",options.dataset
+print "  isRealData     ",isRealData
+print "  Global Tag     ",gtName
+print "  fastSim        ",options.fastSim
+print "  MiniAODv       ",options.miniAODv
+print "  hardPUveto     ",hardPUveto
+print "#########################################################"
