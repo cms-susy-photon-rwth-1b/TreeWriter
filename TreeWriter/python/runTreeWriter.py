@@ -257,14 +257,7 @@ if user=="kiesel":
         "HLT_PFHT600_v",
         "HLT_Photon175_v",
         "HLT_PFHT475_v", #prescale: 60
-        "HLT_Ele23_WP75_Gsf_v",
-        "HLT_Ele22_eta2p1_WP75_Gsf_v",
-        "HLT_Ele22_eta2p1_WPLoose_Gsf_v",
-        "HLT_Ele27_eta2p1_WPLoose_Gsf_v",
     ]
-    if "SingleElectron" in options.dataset or "DY" in options.dataset:
-        process.TreeWriter.HT_cut=0.
-        process.TreeWriter.minNumberElectrons_cut=1
 
 elif user=="lange" or user=="jschulz":
     process.TreeWriter.jet_pT_cut=30.
