@@ -4,6 +4,7 @@
 // system include files
 #include <memory>
 #include <vector>
+#include <algorithm>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -154,6 +155,7 @@ private:
    Char_t mc_weight_; // +1 or -1 event weights (take care when reading with python, this is a character!)
 
    Float_t genHt_;
+   Float_t puPtHat_;
 
    ULong64_t evtNo_;
    UInt_t    runNo_;

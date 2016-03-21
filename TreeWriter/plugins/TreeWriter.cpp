@@ -106,6 +106,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("mc_weight"     , &mc_weight_     , "mc_weight/B");
 
    eventTree_->Branch("genHt" , &genHt_ , "genHt/F");
+   eventTree_->Branch("puPtHat" , &puPtHat_ , "puPtHat/F");
 
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
    eventTree_->Branch("runNo", &runNo_, "runNo/i");
@@ -181,6 +182,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    hCutFlow_->Fill("initial_unweighted",1);
 
    // PileUp weights
+   puPtHat_=0;
    if (!isRealData){
       edm::Handle<PileupSummaryInfoCollection>  PupInfo;
       iEvent.getByToken(pileUpSummaryToken_, PupInfo);
@@ -189,6 +191,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          int BX = PVI.getBunchCrossing();
          if(BX == 0) {
             Tnpv = PVI.getTrueNumInteractions();
+            auto ptHats = PVI.getPU_pT_hats();
+            puPtHat_ = ptHats.size() ? *max_element(ptHats.begin(),ptHats.end()) : 0;
             continue;
          }
       }
