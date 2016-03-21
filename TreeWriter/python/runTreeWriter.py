@@ -3,7 +3,14 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 import os,re
 import getpass
 
-cmssw_src=os.environ['CMSSW_BASE']+'/src/'
+def guessDatasetFromFileName( filename ):
+    # This reproduces the dataset roughly if the file is on /store
+    # Not reproduced are e.g. the pileup scenario
+    # For local files, specify your own rules or run it with the 'dataset' option
+    nParts=filename.split("/")
+    if len(nParts)>6:
+        return "/{}/{}-{}/{}".format(nParts[-5],nParts[-6],nParts[-3],nParts[-4])
+    return filename
 
 options = VarParsing ('analysis')
 options.register ('dataset',
@@ -16,38 +23,17 @@ options.register ('user',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.string,
                   "Name the user. If not set by crab, this script will determine it.")
-options.register ('fastSim',
-                  '',
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.bool,
-                  "Whether the sample is simulated with fast-sim. (Default: False)")
-options.register ('miniAODv',
-                  '',
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "The MiniAOD version. (Default: 2)")
 
 # defaults
 options.inputFiles = 'root://xrootd.unl.edu//store/mc/RunIISpring15MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/0CB41EBB-CA6D-E511-A28E-002618943C3A.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
-options.fastSim=False
-options.miniAODv=2
 # get and parse the command line arguments
 options.parseArguments()
 
-isCrabSubmission=bool(options.dataset) # only set for crab sumission
-
-# determine if Data or Simulation
-isRealData=True
-if isCrabSubmission:
-    isRealData=(not options.dataset.endswith("SIM"))
-else: # running locally
-    isRealData=("SIM" not in options.inputFiles[0])
-
-options.fastSim = (options.fastSim
-                   or bool(re.match( "/SMS-.*/.*/USER", options.dataset )) # signal scan
-                   )
+dataset=options.dataset or guessDatasetFromFileName(options.inputFiles[0])
+print "Assumed dataset:", dataset
+isRealData=not dataset.endswith("SIM")
 
 # the actual TreeWriter module
 process = cms.Process("TreeWriter")
@@ -62,7 +48,7 @@ process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 # determine global tag
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-gtName = "auto:run2_data" if isRealData else "auto:run2_mc"
+gtName="76X_dataRun2_16Dec2015_v0" if isRealData else "76X_mcRun2_asymptotic_RunIIFall15DR76_v1"
 process.GlobalTag = GlobalTag(process.GlobalTag, gtName, '')
 
 
@@ -94,8 +80,10 @@ for idmod in ph_id_modules:
 # Jet Energy Corrections #
 ##########################
 # where .db files are placed (e.g. for JEC, JER)
-localDataBasePath=('sqlite_file:src/TreeWriter/TreeWriter/data/' if isCrabSubmission
-                   else 'sqlite_file:'+cmssw_src+'/TreeWriter/TreeWriter/data/')
+# Crab will always be in the $CMSSW_BASE directory, so to run the code locally,
+# a symbolic link is added
+if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
+localDataBasePath='sqlite_file:src/TreeWriter/TreeWriter/data/'
 
 
 jecLevels = [ 'L1FastJet','L2Relative','L3Absolute' ]
@@ -245,13 +233,13 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
 # Modify the TreeWriter module #
 ################################
 
-process.TreeWriter.hardPUveto=options.dataset.startswith("/QCD_HT100to200")
-if "RunIISpring15MiniAODv2" in options.dataset: process.TreeWriter.pileupHistogramName="pileupWeight_mix_2015_25ns_Startup_PoissonOOTPU"
+process.TreeWriter.hardPUveto=dataset.startswith("/QCD_HT100to200")
+if "RunIISpring15MiniAODv2" in dataset: process.TreeWriter.pileupHistogramName="pileupWeight_mix_2015_25ns_Startup_PoissonOOTPU"
 
-if options.fastSim:
+if "Fast" in dataset:
     process.TreeWriter.metFilterNames = [] # no met filters for fastsim
     process.TreeWriter.lheEventProduct = "source"
-if options.miniAODv==1:
+if dataset.endswith("3d7be4403ea17498be45eb057fcb0278/USER"): # miniAODv1
     process.TreeWriter.pileUpSummary = "addPileupInfo"
 
 
