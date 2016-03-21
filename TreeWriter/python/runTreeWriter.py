@@ -47,6 +47,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 gtName="76X_dataRun2_16Dec2015_v0" if isRealData else "76X_mcRun2_asymptotic_RunIIFall15DR76_v1"
+if "74X" in dataset and not isRealData: "74X_mcRun2_asymptotic_v5"
 process.GlobalTag = GlobalTag(process.GlobalTag, gtName, '')
 
 
