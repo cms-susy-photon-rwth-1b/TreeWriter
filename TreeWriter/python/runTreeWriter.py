@@ -42,8 +42,6 @@ process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
-process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
-
 
 # determine global tag
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
@@ -55,6 +53,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, gtName, '')
 ######################
 # PHOTONS, ELECTRONS #
 ######################
+process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 from RecoEgamma.PhotonIdentification.PhotonIDValueMapProducer_cfi import *
 
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
