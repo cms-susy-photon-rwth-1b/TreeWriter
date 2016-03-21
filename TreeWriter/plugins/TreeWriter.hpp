@@ -82,7 +82,7 @@ private:
 
    //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
    //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
-   //virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
+   virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
    //virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 
    int matchToTruth(const pat::Photon &pho,
@@ -102,6 +102,8 @@ private:
    bool isolatedPhotons_;
    unsigned minNumberPhotons_cut_;
    unsigned minNumberElectrons_cut_;
+
+   bool newLumiBlock_;
 
    edm::EDGetTokenT<reco::VertexCollection>    vtxToken_;
    edm::EDGetTokenT<edm::View<pat::Photon> >   photonCollectionToken_;
