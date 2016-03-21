@@ -258,7 +258,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // go through the filters and check if they were passed
    const edm::TriggerNames &allFilterNames = iEvent.triggerNames(*metFilterBits);
    for (std::string const &name: metFilterNames_){
-      const int index=allFilterNames.triggerIndex(name);
+      const unsigned index=allFilterNames.triggerIndex(name);
+      if (index>=allFilterNames.size()) std::cerr << "MET filter '" << name << "' not found!" << std::endl;
       if (!metFilterBits->accept(index)) return; // not passed
    }
    hCutFlow_->Fill("METfilters",mc_weight_*pu_weight_);
