@@ -228,7 +228,11 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
 # determine user if not set by crab
 user=options.user or getpass.getuser()
 
-if "RunIISpring15MiniAODv2" in options.dataset: process.TreeWriter.pileupHistogramName="pileupWeight_mix_2015_25ns_Startup_PoissonOOTPU"
+# check for 74X samples and use right PU histogram
+if (isCrabSubmission and "RunIISpring15MiniAODv2" in options.dataset) \
+   or (len (options.inputFiles)==1 and '/ggm/' in options.inputFiles[0]):
+    process.TreeWriter.pileupHistogramName="pileupWeight_mix_2015_25ns_Startup_PoissonOOTPU"
+
 # user settings
 if user=="kiesel":
     process.TreeWriter.HT_cut=500.
@@ -367,4 +371,5 @@ print "  Global Tag     ",gtName
 print "  fastSim        ",options.fastSim
 print "  MiniAODv       ",options.miniAODv
 print "  hardPUveto     ",hardPUveto
+print "  PU             ",process.TreeWriter.pileupHistogramName.pythonValue()
 print "#########################################################"
