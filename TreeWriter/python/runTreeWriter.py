@@ -37,7 +37,7 @@ isRealData=not dataset.endswith("SIM")
 
 # the actual TreeWriter module
 process = cms.Process("TreeWriter")
-process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
+#process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -163,8 +163,8 @@ process.jer = cms.ESSource("PoolDBESSource",
 process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
 # rerun metcorrections and uncertainties
-from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-runMetCorAndUncFromMiniAOD(process,isData=isRealData,jetColl="slimmedJets")
+#from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+#runMetCorAndUncFromMiniAOD(process,isData=isRealData,jetColl="slimmedJets")
 
 
 ################################
