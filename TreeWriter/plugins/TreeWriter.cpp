@@ -46,6 +46,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , isolatedPhotons_(iConfig.getUntrackedParameter<bool>("isolatedPhotons"))
    , minNumberPhotons_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberPhotons_cut"))
    , minNumberElectrons_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberElectrons_cut"))
+   , newLumiBlock_(true)
    , vtxToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices")))
    , photonCollectionToken_  (consumes<edm::View<pat::Photon> >(iConfig.getParameter<edm::InputTag>("photons")))
    , jetCollectionToken_     (consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("jets")))
@@ -126,7 +127,13 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
       edm::LogError("File not found") << "create puWeights.root! (see README)";
       std::exit(84);
    } else {
-      hPU_=*( (TH1F*)puFile.Get( pileupHistogramName_.c_str() ) );
+      TH1F* hPU_ptr=(TH1F*)puFile.Get( pileupHistogramName_.c_str() );
+      if (hPU_ptr){
+         hPU_=*hPU_ptr;
+      } else {
+         edm::LogError("Pileup histogram not found") << "recreate puWeights.root! (see README)";
+         std::exit(84);
+      }
    }
    puFile.Close();
 }
@@ -214,13 +221,14 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::InputTag triggerTag("TriggerResults","","HLT");
    iEvent.getByLabel(triggerTag, triggerBits);
 
-   // trigger indices not set yet (ususally first event)
-   if( triggerIndex_.size() && triggerIndex_.begin()->second == -10 ) {
-
-      // set all trigger indeces to -1 to avoid looping a second time
+   // for each lumiBlock, re-read the trigger indices (rather changes for new run)
+   if( triggerIndex_.size() && newLumiBlock_ ) {
+      newLumiBlock_=false;
+      // set all trigger indeces to -1 as "not available"-flag
       for( auto& it : triggerIndex_ )
         it.second = -1;
 
+      // store the indices of the trigger names that we really find
       const edm::TriggerNames &triggerNames = iEvent.triggerNames(*triggerBits);
       for( unsigned i=0; i<triggerNames.size(); i++ ) {
          for( auto& it : triggerIndex_ ) {
@@ -636,12 +644,12 @@ TreeWriter::endJob()
 */
 
 // ------------ method called when starting to processes a luminosity block  ------------
-/*
-  void
-  TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-  {
-  }
-*/
+
+void
+TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
+{
+   newLumiBlock_=true;
+}
 
 // ------------ method called when ending the processing of a luminosity block  ------------
 /*
