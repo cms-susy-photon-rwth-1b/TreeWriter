@@ -88,6 +88,9 @@ datasets["kiesel"] = [
     '/ZJetsToNuNu_HT-400To600_13TeV-madgraph/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
     '/ZJetsToNuNu_HT-600ToInf_13TeV-madgraph/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
     '/SMS-T5Wg_mGl-1550_mNLSP-0to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
+    '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
+    '/SingleElectron/Run2015C_25ns-16Dec2015-v1/MINIAOD',
+    '/SingleElectron/Run2015D-16Dec2015-v1/MINIAOD',
 ] + datasets["GJets_HT"] + datasets["QCD_HT"]
 #datasets["kiesel"] += datasets["T5Wg"]
 #datasets["kiesel"] += datasets["T5gg"]
