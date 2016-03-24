@@ -258,7 +258,6 @@ elif user=="lange" or user=="jschulz":
     process.TreeWriter.jet_pT_cut=30.
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT500_v",
-        "HLT_Photon90_v",
         "HLT_PFHT600_v",
         'HLT_Photon22_R9Id90_HE10_Iso40_EBOnly_PFMET40_v',
         "HLT_Photon36_R9Id90_HE10_Iso40_EBOnly_PFMET40_v",
@@ -272,6 +271,9 @@ elif user=="lange" or user=="jschulz":
         "HLT_Photon30_v",
         "HLT_Photon36_v",
         "HLT_Photon50_v",
+        "HLT_Photon75_v",
+        "HLT_Photon90_v",
+        "HLT_Photon120_v",
         "HLT_Photon36_R9Id90_HE10_IsoM_v",
         "HLT_Photon165_R9Id90_HE10_IsoM_v",
         "HLT_Photon165_HE10_v",
@@ -285,6 +287,7 @@ elif user=="lange" or user=="jschulz":
         "HLT_IsoMu20_v",
         "HLT_Mu20_v",
         "HLT_Mu50_v",
+        "HLT_Mu17_Photon22_CaloIdL_L1ISO_v"
     ]
     process.TreeWriter.triggerPrescales=[
         "HLT_Photon135_PFMET100_JetIdCleaned_v", # used in early data taking
