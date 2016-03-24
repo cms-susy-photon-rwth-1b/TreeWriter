@@ -258,6 +258,13 @@ if user=="kiesel":
         "HLT_Photon175_v",
         "HLT_PFHT475_v", #prescale: 60
     ]
+    if dataset.startswith("SingleElectron") or dataset.startswith("/DY"):
+        process.TreeWriter.HT_cut=0.
+        process.TreeWriter.photon_pT_cut=90.
+        process.TreeWriter.minNumberPhotons_cut=0
+        process.TreeWriter.minNumberElectrons_cut=1
+        process.TreeWriter.triggerNames=[ "HLT_Ele23_WPLoose_Gsf_v" ]
+
 
 elif user=="lange" or user=="jschulz":
     process.TreeWriter.jet_pT_cut=30.
