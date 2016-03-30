@@ -165,7 +165,9 @@ private:
 
    // Trigger decisions
    std::vector<std::string> triggerNames_;
+   std::vector<std::string> triggerPrescales_;
    std::map<std::string, Bool_t > triggerDecision_;
+   std::map<std::string, int > triggerPrescale_;
    std::map<std::string, int > triggerIndex_;
 
    // physics Objects

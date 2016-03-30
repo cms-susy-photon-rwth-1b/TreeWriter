@@ -10,6 +10,8 @@
 
 #include "TreeWriter.hpp"
 
+#include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
+
 // compute HT using RECO objects to "reproduce" the trigger requirements
 static double computeHT(const std::vector<tree::Jet>& jets)
 {
@@ -80,11 +82,13 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , hardPUveto_(iConfig.getUntrackedParameter<bool>("hardPUveto"))
    , jetIdSelector(iConfig.getParameter<edm::ParameterSet>("pfJetIDSelector"))
    , triggerNames_(iConfig.getParameter<std::vector<std::string>>("triggerNames"))
+   , triggerPrescales_(iConfig.getParameter<std::vector<std::string>>("triggerPrescales"))
 {
    // declare consumptions that are used "byLabel" in analyze()
    consumes<GenEventInfoProduct>(edm::InputTag("generator"));
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","","HLT"));
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults",""));
+   consumes<pat::PackedTriggerPrescales>(edm::InputTag("patTrigger"));
    consumes<std::vector<pat::TriggerObjectStandAlone>>(edm::InputTag("selectedPatTrigger"));
 
    eventTree_ = fs_->make<TTree> ("eventTree", "event data");
@@ -118,6 +122,11 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
       triggerIndex_[n] = -10; // not set and not found
       triggerDecision_[n] = false;
       eventTree_->Branch( n.c_str(), &triggerDecision_[n], (n+"/O").c_str() );
+   }
+   // create branches for prescales
+   for( std::string const& n : triggerPrescales_ ){
+      std::string const name=n+"_pre";
+      eventTree_->Branch( name.c_str(), &triggerPrescale_[n], (name+"/I").c_str() );
    }
 
    // get pileup histogram(s)
@@ -216,8 +225,11 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    hCutFlow_->Fill("initial",mc_weight_*pu_weight_);
 
    edm::Handle<edm::TriggerResults> triggerBits;
+   edm::Handle<pat::PackedTriggerPrescales> triggerPrescales;
    edm::InputTag triggerTag("TriggerResults","","HLT");
+   edm::InputTag triggerPrescaleTag("patTrigger");
    iEvent.getByLabel(triggerTag, triggerBits);
+   iEvent.getByLabel(triggerPrescaleTag, triggerPrescales);
 
    // for each lumiBlock, re-read the trigger indices (rather changes for new run)
    if( triggerIndex_.size() && newLumiBlock_ ) {
@@ -242,6 +254,12 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if( it.second != -1 ) {
          triggerDecision_[it.first] = triggerBits->accept( it.second );
       }
+   }
+   // store prescales
+   for( std::string const& n : triggerPrescales_ ){
+      int const index = triggerIndex_[n];
+      // if the index was not found, store '0': trigger was not run!
+      triggerPrescale_[n] = index == -1 ? 0 : triggerPrescales->getPrescaleForIndex(triggerIndex_[n]);
    }
 
    // fill trigger objects
