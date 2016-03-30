@@ -91,16 +91,6 @@ applyMetFilters=cms.untracked.vstring(
     "Flag_goodVertices",
     "Flag_eeBadScFilter",
 )
-# HBHE has to be manually re-run for early data.
-# This is not applied as EDFilter, as suggested, but manually
-# checked in TreeWriter (otherwise the "initial" event count
-# is wrong)
-# TODO: remove, when fixed upstream
-if not options.fastSim:
-    process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
-    process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
-    process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion=cms.bool(False)
-    process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
 
 ######################
 # Jets               #
@@ -226,8 +216,6 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     metFilterNames=applyMetFilters,
                                     phoWorstChargedIsolation = cms.InputTag("photonIDValueMapProducer:phoWorstChargedIsolation"),
                                     pileupHistogramName=cms.untracked.string("pileupWeight_mix_2015_25ns_FallMC_matchData_PoissonOOTPU"),
-                                    HBHENoiseFilterResult = cms.InputTag('HBHENoiseFilterResultProducer','HBHENoiseFilterResult'),
-                                    HBHEIsoNoiseFilterResult = cms.InputTag('HBHENoiseFilterResultProducer','HBHEIsoNoiseFilterResult'),
                                     hardPUveto=cms.untracked.bool(hardPUveto),
                                     # triggers to be saved
                                     # Warning: To be independent of the version number, the trigger result is saved if the trigger name begins
@@ -366,8 +354,6 @@ process.p = cms.Path(
     *process.egmPhotonIDSequence
     )
 process.p += cms.Sequence( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC )
-if not options.fastSim:
-    process.p*=process.HBHENoiseFilterResultProducer #produces HBHE bools (applied in TreeWriter manually)
 process.p*=process.TreeWriter
 
 process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
