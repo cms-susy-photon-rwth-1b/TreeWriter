@@ -82,10 +82,14 @@ process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring(
 ###############################
 # Define MET Filters to apply #
 ###############################
-# See https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2?rev=39
+# See https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#MiniAOD_76X_v2_produced_with_the
 applyMetFilters=cms.untracked.vstring(
-    "Flag_CSCTightHaloFilter",
-    "Flag_eeBadScFilter"
+    "Flag_HBHENoiseFilter",
+    "Flag_HBHENoiseIsoFilter",
+    "Flag_CSCTightHalo2015Filter",
+    "Flag_EcalDeadCellTriggerPrimitiveFilter",
+    "Flag_goodVertices",
+    "Flag_eeBadScFilter",
 )
 # HBHE has to be manually re-run for early data.
 # This is not applied as EDFilter, as suggested, but manually
