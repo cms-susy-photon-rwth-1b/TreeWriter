@@ -162,9 +162,11 @@ process.jer = cms.ESSource("PoolDBESSource",
 )
 process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
-# rerun metcorrections and uncertainties
+# rerun metcorrections and uncertainties ## Does not work in combination with met significance
 #from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-#runMetCorAndUncFromMiniAOD(process,isData=isRealData,jetColl="slimmedJets")
+#runMetCorAndUncFromMiniAOD(process,isData=isRealData)
+#process.TreeWriter.mets = cms.InputTag("slimmedMETs","","TreeWriter"),
+#process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
 
 
 ################################
