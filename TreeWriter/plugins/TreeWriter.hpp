@@ -140,8 +140,6 @@ private:
    edm::EDGetTokenT<edm::ValueMap<float> > phoWorstChargedIsolationToken_;
 
    const std::string pileupHistogramName_;
-   edm::EDGetTokenT<bool> HBHENoiseFilterResult_;
-   edm::EDGetTokenT<bool> HBHEIsoNoiseFilterResult_;
    const bool hardPUveto_;
 
    PFJetIDSelectionFunctor jetIdSelector;
@@ -167,7 +165,9 @@ private:
 
    // Trigger decisions
    std::vector<std::string> triggerNames_;
+   std::vector<std::string> triggerPrescales_;
    std::map<std::string, Bool_t > triggerDecision_;
+   std::map<std::string, int > triggerPrescale_;
    std::map<std::string, int > triggerIndex_;
 
    // physics Objects
