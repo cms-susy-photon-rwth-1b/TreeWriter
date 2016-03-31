@@ -261,6 +261,7 @@ if user=="kiesel":
         "HLT_Photon175_v",
         "HLT_PFHT475_v", #prescale: 60
     ]
+    process.TreeWriter.triggerPrescales=process.TreeWriter.triggerNames
     if dataset.startswith("SingleElectron") or dataset.startswith("/DY"):
         process.TreeWriter.HT_cut=0.
         process.TreeWriter.photon_pT_cut=90.
