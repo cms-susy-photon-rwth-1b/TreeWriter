@@ -247,8 +247,6 @@ if dataset.endswith("3d7be4403ea17498be45eb057fcb0278/USER"): # miniAODv1
 
 # determine user if not set by crab
 user=options.user or getpass.getuser()
-
-if "RunIISpring15MiniAODv2" in options.dataset: process.TreeWriter.pileupHistogramName="pileupWeight_mix_2015_25ns_Startup_PoissonOOTPU"
 # user settings
 if user=="kiesel":
     process.TreeWriter.HT_cut=500.
