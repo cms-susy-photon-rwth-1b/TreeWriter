@@ -350,7 +350,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       trPho.sigmaIetaIeta=pho->full5x5_sigmaIetaIeta(); // from reco::Photon
       trPho.hOverE=pho->hadTowOverEm() ;
-      trPho.hasPixelSeed=(Int_t)pho->hasPixelSeed() ;
+      trPho.hasPixelSeed=pho->hasPixelSeed() ;
       trPho.passElectronVeto= pho->passElectronVeto() ;
       trPho.r9  = pho->r9();
 
@@ -361,7 +361,6 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
 
       trPho.mvaValue=(*mva_value)[phoPtr];
-
 
       // MC match
       if (!isRealData){

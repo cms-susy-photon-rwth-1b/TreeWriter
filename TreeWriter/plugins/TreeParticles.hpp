@@ -32,8 +32,8 @@ namespace tree
    {
       Float_t sigmaIetaIeta; // full 5x5
       Float_t hOverE;
-      Int_t hasPixelSeed;
-      Int_t passElectronVeto;
+      Bool_t hasPixelSeed;
+      Bool_t passElectronVeto;
       Float_t r9;
 
       Float_t cIso;
