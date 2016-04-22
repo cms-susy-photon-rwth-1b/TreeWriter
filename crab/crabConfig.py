@@ -103,6 +103,7 @@ datasets["kiesel"] = [
 datasets["lange"] = [
     # data
     '/SinglePhoton/Run2015D-16Dec2015-v1/MINIAOD',
+    '/SingleElectron/Run2015D-16Dec2015-v1/MINIAOD',
     '/MET/Run2015D-16Dec2015-v1/MINIAOD',
     '/SingleMuon/Run2015D-16Dec2015-v1/MINIAOD',
     '/MuonEG/Run2015D-16Dec2015-v1/MINIAOD',
