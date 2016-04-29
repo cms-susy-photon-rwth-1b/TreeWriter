@@ -4,8 +4,8 @@
 Get CMSSW environment 76X
 
 ```
-cmsrel CMSSW_7_6_3_patch2
-cd CMSSW_7_6_3_patch2/src/
+cmsrel CMSSW_7_6_5
+cd CMSSW_7_6_5/src/
 cmsenv
 ```
 get MET Significance Recipe
@@ -14,10 +14,6 @@ get MET Significance Recipe
 # git-cms-merge-topic -u cms-met:76X-METSignificance-patch0
 # memory leak fixed in:
 git-cms-merge-topic -u jolange:76X-METSignificance-patch0
-# further memory leak fix
-git cms-merge-topic -u jolange:memLeakFix
-git cms-addpkg RecoEgamma/ElectronIdentification
-git cms-addpkg RecoEgamma/PhotonIdentification
 ```
 Get and build the TreeWriter
 
