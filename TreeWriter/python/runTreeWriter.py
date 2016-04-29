@@ -172,7 +172,7 @@ process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
 # rerun metcorrections and uncertainties
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-runMetCorAndUncFromMiniAOD(process,isData=isRealData,jetColl="slimmedJets")
+runMetCorAndUncFromMiniAOD(process,isData=isRealData)
 
 ################################
 # The actual TreeWriter module #
