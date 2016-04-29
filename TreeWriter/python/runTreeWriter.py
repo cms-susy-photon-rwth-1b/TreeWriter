@@ -55,6 +55,7 @@ localDataBasePath=('sqlite_file:src/TreeWriter/TreeWriter/data/' if isCrabSubmis
 
 # the actual TreeWriter module
 process = cms.Process("TreeWriter")
+process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -121,20 +122,16 @@ process.jec = cms.ESSource("PoolDBESSource",
 ## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
 
+# https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 jecLevels = [ 'L1FastJet','L2Relative','L3Absolute' ]
 if isRealData: jecLevels.append( 'L2L3Residual' )
 
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-  src = cms.InputTag("slimmedJets"),
-  levels = jecLevels,
-  payload = 'AK4PFchs'
-)
-
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-process.patJetsReapplyJEC = patJetsUpdated.clone(
-  jetSource = cms.InputTag("slimmedJets"),
-  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+updateJetCollection(
+   process,
+   jetSource = cms.InputTag('slimmedJets'),
+   labelName = 'UpdatedJEC',
+   jetCorrections = ('AK4PFchs', cms.vstring(jecLevels), 'None')
 )
 
 ######################
@@ -175,7 +172,7 @@ process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
 # rerun metcorrections and uncertainties
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-runMetCorAndUncFromMiniAOD(process,isData=isRealData,jetColl="slimmedJets")
+runMetCorAndUncFromMiniAOD(process,isData=isRealData)
 
 ################################
 # The actual TreeWriter module #
@@ -190,7 +187,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     minNumberElectrons_cut=cms.untracked.uint32(0),
                                     # physics objects
                                     photons = cms.InputTag("slimmedPhotons"),
-                                    jets = cms.InputTag("patJetsReapplyJEC"),
+                                    jets = cms.InputTag("selectedUpdatedPatJetsUpdatedJEC"),
                                     muons = cms.InputTag("slimmedMuons"),
                                     genJets=cms.InputTag("slimmedGenJets"),
                                     electrons = cms.InputTag("slimmedElectrons"),
@@ -200,7 +197,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     prunedGenParticles = cms.InputTag("prunedGenParticles"),
                                     pileUpSummary = cms.InputTag('slimmedAddPileupInfo'),
                                     lheEventProduct = cms.InputTag('externalLHEProducer'),
-                                    metSig=cms.InputTag("METSignificance","METSignificance"),
+                                    metSig=cms.InputTag("METSignificance","METSignificance","TreeWriter"),
                                     packedCandidates=cms.InputTag("packedPFCandidates"),
                                     # electron IDs
                                     electronVetoIdMap   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-veto"),
@@ -368,10 +365,8 @@ process.p = cms.Path(
     *process.egmGsfElectronIDSequence
     *process.egmPhotonIDSequence
     )
-process.p += cms.Sequence( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC )
 process.p*=process.TreeWriter
 
-process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
 print "#########################################################"
 print "This is what I think I am processing..."
 print "  user           ",user
