@@ -108,6 +108,8 @@ datasets["lange"] = [
     '/SingleMuon/Run2015D-16Dec2015-v1/MINIAOD',
     '/MuonEG/Run2015D-16Dec2015-v1/MINIAOD',
     '/JetHT/Run2015D-16Dec2015-v1/MINIAOD',
+    '/DoubleEG/Run2015D-16Dec2015-v2/MINIAOD',
+    '/DoubleMuon/Run2015D-16Dec2015-v1/MINIAOD',
     # standard MC
     '/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
     '/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
