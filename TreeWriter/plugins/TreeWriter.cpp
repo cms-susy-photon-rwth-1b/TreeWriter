@@ -397,6 +397,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trMuon.isTight=mu.isTightMuon(firstGoodVertex);
       auto const& pfIso=mu.pfIsolationR04();
       trMuon.rIso=(pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/mu.pt();
+      trMuon.charge=mu.charge();
       vMuons_.push_back(trMuon);
    } // muon loop
    sort(vMuons_.begin(), vMuons_.end(), tree::PtGreater);
@@ -424,6 +425,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trEl.isMedium=(*medium_id_decisions)[elPtr];
       trEl.isTight =(*tight_id_decisions) [elPtr];
       trEl.p.SetPtEtaPhi(el->pt(),el->superCluster()->eta(),el->superCluster()->phi());
+      trEl.charge=el->charge();
       vElectrons_.push_back(trEl);
    }
    sort(vElectrons_.begin(), vElectrons_.end(), tree::PtGreater);

@@ -63,6 +63,7 @@ namespace tree
 
    struct Muon: public Particle
    {
+      Char_t charge; // +/- 1
       bool isTight;
       // PF-based combined relative isolation with Δβ correction:
       // (∑pT(ch.had from PV) + max(0, ∑ET(neut.had) + ∑ET(phot) − 0.5*∑pT(ch.had from PU)))/pT(μ)
@@ -71,6 +72,7 @@ namespace tree
 
    struct Electron: public Particle
    {
+      Char_t charge; // +/- 1
       bool isLoose;
       bool isMedium;
       bool isTight;
