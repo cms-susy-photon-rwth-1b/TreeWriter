@@ -168,6 +168,8 @@ private:
    std::map<std::string, int > triggerPrescale_;
    std::map<std::string, int > triggerIndex_;
 
+   bool storeTriggerObjects_;
+
    // physics Objects
    std::vector<tree::Photon>   vPhotons_;
    std::vector<tree::Jet>      vJets_;

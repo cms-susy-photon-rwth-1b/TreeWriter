@@ -81,6 +81,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , jetIdSelector(iConfig.getParameter<edm::ParameterSet>("pfJetIDSelector"))
    , triggerNames_(iConfig.getParameter<std::vector<std::string>>("triggerNames"))
    , triggerPrescales_(iConfig.getParameter<std::vector<std::string>>("triggerPrescales"))
+   , storeTriggerObjects_(iConfig.getUntrackedParameter<bool>("storeTriggerObjects"))
 {
    // declare consumptions that are used "byLabel" in analyze()
    consumes<GenEventInfoProduct>(edm::InputTag("generator"));
@@ -98,7 +99,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("muons"    , &vMuons_);
    eventTree_->Branch("met"      , &met_);
    eventTree_->Branch("genParticles", &vGenParticles_);
-   eventTree_->Branch("triggerObjects", &vTriggerObjects_);
+   if (storeTriggerObjects_) eventTree_->Branch("triggerObjects", &vTriggerObjects_);
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
    eventTree_->Branch("nGoodVertices" , &nGoodVertices_ , "nGoodVertices/I");
@@ -260,19 +261,20 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       triggerPrescale_[n] = index == -1 ? 0 : triggerPrescales->getPrescaleForIndex(triggerIndex_[n]);
    }
 
-   // fill trigger objects
-   edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
-   edm::InputTag triggerObjects_("selectedPatTrigger");
-   iEvent.getByLabel(triggerObjects_, triggerObjects);
+   if (storeTriggerObjects_) {
+      edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
+      edm::InputTag triggerObjects_("selectedPatTrigger");
+      iEvent.getByLabel(triggerObjects_, triggerObjects);
 
-   vTriggerObjects_.clear();
-   tree::Particle trObj;
-   for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
-//      obj.unpackPathNames(names);
-      auto ids = obj.filterIds();
-      if (obj.collection() != "hltEgammaCandidates::HLT") continue;
-      trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
-      vTriggerObjects_.push_back(trObj);
+      vTriggerObjects_.clear();
+      tree::Particle trObj;
+      for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
+         // obj.unpackPathNames(names);
+         auto ids = obj.filterIds();
+         if (obj.collection() != "hltEgammaCandidates::HLT") continue;
+         trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
+         vTriggerObjects_.push_back(trObj);
+      }
    }
 
    // MET Filters

@@ -219,6 +219,8 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     # with the strings given here. E.g. "HLT" would always be true if any of the triggers fired.
                                     triggerNames=cms.vstring(),
                                     triggerPrescales=cms.vstring(), # also useful to check whether a trigger was run
+                                    # if trigger objects are stored
+                                    storeTriggerObjects=cms.untracked.bool(True),
                                     pfJetIDSelector=pfJetIDSelector,
 )
 
@@ -253,6 +255,7 @@ if user=="kiesel":
 
 elif user=="lange" or user=="jschulz":
     process.TreeWriter.jet_pT_cut=30.
+    process.TreeWriter.storeTriggerObjects=False
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT500_v",
         "HLT_PFHT600_v",
