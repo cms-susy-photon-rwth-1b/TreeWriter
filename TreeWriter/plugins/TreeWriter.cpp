@@ -575,7 +575,6 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // Get generator level info
       // Pruned particles are the one containing "important" stuff
       for (const reco::GenParticle &genP: *prunedGenParticles){
-         // count generated leptons from W bosons
          auto absId = abs(genP.pdgId());
          if (absId==23||absId==24){ // store intermediate bosons
             int iNdaugh=genP.numberOfDaughters();
