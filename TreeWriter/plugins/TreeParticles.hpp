@@ -31,6 +31,7 @@ namespace tree
    struct Photon : public Particle
    {
       Float_t sigmaIetaIeta; // full 5x5
+      Float_t sigmaIphiIphi;
       Float_t hOverE;
       Bool_t hasPixelSeed;
       Bool_t passElectronVeto;
