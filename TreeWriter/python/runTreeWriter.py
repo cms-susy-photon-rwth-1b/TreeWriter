@@ -255,6 +255,7 @@ if user=="kiesel":
 
 elif user=="lange" or user=="jschulz":
     process.TreeWriter.jet_pT_cut=30.
+    process.TreeWriter.photon_pT_cut=50
     process.TreeWriter.storeTriggerObjects=False
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT500_v",
