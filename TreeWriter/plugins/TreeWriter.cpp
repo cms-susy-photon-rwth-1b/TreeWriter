@@ -597,7 +597,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
          // save particles
          if (genP.status() != 1) continue; // only final state particles
-         if (genP.pt() < 30)     continue;
+         if (genP.pt() < 20)     continue;
          if (absId==11 || absId==22 || absId==13       // e+-, photon, muon
              || absId==12 || absId==14 || absId==16) { // neutrino
             trP.pdgId = genP.pdgId();
