@@ -222,7 +222,10 @@ elif user=="lange" or user=="jschulz":
         "HLT_Photon135_PFMET100_NoiseCleaned_v", # used for MC
         "HLT_Photon175_v",
         "HLT_Photon500_v",
-        "HLT_PFMET170_v",
+        "HLT_PFMET170_NoiseCleaned_v",
+        "HLT_PFMET170_HBHECleaned_v",
+        "HLT_PFMET170_JetIdCleaned_v",
+        "HLT_PFMET170_NotCleaned_v",
         "HLT_IsoMu18_v",
         "HLT_IsoMu20_v",
         "HLT_IsoMu22_v",
@@ -236,6 +239,7 @@ elif user=="lange" or user=="jschulz":
         "HLT_Ele27_eta2p1_WPTight_Gsf_v",
         "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
          # HT
+        "HLT_PFHT125_v",
         "HLT_PFHT200_v",
         "HLT_PFHT250_v",
         "HLT_PFHT300_v",
@@ -262,6 +266,7 @@ elif user=="lange" or user=="jschulz":
         "HLT_Mu20_v",
         "HLT_Mu17_Photon22_CaloIdL_L1ISO_v",
         # HT
+        "HLT_PFHT125_v",
         "HLT_PFHT200_v",
         "HLT_PFHT250_v",
         "HLT_PFHT300_v",
