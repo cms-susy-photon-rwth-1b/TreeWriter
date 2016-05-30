@@ -1,20 +1,13 @@
 **TreeWriter** to build a ROOT tree from MiniAOD. Photon Cut- and MVA-IDs are computed.
 
 ## Building and Running ##
-Get CMSSW environment 76X
+Get CMSSW environment 80X
 
 ```
-cmsrel CMSSW_7_6_5
-cd CMSSW_7_6_5/src/
+cmsrel CMSSW_8_0_8
+cd CMSSW_8_0_8/src/
 cmsenv
 ```
-get MET Significance [Recipe](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETSignificance#Instructions_for_7_6_4)
-
-```
-git cms-init
-git cms-merge-topic cms-met:metTool76X
-```
-This will give a **conflict**. Resolve it by simply using the `HEAD` versions, and commit the merge.
 
 Get and build the TreeWriter
 
@@ -23,7 +16,7 @@ git clone git@github.com:cms-susy-photon-rwth-1b/TreeWriter.git
 scram b -j5
 cd TreeWriter
 ```
-Create Pilup Histograms
+Create Pileup Histograms
 
 ```
 make -C PUreweighting
