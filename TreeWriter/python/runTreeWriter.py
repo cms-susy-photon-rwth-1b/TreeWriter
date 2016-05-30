@@ -101,38 +101,6 @@ pfJetIDSelector = cms.PSet(
     quality = cms.string('LOOSE')
 )
 
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-from CondCore.DBCommon.CondDBSetup_cfi import *
-
-process.jec = cms.ESSource("PoolDBESSource",
-                           DBParameters = cms.PSet(messageLevel = cms.untracked.int32(0)),
-                           timetype = cms.string('runnumber'),
-                           toGet = cms.VPSet(
-                               cms.PSet(
-                                   record = cms.string('JetCorrectionsRecord'),
-                                   tag    = (cms.string('JetCorrectorParametersCollection_Summer15_25nsV7_DATA_AK4PFchs') if isRealData
-                                             else cms.string('JetCorrectorParametersCollection_Summer15_25nsV7_MC_AK4PFchs')
-                                   ),
-                                   label  = cms.untracked.string('AK4PFchs')
-                               ),
-                           ),
-                           connect = (cms.string(localDataBasePath+'Summer15_25nsV7_DATA.db') if isRealData
-                                      else cms.string(localDataBasePath+'Summer15_25nsV7_MC.db'))
-)
-## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
-process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
-
-# https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
-from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
-jecLevels = [ 'L1FastJet','L2Relative','L3Absolute' ]
-if isRealData: jecLevels.append( 'L2L3Residual' )
-
-updateJetCollection(
-   process,
-   jetSource = cms.InputTag('slimmedJets'),
-   labelName = 'UpdatedJEC',
-   jetCorrections = ('AK4PFchs', cms.vstring(jecLevels), 'None')
-)
 
 ######################
 # MET Significance   #
@@ -140,35 +108,6 @@ updateJetCollection(
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETSignificance
 process.load("RecoMET/METProducers.METSignificance_cfi")
 process.load("RecoMET/METProducers.METSignificanceParams_cfi")
-
-process.load('Configuration.StandardSequences.Services_cff')
-process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
-from CondCore.DBCommon.CondDBSetup_cfi import *
-process.jer = cms.ESSource("PoolDBESSource",
-                           CondDBSetup,
-                           toGet = cms.VPSet(
-                               # Pt Resolution
-                               cms.PSet(
-                                   record = cms.string('JetResolutionRcd'),
-                                   tag    = cms.string('JR_MC_PtResolution_Summer15_25nsV6_AK4PFchs'),
-                                   label  = cms.untracked.string('AK4PFchs_pt')
-                               ),
-                               # Phi Resolution
-                               cms.PSet(
-                                   record = cms.string('JetResolutionRcd'),
-                                   tag    = cms.string('JR_MC_PhiResolution_Summer15_25nsV6_AK4PFchs'),
-                                   label  = cms.untracked.string('AK4PFchs_phi')
-                               ),
-                               # Scale factors
-                               cms.PSet(
-                                   record = cms.string('JetResolutionScaleFactorRcd'),
-                                   tag    = cms.string('JR_DATAMCSF_Summer15_25nsV6_AK4PFchs'),
-                                   label  = cms.untracked.string('AK4PFchs')
-                               ),
-                           ),
-                           connect = cms.string(localDataBasePath+'Summer15_25nsV6.db')
-)
-process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
 # rerun metcorrections and uncertainties
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
@@ -187,7 +126,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     minNumberElectrons_cut=cms.untracked.uint32(0),
                                     # physics objects
                                     photons = cms.InputTag("slimmedPhotons"),
-                                    jets = cms.InputTag("selectedUpdatedPatJetsUpdatedJEC"),
+                                    jets = cms.InputTag("slimmedJets"),
                                     muons = cms.InputTag("slimmedMuons"),
                                     genJets=cms.InputTag("slimmedGenJets"),
                                     electrons = cms.InputTag("slimmedElectrons"),
