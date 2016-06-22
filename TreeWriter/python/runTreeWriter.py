@@ -171,6 +171,10 @@ if (isCrabSubmission and "RunIISpring15MiniAODv2" in options.dataset) \
    or (len (options.inputFiles)==1 and '/ggm/' in options.inputFiles[0]):
     process.TreeWriter.pileupHistogramName="pileupWeight_mix_2015_25ns_Startup_PoissonOOTPU"
 
+# 2016 pileup
+if (isCrabSubmission and "RunIISpring16MiniAODv2-PUSpring16" in options.dataset):
+    process.TreeWriter.pileupHistogramName="pileupWeight_mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU"
+
 # user settings
 if user=="kiesel":
     process.TreeWriter.HT_cut=500.
