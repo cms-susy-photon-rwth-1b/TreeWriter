@@ -258,6 +258,7 @@ if user=="kiesel":
         "HLT_Photon90_CaloIdL_PFHT500_v",
         "HLT_Photon90_v", #prescale: 90
         "HLT_PFHT600_v",
+        "HLT_PFHT800_v",
         "HLT_Photon175_v",
         "HLT_PFHT475_v", #prescale: 60
     ]
