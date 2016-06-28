@@ -268,7 +268,7 @@ if user=="kiesel":
         process.TreeWriter.photon_pT_cut=90.
         process.TreeWriter.minNumberPhotons_cut=0
         process.TreeWriter.minNumberElectrons_cut=1
-        process.TreeWriter.triggerNames=[ "HLT_Ele23_WPLoose_Gsf_v" ]
+        process.TreeWriter.triggerNames.append("HLT_Ele23_WPLoose_Gsf_v")
 
 
 elif user=="lange" or user=="jschulz":
