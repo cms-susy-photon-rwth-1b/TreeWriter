@@ -353,6 +353,15 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       const edm::Ptr<pat::Photon> phoPtr( photonColl, pho - photonColl->begin() );
 
+      // resolution:
+      /*
+      std::cout << "\n photon " << trPho.p << std::endl;
+      std::cout << "resolution E " << pho->resolE() << std::endl;
+      std::cout << "resolution Et " << pho->resolEt() << std::endl;
+      std::cout << "resolution P " << pho->resolP() << std::endl;
+      std::cout << "resolution Pt " << pho->resolPt() << std::endl;
+      std::cout << "resolution Eta " << pho->resolEta() << std::endl;
+      */
       trPho.sigmaIetaIeta=pho->full5x5_sigmaIetaIeta(); // from reco::Photon
       trPho.hOverE=pho->hadTowOverEm() ;
       trPho.hasPixelSeed=(Int_t)pho->hasPixelSeed() ;
@@ -667,6 +676,14 @@ void
 TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
    newLumiBlock_=true;
+
+  /*
+   // copied from https://hypernews.cern.ch/HyperNews/CMS/get/susy-interpretations/242.html
+   edm::Handle<GenLumiInfoHeader> gen_header;
+   iLumi.getByToken(genLumiHeaderToken, gen_header);
+   string model = gen_header->configDescription();
+   std::cout << model << std::endl;  // prints, e.g. T1tttt_1500_100
+   */
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
