@@ -25,7 +25,7 @@ options.register ('user',
                   "Name the user. If not set by crab, this script will determine it.")
 
 # defaults
-options.inputFiles = 'root://xrootd.unl.edu//store/mc/RunIISpring15MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/0CB41EBB-CA6D-E511-A28E-002618943C3A.root'
+options.inputFiles = '/store/mc/RunIIFall15MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/06717272-14BC-E511-B911-0CC47A00A814.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
 # get and parse the command line arguments
