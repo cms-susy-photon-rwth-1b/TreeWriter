@@ -36,8 +36,11 @@ config.Site.storageSite = 'T2_DE_RWTH'
 datasets={}
 datasets["T5Wg"] = [
     '/SMS-T5Wg_mGl-800to1000_mNLSP-0to950_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
+    '/SMS-T5Wg_mGl-1050to1100_mNLSP-0to1050_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/SMS-T5Wg_mGl-1150to1200_mNLSP-0to1150_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
+    '/SMS-T5Wg_mGl-1250to1300_mNLSP-0to1250_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/SMS-T5Wg_mGl-1350to1400_mNLSP-0to1350_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
+    '/SMS-T5Wg_mGl-1450to1500_mNLSP-0to1450_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v2/MINIAODSIM',
     '/SMS-T5Wg_mGl-1550_mNLSP-0to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 ]
 datasets["T5gg"] = [
@@ -45,6 +48,7 @@ datasets["T5gg"] = [
     '/SMS-T5gg_mGluino-1400-1550_mLSP-0to1400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/SMS-T5gg_mGluino-1600-1750_mLSP-0to1600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/SMS-T5gg_mGluino-1800-1850_mLSP-0to1700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
+    '/SMS-T5gg_mGluino-1900-1950_mLSP-0to1800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
     '/SMS-T5gg_mGluino-2000_mLSP-0to1900_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 ]
 
