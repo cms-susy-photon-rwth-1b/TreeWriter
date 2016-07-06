@@ -147,6 +147,7 @@ datasets["rmeyer"] = [
 if __name__ == '__main__':
     import getpass
     from CRABAPI.RawCommand import crabCommand
+    import CRABClient
 
     user=getpass.getuser()
     if user=="kiesel":
@@ -166,6 +167,8 @@ if __name__ == '__main__':
         print "(unkown user '%s')"%user
         exit()
 
+    iSub=0
+    failed=[]
     for dataset in datasets[user]:
 
         isSim = 'SIM' in dataset
@@ -192,7 +195,6 @@ if __name__ == '__main__':
             config.General.requestName = dataset.split('/')[1]
             if "GGM" in dataset:
                 config.General.requestName+="_"+dataset.split("jolange-")[-1].split("_MINI")[0]
-                print config.General.requestName
         else:
             config.General.requestName = '_'.join(dataset.split('/')[1:3])
          # CRABClient.ClientExceptions.ConfigurationException: Invalid CRAB configuration: Parameter General.requestName should not be longer than 100 characters.
@@ -201,4 +203,20 @@ if __name__ == '__main__':
         config.JobType.pyCfgParams = ["dataset="+dataset,"user="+user,"fastSim="+isFastSim,"miniAODv="+miniAODv]
 
         config.Data.inputDataset = dataset
-        crabCommand('submit', config = config)
+
+        try:
+            print "submitting",dataset
+            crabCommand('submit', config = config)
+        except CRABClient.ClientExceptions.ConfigException,e:
+            print "  ERROR:",e
+            failed.append(dataset)
+        except Exception,e:
+            print "  ERROR:",e
+            failed.append(dataset)
+        else:
+            iSub+=1
+    print "submitted",iSub,"tasks"
+    if failed:
+        print "failed to submit:"
+        print "   "+"\n   ".join(failed)
+
