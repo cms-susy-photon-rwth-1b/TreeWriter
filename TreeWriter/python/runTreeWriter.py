@@ -41,7 +41,7 @@ isCrabSubmission=bool(options.dataset) # only set for crab sumission
 # determine if Data or Simulation
 isRealData=True
 if isCrabSubmission:
-    isRealData=(not options.dataset.endswith("SIM"))
+    isRealData=(not "AODSIM" in options.dataset)
 else: # running locally
     isRealData=("SIM" not in options.inputFiles[0])
 
