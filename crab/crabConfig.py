@@ -87,6 +87,8 @@ datasets["WJetsToLNu_HT"] = [
     "/WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM",
 ]
 
+datasets["GGM"] = searchUserDatasets("/GGM_WinoBino/jolange-M2_*_M1_*_MINIAODSIM-*/USER")
+
 datasets["kiesel"] = [
     '/SinglePhoton/Run2015C_25ns-16Dec2015-v1/MINIAOD',
     '/SinglePhoton/Run2015D-16Dec2015-v1/MINIAOD',
@@ -130,6 +132,7 @@ datasets["lange"] = [
     '/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
     '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
 ] \
++ datasets["GGM"] \
 + datasets["GJets_HT"] + datasets["QCD_HT"] + datasets["ZJetsToNuNu_HT"] + datasets["WJetsToLNu_HT"] \
 + datasets["T5gg"] + datasets["T5Wg"]
 
@@ -184,6 +187,9 @@ if __name__ == '__main__':
         config.Data.unitsPerJob = 5 if isSim or isUser else 40
         if isSim:
             config.General.requestName = dataset.split('/')[1]
+            if "GGM" in dataset:
+                config.General.requestName+="_"+dataset.split("jolange-")[-1].split("_MINI")[0]
+                print config.General.requestName
         else:
             config.General.requestName = '_'.join(dataset.split('/')[1:3])
          # CRABClient.ClientExceptions.ConfigurationException: Invalid CRAB configuration: Parameter General.requestName should not be longer than 100 characters.
