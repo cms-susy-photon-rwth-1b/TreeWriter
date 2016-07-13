@@ -116,6 +116,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
 
    eventTree_->Branch("pu_weight"     , &pu_weight_     , "pu_weight/F");
    eventTree_->Branch("mc_weight"     , &mc_weight_     , "mc_weight/B");
+   eventTree_->Branch("pdf_weights"   , &vPdf_weights_);
 
    eventTree_->Branch("genHt" , &genHt_ , "genHt/F");
 
@@ -226,6 +227,21 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       edm::Handle<GenEventInfoProduct> GenEventInfoHandle;
       iEvent.getByLabel("generator", GenEventInfoHandle);
       mc_weight_= sign(GenEventInfoHandle->weight());
+
+      // muR, muF, PDF variations
+      // see https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW
+      edm::Handle<LHEEventProduct> EvtHandle;
+      iEvent.getByToken(LHEEventToken_, EvtHandle);
+      unsigned iMax=110; // these are 9 scale variations and 100 variation of the first pdf set
+      // for the case that the weights vector is shorter for some reason
+      if (iMax>EvtHandle->weights().size()) iMax=EvtHandle->weights().size();
+      vPdf_weights_=std::vector<float>(iMax,1.0);
+      for (unsigned i=0; i<iMax; i++) {
+         // it's possible to check the "id" that is used in the LHE record:
+         // std::cout<<EvtHandle->weights()[i].id<<" "<<EvtHandle->weights()[i].wgt/EvtHandle->originalXWGTUP()<<std::endl;
+
+         vPdf_weights_[i]=EvtHandle->weights()[i].wgt/EvtHandle->originalXWGTUP();
+      }
    }
 
    hCutFlow_->Fill("initial_mc_weighted",mc_weight_);
@@ -670,6 +686,7 @@ void
 TreeWriter::beginRun(edm::Run const& iRun, edm::EventSetup const&)
 {
    // use this to print the weight indices that are used for muR, muF and PDF variations
+   // see https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW
 
    // try {
    //    edm::Handle<LHERunInfoProduct> run;
