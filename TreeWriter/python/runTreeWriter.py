@@ -104,24 +104,6 @@ pfJetIDSelector = cms.PSet(
 process.load("CondCore.DBCommon.CondDBCommon_cfi")
 from CondCore.DBCommon.CondDBSetup_cfi import *
 
-process.jec = cms.ESSource("PoolDBESSource",
-                           DBParameters = cms.PSet(messageLevel = cms.untracked.int32(0)),
-                           timetype = cms.string('runnumber'),
-                           toGet = cms.VPSet(
-                               cms.PSet(
-                                   record = cms.string('JetCorrectionsRecord'),
-                                   tag    = (cms.string('JetCorrectorParametersCollection_Summer15_25nsV7_DATA_AK4PFchs') if isRealData
-                                             else cms.string('JetCorrectorParametersCollection_Summer15_25nsV7_MC_AK4PFchs')
-                                   ),
-                                   label  = cms.untracked.string('AK4PFchs')
-                               ),
-                           ),
-                           connect = (cms.string(localDataBasePath+'Summer15_25nsV7_DATA.db') if isRealData
-                                      else cms.string(localDataBasePath+'Summer15_25nsV7_MC.db'))
-)
-## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
-process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
-
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 jecLevels = [ 'L1FastJet','L2Relative','L3Absolute' ]
@@ -150,23 +132,27 @@ process.jer = cms.ESSource("PoolDBESSource",
                                # Pt Resolution
                                cms.PSet(
                                    record = cms.string('JetResolutionRcd'),
-                                   tag    = cms.string('JR_MC_PtResolution_Summer15_25nsV6_AK4PFchs'),
+                                   tag    = cms.string('JR_Fall15_25nsV2_DATA_PtResolution_AK4PFchs' if isRealData
+                                                       else 'JR_Fall15_25nsV2_MC_PtResolution_AK4PFchs'),
                                    label  = cms.untracked.string('AK4PFchs_pt')
                                ),
                                # Phi Resolution
                                cms.PSet(
                                    record = cms.string('JetResolutionRcd'),
-                                   tag    = cms.string('JR_MC_PhiResolution_Summer15_25nsV6_AK4PFchs'),
+                                   tag    = cms.string('JR_Fall15_25nsV2_DATA_PhiResolution_AK4PFchs' if isRealData
+                                                       else 'JR_Fall15_25nsV2_MC_PhiResolution_AK4PFchs'),
                                    label  = cms.untracked.string('AK4PFchs_phi')
                                ),
                                # Scale factors
                                cms.PSet(
                                    record = cms.string('JetResolutionScaleFactorRcd'),
-                                   tag    = cms.string('JR_DATAMCSF_Summer15_25nsV6_AK4PFchs'),
+                                   tag    = cms.string('JR_Fall15_25nsV2_DATA_SF_AK4PFchs' if isRealData
+                                                       else 'JR_Fall15_25nsV2_MC_SF_AK4PFchs'),
                                    label  = cms.untracked.string('AK4PFchs')
                                ),
                            ),
-                           connect = cms.string(localDataBasePath+'Summer15_25nsV6.db')
+                           connect = cms.string(localDataBasePath+('JER/Fall15_25nsV2_DATA.db' if isRealData
+                                                                   else "JER/Fall15_25nsV2_MC.db"))
 )
 process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
