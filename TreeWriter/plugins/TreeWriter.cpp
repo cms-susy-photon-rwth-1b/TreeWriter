@@ -99,6 +99,10 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("muons"    , &vMuons_);
    eventTree_->Branch("met"      , &met_);
    eventTree_->Branch("met_raw"  , &met_raw_);
+   eventTree_->Branch("met_JESu" , &met_JESu_);
+   eventTree_->Branch("met_JESd" , &met_JESd_);
+   eventTree_->Branch("met_JERu" , &met_JERu_);
+   eventTree_->Branch("met_JERd" , &met_JERd_);
    eventTree_->Branch("genParticles", &vGenParticles_);
    if (storeTriggerObjects_) eventTree_->Branch("triggerObjects", &vTriggerObjects_);
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
@@ -513,9 +517,6 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    const pat::MET &met = metColl->front();
    double metPt=met.pt();
    met_.p.SetPtEtaPhi(metPt,met.eta(),met.phi());
-   edm::Handle<double> METSignificance;
-   iEvent.getByToken(METSignificance_, METSignificance);
-   met_.sig=float(*METSignificance);
 
    // jet resolution shift is set to 0 for 74X
    met_.uncertainty=0;
@@ -534,6 +535,25 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    pat::MET::LorentzVector metShifted;
    metShifted=met.shiftedP4(pat::MET::NoShift, pat::MET::Raw);
    met_raw_.p.SetPtEtaPhi(metShifted.pt(),metShifted.eta(),metShifted.phi());
+
+   metShifted=met.shiftedP4(pat::MET::JetEnUp);
+   met_JESu_.p.SetPtEtaPhi(metShifted.pt(),metShifted.eta(),metShifted.phi());
+   metShifted=met.shiftedP4(pat::MET::JetEnDown);
+   met_JESd_.p.SetPtEtaPhi(metShifted.pt(),metShifted.eta(),metShifted.phi());
+
+   metShifted=met.shiftedP4(pat::MET::JetResUp);
+   met_JERu_.p.SetPtEtaPhi(metShifted.pt(),metShifted.eta(),metShifted.phi());
+   metShifted=met.shiftedP4(pat::MET::JetResDown);
+   met_JERd_.p.SetPtEtaPhi(metShifted.pt(),metShifted.eta(),metShifted.phi());
+
+   edm::Handle<double> METSignificance;
+   iEvent.getByToken(METSignificance_, METSignificance);
+   met_.sig=float(*METSignificance);
+   met_raw_.sig=met_.sig;
+   met_JESu_.sig=met_.sig;
+   met_JESd_.sig=met_.sig;
+   met_JERu_.sig=met_.sig;
+   met_JERd_.sig=met_.sig;
 
    // generated HT
    // stolen from https://github.com/Aachen-3A/PxlSkimmer/blob/master/Skimming/src/PxlSkimmer_miniAOD.cc#L590
