@@ -110,6 +110,8 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("triggerObjects", &vTriggerObjects_);
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
+   eventTree_->Branch("nPV"           , &nPV_           , "nPV/I");
+   eventTree_->Branch("true_nPV"      , &true_nPV_      , "true_nPV/I");
    eventTree_->Branch("nGoodVertices" , &nGoodVertices_ , "nGoodVertices/I");
    eventTree_->Branch("nTracksPV"     , &nTracksPV_     , "nTracksPV/I");
    eventTree_->Branch("rho"           , &rho_           , "rho/F");
@@ -216,8 +218,10 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             continue;
          }
       }
+      true_nPV_=Tnpv;
       pu_weight_=hPU_.GetBinContent(hPU_.FindBin(Tnpv));
    }else{ // real data
+      true_nPV_=-1;
       pu_weight_=1.;
    }
 
@@ -325,6 +329,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<reco::VertexCollection> vertices;
    iEvent.getByToken(vtxToken_, vertices);
    if (vertices->empty()) return; // skip the event if no PV found
+   nPV_ = vertices->size();
 
    reco::Vertex firstGoodVertex;
    nGoodVertices_=0;
