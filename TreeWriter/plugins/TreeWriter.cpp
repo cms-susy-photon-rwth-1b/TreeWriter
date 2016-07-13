@@ -485,6 +485,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       jecUnc.setJetEta(jet.eta());
       jecUnc.setJetPt(jet.pt());
       trJet.uncert = jecUnc.getUncertainty(true);
+      trJet.chf = jet.chargedHadronEnergyFraction();
       // object matching
       trJet.hasPhotonMatch=false;
       for (tree::Photon const &ph: vPhotons_){
