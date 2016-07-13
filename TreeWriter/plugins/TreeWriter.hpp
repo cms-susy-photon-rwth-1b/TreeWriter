@@ -80,8 +80,8 @@ private:
    virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
    virtual void endJob() override;
 
-   //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
-   //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
+   virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
+   virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
    virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
    //virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 

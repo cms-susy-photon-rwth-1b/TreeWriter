@@ -12,6 +12,8 @@
 
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 
+#include <SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h>
+
 // compute HT using RECO objects to "reproduce" the trigger requirements
 static double computeHT(const std::vector<tree::Jet>& jets)
 {
@@ -84,6 +86,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , storeTriggerObjects_(iConfig.getUntrackedParameter<bool>("storeTriggerObjects"))
 {
    // declare consumptions that are used "byLabel" in analyze()
+   mayConsume<LHERunInfoProduct,edm::InRun> (edm::InputTag("externalLHEProducer"));
    consumes<GenEventInfoProduct>(edm::InputTag("generator"));
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","","HLT"));
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults",""));
@@ -662,20 +665,41 @@ TreeWriter::endJob()
 }
 
 // ------------ method called when starting to processes a run  ------------
-/*
-  void
-  TreeWriter::beginRun(edm::Run const&, edm::EventSetup const&)
-  {
-  }
-*/
+
+void
+TreeWriter::beginRun(edm::Run const& iRun, edm::EventSetup const&)
+{
+   // use this to print the weight indices that are used for muR, muF and PDF variations
+
+   // try {
+   //    edm::Handle<LHERunInfoProduct> run;
+   //    typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
+
+   //    iRun.getByLabel( "externalLHEProducer", run );
+   //    LHERunInfoProduct myLHERunInfoProduct = *(run.product());
+
+   //    for (headers_const_iterator iter=myLHERunInfoProduct.headers_begin(); iter!=myLHERunInfoProduct.headers_end(); iter++){
+   //       if (iter->tag().find("initrwgt")==std::string::npos) continue;
+   //       std::cout << iter->tag() << std::endl;
+   //       std::vector<std::string> lines = iter->lines();
+   //       for (unsigned int iLine = 0; iLine<lines.size(); iLine++) {
+   //          std::cout << lines.at(iLine);
+   //       }
+   //    }
+   // } catch (std::exception &e) {
+   //    std::cout<<"cannot read scale/pdf information from lhe:"<<std::endl;
+   //    std::cout<<e.what()<<std::endl;
+   // }
+}
+
 
 // ------------ method called when ending the processing of a run  ------------
-/*
-  void
-  TreeWriter::endRun(edm::Run const&, edm::EventSetup const&)
-  {
-  }
-*/
+
+void
+TreeWriter::endRun(edm::Run const& iRun, edm::EventSetup const&)
+{
+}
+
 
 // ------------ method called when starting to processes a luminosity block  ------------
 
