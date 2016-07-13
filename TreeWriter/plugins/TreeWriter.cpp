@@ -491,6 +491,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      vGenJets_.clear();
      tree::Particle trGJet;
      for (const reco::GenJet& jet: *genJetColl){
+        if (jet.pt()<dJet_pT_cut_-5) continue;
         trGJet.p.SetPtEtaPhi(jet.pt(),jet.eta(),jet.phi());
         vGenJets_.push_back(trGJet);
      }
