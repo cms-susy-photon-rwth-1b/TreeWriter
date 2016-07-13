@@ -83,7 +83,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , jetIdSelector(iConfig.getParameter<edm::ParameterSet>("pfJetIDSelector"))
    , triggerNames_(iConfig.getParameter<std::vector<std::string>>("triggerNames"))
    , triggerPrescales_(iConfig.getParameter<std::vector<std::string>>("triggerPrescales"))
-   , storeTriggerObjects_(iConfig.getUntrackedParameter<bool>("storeTriggerObjects"))
+   , triggerObjectPath_(iConfig.getUntrackedParameter<std::string>("triggerObjectPath"))
 {
    // declare consumptions that are used "byLabel" in analyze()
    mayConsume<LHERunInfoProduct,edm::InRun> (edm::InputTag("externalLHEProducer"));
@@ -107,7 +107,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("met_JERu" , &met_JERu_);
    eventTree_->Branch("met_JERd" , &met_JERd_);
    eventTree_->Branch("genParticles", &vGenParticles_);
-   if (storeTriggerObjects_) eventTree_->Branch("triggerObjects", &vTriggerObjects_);
+   eventTree_->Branch("triggerObjects", &vTriggerObjects_);
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
    eventTree_->Branch("nGoodVertices" , &nGoodVertices_ , "nGoodVertices/I");
@@ -285,19 +285,27 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       triggerPrescale_[n] = index == -1 ? 0 : triggerPrescales->getPrescaleForIndex(triggerIndex_[n]);
    }
 
-   if (storeTriggerObjects_) {
-      edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
-      edm::InputTag triggerObjects_("selectedPatTrigger");
-      iEvent.getByLabel(triggerObjects_, triggerObjects);
 
-      vTriggerObjects_.clear();
-      tree::Particle trObj;
-      for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
-         // obj.unpackPathNames(names);
-         auto ids = obj.filterIds();
-         if (obj.collection() != "hltEgammaCandidates::HLT") continue;
-         trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
-         vTriggerObjects_.push_back(trObj);
+   edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
+   edm::InputTag triggerObjects_("selectedPatTrigger");
+   iEvent.getByLabel(triggerObjects_, triggerObjects);
+
+   vTriggerObjects_.clear();
+   tree::Particle trObj;
+   for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
+      const edm::TriggerNames &triggerNames = iEvent.triggerNames(*triggerBits);
+      obj.unpackPathNames(triggerNames);
+      // only consider objects in egamma collection
+      if (obj.collection() != "hltEgammaCandidates::HLT") continue;
+
+      // check all paths for the signal trigger
+      std::vector<std::string> pathNamesAll = obj.pathNames(false);
+      for (std::string p: pathNamesAll){
+         if (p.find(triggerObjectPath_) != std::string::npos) {
+            trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
+            vTriggerObjects_.push_back(trObj);
+            break;
+         }
       }
    }
 
