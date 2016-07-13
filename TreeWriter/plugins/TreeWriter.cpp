@@ -98,6 +98,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("electrons", &vElectrons_);
    eventTree_->Branch("muons"    , &vMuons_);
    eventTree_->Branch("met"      , &met_);
+   eventTree_->Branch("met_raw"  , &met_raw_);
    eventTree_->Branch("genParticles", &vGenParticles_);
    if (storeTriggerObjects_) eventTree_->Branch("triggerObjects", &vTriggerObjects_);
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
@@ -510,10 +511,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByToken(metCollectionToken_, metColl);
 
    const pat::MET &met = metColl->front();
-   pat::MET::LorentzVector metRaw=met.shiftedP4(pat::MET::NoShift, pat::MET::Raw);
    double metPt=met.pt();
    met_.p.SetPtEtaPhi(metPt,met.eta(),met.phi());
-   met_.p_raw.SetPtEtaPhi(metRaw.pt(),metRaw.eta(),metRaw.phi());
    edm::Handle<double> METSignificance;
    iEvent.getByToken(METSignificance_, METSignificance);
    met_.sig=float(*METSignificance);
@@ -531,6 +530,10 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       met_.uncertainty+=a*a;
    }
    met_.uncertainty=TMath::Sqrt(met_.uncertainty);
+
+   pat::MET::LorentzVector metShifted;
+   metShifted=met.shiftedP4(pat::MET::NoShift, pat::MET::Raw);
+   met_raw_.p.SetPtEtaPhi(metShifted.pt(),metShifted.eta(),metShifted.phi());
 
    // generated HT
    // stolen from https://github.com/Aachen-3A/PxlSkimmer/blob/master/Skimming/src/PxlSkimmer_miniAOD.cc#L590

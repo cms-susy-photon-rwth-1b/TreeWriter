@@ -81,7 +81,6 @@ namespace tree
 
    struct MET : public Particle
    {
-      TVector3 p_raw;
       Float_t  uncertainty;
       Float_t  sig; // MET significance
    };
