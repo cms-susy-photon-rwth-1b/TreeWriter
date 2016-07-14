@@ -234,17 +234,20 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       // muR, muF, PDF variations
       // see https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW
+      vPdf_weights_.clear();
       edm::Handle<LHEEventProduct> EvtHandle;
       iEvent.getByToken(LHEEventToken_, EvtHandle);
-      unsigned iMax=110; // these are 9 scale variations and 100 variation of the first pdf set
-      // for the case that the weights vector is shorter for some reason
-      if (iMax>EvtHandle->weights().size()) iMax=EvtHandle->weights().size();
-      vPdf_weights_=std::vector<float>(iMax,1.0);
-      for (unsigned i=0; i<iMax; i++) {
-         // it's possible to check the "id" that is used in the LHE record:
-         // std::cout<<EvtHandle->weights()[i].id<<" "<<EvtHandle->weights()[i].wgt/EvtHandle->originalXWGTUP()<<std::endl;
+      if (EvtHandle.isValid()) { // else: Pythia-only simulation: info not available
+         unsigned iMax=110; // these are 9 scale variations and 100 variation of the first pdf set
+         // for the case that the weights vector is shorter for some reason
+         if (iMax>EvtHandle->weights().size()) iMax=EvtHandle->weights().size();
+         vPdf_weights_=std::vector<float>(iMax,1.0);
+         for (unsigned i=0; i<iMax; i++) {
+            // it's possible to check the "id" that is used in the LHE record:
+            // std::cout<<EvtHandle->weights()[i].id<<" "<<EvtHandle->weights()[i].wgt/EvtHandle->originalXWGTUP()<<std::endl;
 
-         vPdf_weights_[i]=EvtHandle->weights()[i].wgt/EvtHandle->originalXWGTUP();
+            vPdf_weights_[i]=EvtHandle->weights()[i].wgt/EvtHandle->originalXWGTUP();
+         }
       }
    }
 
