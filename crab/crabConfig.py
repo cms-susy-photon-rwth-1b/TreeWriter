@@ -109,13 +109,10 @@ datasets["kiesel"] = [
 datasets["lange"] = [
     # data
     '/SinglePhoton/Run2015D-16Dec2015-v1/MINIAOD',
-    '/SingleElectron/Run2015D-16Dec2015-v1/MINIAOD',
     '/MET/Run2015D-16Dec2015-v1/MINIAOD',
     '/SingleMuon/Run2015D-16Dec2015-v1/MINIAOD',
     '/MuonEG/Run2015D-16Dec2015-v1/MINIAOD',
     '/JetHT/Run2015D-16Dec2015-v1/MINIAOD',
-    '/DoubleEG/Run2015D-16Dec2015-v2/MINIAOD',
-    '/DoubleMuon/Run2015D-16Dec2015-v1/MINIAOD',
     # standard MC
     '/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
     '/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
