@@ -84,6 +84,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , storeTriggerObjects_(iConfig.getUntrackedParameter<bool>("storeTriggerObjects"))
 {
    // declare consumptions that are used "byLabel" in analyze()
+   mayConsume<GenLumiInfoHeader,edm::InLumi> (edm::InputTag("generator"));
    consumes<GenEventInfoProduct>(edm::InputTag("generator"));
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","","HLT"));
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults",""));
@@ -176,29 +177,6 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    Bool_t  isRealData; // data or MC
    isRealData=iEvent.isRealData();
-
-   // get model name
-   modelName_ = "";
-   if( !isRealData ) {
-      edm::Handle<LHEEventProduct> lheInfoHandle;
-      iEvent.getByToken(LHEEventToken_, lheInfoHandle);
-      if (lheInfoHandle.isValid()) {
-         if (lheInfoHandle->comments_size()){
-           modelName_=lheInfoHandle->getComment(0);
-           // Typical model name is '# model T5Wg_1100_1000\n'
-           // cut out only interesting part
-           if (modelName_.find("# model")!=0) modelName_="";
-           else if (modelName_.size()>8) modelName_=modelName_.substr(8,modelName_.size()-9);
-         }
-      }
-   }
-   // create the cutflow histogram for the model if not there yet
-   // (modelName="" for non-signal samples)
-   if (!hCutFlowMap_.count(modelName_)) {
-      hCutFlowMap_[modelName_] = createCutFlowHist(modelName_);
-   }
-   // point to the right cut flow histogram
-   hCutFlow_ = hCutFlowMap_.at(modelName_);
 
    hCutFlow_->Fill("initial_unweighted",1);
 
@@ -687,9 +665,26 @@ TreeWriter::endJob()
 // ------------ method called when starting to processes a luminosity block  ------------
 
 void
-TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
+TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSetup const&)
 {
    newLumiBlock_=true;
+
+   edm::Handle<GenLumiInfoHeader> gen_header;
+   // iLumi.getByToken(genLumiHeaderToken, gen_header);
+   iLumi.getByLabel("generator", gen_header);
+   modelName_ = "";
+   if (gen_header.isValid()) {
+      modelName_ = gen_header->configDescription();
+      std::cout<<modelName_<<std::endl;  // prints, e.g. T1tttt_1500_100
+   }
+
+   // create the cutflow histogram for the model if not there yet
+   // (modelName="" for non-signal samples)
+   if (!hCutFlowMap_.count(modelName_)) {
+      hCutFlowMap_[modelName_] = createCutFlowHist(modelName_);
+   }
+   // point to the right cut flow histogram
+   hCutFlow_ = hCutFlowMap_.at(modelName_);
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
