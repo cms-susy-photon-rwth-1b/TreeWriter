@@ -158,6 +158,8 @@ private:
 
    Float_t genHt_;
 
+   Int_t nISR_;
+
    ULong64_t evtNo_;
    UInt_t    runNo_;
    UInt_t    lumNo_;
