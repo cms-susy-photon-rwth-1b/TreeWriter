@@ -26,6 +26,40 @@ static double computeHT(const std::vector<tree::Jet>& jets)
    return HT;
 }
 
+// taken from https://github.com/manuelfs/babymaker/blob/0136340602ee28caab14e3f6b064d1db81544a0a/bmaker/plugins/bmaker_full.cc#L1268-L1295
+// "recipe" https://indico.cern.ch/event/557678/contributions/2247944/attachments/1311994/1963568/16-07-19_ana_manuelf_isr.pdf
+int n_isr_jets(edm::Handle<edm::View<reco::GenParticle>> const &genParticles,
+                            std::vector<tree::Jet> const &jets)
+{
+   int nisr(0);
+   bool matched;
+   int momid;
+   TVector3 pGen;
+   for (tree::Jet const&jet: jets){
+      if (jet.hasMuonMatch || jet.hasElectronMatch || jet.hasPhotonMatch) continue;
+      matched=false;
+      for (size_t imc(0); imc < genParticles->size(); imc++) {
+         if (matched) break;
+         const reco::GenParticle &mc = (*genParticles)[imc];
+         if (mc.status()!=23 || abs(mc.pdgId())>5) continue;
+         momid = abs(mc.mother()->pdgId());
+         if(!(momid==6 || momid==23 || momid==24 || momid==25 || momid>1e6)) continue;
+         //check against daughter in case of hard initial splitting
+         for (size_t idau(0); idau < mc.numberOfDaughters(); idau++) {
+            pGen.SetXYZ(mc.daughter(idau)->px(),mc.daughter(idau)->py(),mc.daughter(idau)->pz());
+            if(jet.p.DeltaR(pGen)<0.3){
+               matched = true;
+               break;
+            }
+         }
+      } // Loop over MC particles
+      if(!matched) {
+         nisr++;
+      }
+   } // Loop over jets
+   return nisr;
+}
+
 template <typename T> int sign(T val) {
    return (T(0) < val) - (val < T(0));
 }
@@ -121,6 +155,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("pdf_weights"   , &vPdf_weights_);
 
    eventTree_->Branch("genHt" , &genHt_ , "genHt/F");
+   eventTree_->Branch("nISR"  , &nISR_  , "nISR/I");
 
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
    eventTree_->Branch("runNo", &runNo_, "runNo/i");
@@ -520,6 +555,12 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    } // jet loop
    sort(vJets_.begin(), vJets_.end(), tree::PtGreater);
 
+   // number of ISR jets
+   nISR_=0;
+   if (!isRealData) {
+      nISR_=n_isr_jets(prunedGenParticles,vJets_);
+      // std::cout<<nISR_<<std::endl;
+   }
 
    edm::Handle<reco::GenJetCollection> genJetColl;
    if (!isRealData){
