@@ -150,6 +150,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
 
    eventTree_->Branch("pu_weight"     , &pu_weight_     , "pu_weight/F");
    eventTree_->Branch("mc_weight"     , &mc_weight_     , "mc_weight/B");
+   eventTree_->Branch("pdf_weights"   , &vPdf_weights_);
 
    eventTree_->Branch("genHt" , &genHt_ , "genHt/F");
    eventTree_->Branch("nISR"  , &nISR_  , "nISR/I");
@@ -240,6 +241,15 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       edm::Handle<GenEventInfoProduct> GenEventInfoHandle;
       iEvent.getByLabel("generator", GenEventInfoHandle);
       mc_weight_= sign(GenEventInfoHandle->weight());
+
+      unsigned iMax=110; // these are 9 scale variations and 100 variation of the first pdf set
+      if (iMax+1>GenEventInfoHandle->weights().size()) iMax=GenEventInfoHandle->weights().size()-1;
+      vPdf_weights_=std::vector<float>(iMax,1.0);
+      for (unsigned i=0; i<iMax; i++) {
+         // 0 and 1 are the same for 80X scans
+         // https://hypernews.cern.ch/HyperNews/CMS/get/susy-interpretations/242/1/1.html
+         vPdf_weights_[i]=GenEventInfoHandle->weights()[i+1]/GenEventInfoHandle->weights()[1];
+      }
    }
 
    hCutFlow_->Fill("initial_mc_weighted",mc_weight_);

@@ -155,6 +155,7 @@ private:
 
    Float_t pu_weight_; // pileup weight
    Char_t mc_weight_; // +1 or -1 event weights (take care when reading with python, this is a character!)
+   std::vector<float> vPdf_weights_;
 
    Float_t genHt_;
 
