@@ -184,6 +184,7 @@ private:
    std::vector<tree::Muon>     vMuons_;
    tree::MET                   met_;
    tree::MET                   met_raw_;
+   tree::MET                   met_gen_;
    tree::MET                   met_JESu_;
    tree::MET                   met_JESd_;
    tree::MET                   met_JERu_;

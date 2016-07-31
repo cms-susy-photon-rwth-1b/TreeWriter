@@ -134,6 +134,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("muons"    , &vMuons_);
    eventTree_->Branch("met"      , &met_);
    eventTree_->Branch("met_raw"  , &met_raw_);
+   eventTree_->Branch("met_gen"  , &met_gen_);
    eventTree_->Branch("met_JESu" , &met_JESu_);
    eventTree_->Branch("met_JESd" , &met_JESd_);
    eventTree_->Branch("met_JERu" , &met_JERu_);
@@ -553,6 +554,11 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    const pat::MET &met = metColl->front();
    double metPt=met.pt();
    met_.p.SetPtEtaPhi(metPt,met.eta(),met.phi());
+
+   if( !isRealData ) {
+      const reco::GenMET *genMet=met.genMET();
+      met_gen_.p.SetPtEtaPhi(genMet->pt(),genMet->eta(),genMet->phi());
+   }
 
    // jet resolution shift is set to 0 for 74X
    met_.uncertainty=0;
