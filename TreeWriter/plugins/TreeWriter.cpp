@@ -155,6 +155,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
 
    eventTree_->Branch("genHt" , &genHt_ , "genHt/F");
    eventTree_->Branch("nISR"  , &nISR_  , "nISR/I");
+   eventTree_->Branch("puPtHat" , &puPtHat_ , "puPtHat/F");
 
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
    eventTree_->Branch("runNo", &runNo_, "runNo/i");
@@ -218,6 +219,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    hCutFlow_->Fill("initial_unweighted",1);
 
    // PileUp weights
+   puPtHat_=0;
    if (!isRealData){
       edm::Handle<PileupSummaryInfoCollection>  PupInfo;
       iEvent.getByToken(pileUpSummaryToken_, PupInfo);
@@ -226,6 +228,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          int BX = PVI.getBunchCrossing();
          if(BX == 0) {
             Tnpv = PVI.getTrueNumInteractions();
+            auto ptHats = PVI.getPU_pT_hats();
+            puPtHat_ = ptHats.size() ? *max_element(ptHats.begin(),ptHats.end()) : 0;
             continue;
          }
       }
@@ -317,7 +321,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // go through the filters and check if they were passed
    const edm::TriggerNames &allFilterNames = iEvent.triggerNames(*metFilterBits);
    for (std::string const &name: metFilterNames_){
-      const int index=allFilterNames.triggerIndex(name);
+      const unsigned index=allFilterNames.triggerIndex(name);
+      if (index>=allFilterNames.size()) std::cerr << "MET filter '" << name << "' not found!" << std::endl;
       if (!metFilterBits->accept(index)) return; // not passed
    }
    hCutFlow_->Fill("METfilters",mc_weight_*pu_weight_);
@@ -384,6 +389,15 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       const edm::Ptr<pat::Photon> phoPtr( photonColl, pho - photonColl->begin() );
 
+      // resolution:
+      /*
+      std::cout << "\n photon " << trPho.p << std::endl;
+      std::cout << "resolution E " << pho->resolE() << std::endl;
+      std::cout << "resolution Et " << pho->resolEt() << std::endl;
+      std::cout << "resolution P " << pho->resolP() << std::endl;
+      std::cout << "resolution Pt " << pho->resolPt() << std::endl;
+      std::cout << "resolution Eta " << pho->resolEta() << std::endl;
+      */
       trPho.sigmaIetaIeta=pho->full5x5_sigmaIetaIeta(); // from reco::Photon
       trPho.sigmaIphiIphi=pho->full5x5_showerShapeVariables().sigmaIphiIphi;
       trPho.hOverE=pho->hadTowOverEm() ;
@@ -488,6 +502,11 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       jecUnc.setJetPt(jet.pt());
       trJet.uncert = jecUnc.getUncertainty(true);
       trJet.chf = jet.chargedHadronEnergyFraction();
+      trJet.nhf = jet.neutralHadronEnergyFraction();
+      trJet.cef = jet.chargedEmEnergyFraction();
+      trJet.nef = jet.neutralEmEnergyFraction();
+      trJet.nch = jet.chargedMultiplicity();
+      trJet.nconstituents = jet.numberOfDaughters();
       // object matching
       trJet.hasPhotonMatch=false;
       for (tree::Photon const &ph: vPhotons_){

@@ -61,6 +61,11 @@ namespace tree
       float bDiscriminator;
       float uncert;
       float chf;
+      float nhf;
+      float cef;
+      float nef;
+      int nch;
+      int nconstituents;
    };
 
    struct Muon: public Particle

@@ -4,6 +4,7 @@
 // system include files
 #include <memory>
 #include <vector>
+#include <algorithm>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -158,6 +159,7 @@ private:
    std::vector<float> vPdf_weights_;
 
    Float_t genHt_;
+   Float_t puPtHat_;
 
    Int_t nISR_;
 

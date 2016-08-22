@@ -139,7 +139,10 @@ datasets["lange"] = [
 datasets["jschulz"] = datasets["lange"]
 
 datasets["rmeyer"] = [
-    '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
+    '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
+    '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_HCALDebug_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
+    '/SingleElectron/Run2015C_25ns-16Dec2015-v1/MINIAOD',
+    '/SingleElectron/Run2015D-16Dec2015-v1/MINIAOD',
 ]
 #datasets["SMS-T5gg-private"] = searchUserDatasets( "/SMS-T5gg/kiesel-*/USER" )
 
@@ -150,7 +153,7 @@ if __name__ == '__main__':
 
     user=getpass.getuser()
     if user=="kiesel":
-        config.Data.outputDatasetTag = 'v09'
+        config.Data.outputDatasetTag = 'v11'
         config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
     elif user=="lange":
         config.Data.outputDatasetTag = 'CMSSW_8_0_8_v01'
@@ -170,8 +173,6 @@ if __name__ == '__main__':
 
         isSim = 'SIM' in dataset
         isUser = dataset.endswith("/USER")
-        isFastSim = "True" if "Fast" in dataset else "False"
-        miniAODv="1" if dataset.endswith("3d7be4403ea17498be45eb057fcb0278/USER") else "2"
 
         config.Data.inputDBS = 'phys03' if isUser else 'global'
 
@@ -192,7 +193,7 @@ if __name__ == '__main__':
          # CRABClient.ClientExceptions.ConfigurationException: Invalid CRAB configuration: Parameter General.requestName should not be longer than 100 characters.
         config.General.requestName = config.General.requestName[:100]
 
-        config.JobType.pyCfgParams = ["dataset="+dataset,"user="+user,"fastSim="+isFastSim,"miniAODv="+miniAODv]
+        config.JobType.pyCfgParams = ["dataset="+dataset,"user="+user]
 
         config.Data.inputDataset = dataset
         crabCommand('submit', config = config)
