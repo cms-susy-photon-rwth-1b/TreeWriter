@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <algorithm>
+#include <regex>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -167,7 +168,9 @@ private:
    UInt_t    runNo_;
    UInt_t    lumNo_;
 
-   std::string modelName_;
+   UShort_t signal_m1_; // usually mass of first particle in decay chain
+   UShort_t signal_m2_; // usually neutarlino mass
+   UShort_t signal_nBinos_; // 2 for T5gg, 1 for T5Wg, 0 for T5WW
 
    // Trigger decisions
    std::vector<std::string> triggerNames_;

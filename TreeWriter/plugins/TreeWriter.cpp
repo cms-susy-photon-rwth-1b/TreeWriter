@@ -160,7 +160,10 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
    eventTree_->Branch("runNo", &runNo_, "runNo/i");
    eventTree_->Branch("lumNo", &lumNo_, "lumNo/i");
-   eventTree_->Branch("modelName", &modelName_);
+
+   eventTree_->Branch("signal_m1", &signal_m1_, "signal_m1/s");
+   eventTree_->Branch("signal_m2", &signal_m2_, "signal_m2/s");
+   eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
 
    // Fill trigger maps
    for( const auto& n : triggerNames_ ){
@@ -660,8 +663,13 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    if (!isRealData){
       // Get generator level info
       // Pruned particles are the one containing "important" stuff
+      auto countBinos = signal_nBinos_ == 10;
+      if (countBinos) signal_nBinos_ = 0;
       for (const reco::GenParticle &genP: *prunedGenParticles){
          auto absId = abs(genP.pdgId());
+         // estimate number of binos
+         if (countBinos && absId == 1000023 && abs(genP.mother(0)->pdgId()) != 1000023) signal_nBinos_++;
+
          if (absId==23||absId==24){ // store intermediate bosons
             int iNdaugh=genP.numberOfDaughters();
             if (iNdaugh>1){ // skip "decays" V->V
@@ -747,12 +755,18 @@ TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSe
    newLumiBlock_=true;
 
    edm::Handle<GenLumiInfoHeader> gen_header;
-   // iLumi.getByToken(genLumiHeaderToken, gen_header);
    iLumi.getByLabel("generator", gen_header);
-   modelName_ = "";
+   std::string modelName_ = "";
+   signal_m1_ = 0;
+   signal_m2_ = 0;
+   signal_nBinos_ = 10; // initial value
    if (gen_header.isValid()) {
       modelName_ = gen_header->configDescription();
-      std::cout<<modelName_<<std::endl;  // prints, e.g. T1tttt_1500_100
+      std::smatch sm;
+      if (regex_match(modelName_, sm, std::regex(".*_(\\d+)_(\\d+)"))) {
+         signal_m1_ = std::stoi(sm[1]);
+         signal_m2_ = std::stoi(sm[2]);
+      }
    }
 
    // create the cutflow histogram for the model if not there yet
