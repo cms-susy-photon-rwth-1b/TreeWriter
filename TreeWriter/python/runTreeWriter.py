@@ -39,7 +39,7 @@ isRealData=not dataset.endswith("SIM")
 
 # the actual TreeWriter module
 process = cms.Process("TreeWriter")
-#process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
+process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -377,10 +377,5 @@ for trig in process.TreeWriter.triggerPrescales:
 ####################
 
 process.p = cms.Path(
-    process.METSignificance
-    *process.photonIDValueMapProducer
-    *process.egmGsfElectronIDSequence
-    *process.egmPhotonIDSequence
-    +cms.Sequence( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC )
-    *process.TreeWriter
+    process.TreeWriter
 )
