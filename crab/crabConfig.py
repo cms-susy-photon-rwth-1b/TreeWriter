@@ -111,7 +111,12 @@ datasets["kiesel"] = [
     '/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
     '/SMS-T6Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
     '/SMS-TChiWG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
-] + datasets["GJets_HT"] + datasets["QCD_HT"] + datasets["ZJetsToNuNu_HT"] + datasets["WJetsToLNu_HT"] + dataDatasets("SinglePhoton") + dataDatasets("JetHT")
+]
+datasets["kiesel"].extend(datasets["GJets_HT"])
+datasets["kiesel"].extend(datasets["QCD_HT"])
+datasets["kiesel"].extend(datasets["ZJetsToNuNu_HT"])
+datasets["kiesel"].extend(dataDatasets("SinglePhoton"))
+datasets["kiesel"].extend(dataDatasets("JetHT"))
 
 datasets["lange"] = [
     # data
