@@ -94,7 +94,6 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , prunedGenToken_         (consumes<edm::View<reco::GenParticle> >(iConfig.getParameter<edm::InputTag>("prunedGenParticles")))
    , pileUpSummaryToken_     (consumes<PileupSummaryInfoCollection>(iConfig.getParameter<edm::InputTag>("pileUpSummary")))
    , LHEEventToken_          (consumes<LHEEventProduct>(iConfig.getParameter<edm::InputTag>("lheEventProduct")))
-   , METSignificance_        (consumes<double> (iConfig.getParameter<edm::InputTag>("metSig")))
    , packedCandidateToken_   (consumes<std::vector<pat::PackedCandidate>> (iConfig.getParameter<edm::InputTag>("packedCandidates")))
    // electron id
    , electronVetoIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronVetoIdMap"   )))
@@ -600,9 +599,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    metShifted=met.shiftedP4(pat::MET::JetResDown);
    met_JERd_.p.SetPtEtaPhi(metShifted.pt(),metShifted.eta(),metShifted.phi());
 
-   edm::Handle<double> METSignificance;
-   iEvent.getByToken(METSignificance_, METSignificance);
-   met_.sig=float(*METSignificance);
+   met_.sig = met.metSignificance();
    met_raw_.sig=met_.sig;
    met_JESu_.sig=met_.sig;
    met_JESd_.sig=met_.sig;

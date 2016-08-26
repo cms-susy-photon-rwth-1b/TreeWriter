@@ -84,91 +84,28 @@ for idmod in ph_id_modules:
 # Crab will always be in the $CMSSW_BASE directory, so to run the code locally,
 # a symbolic link is added
 if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
-localDataBasePath='sqlite_file:src/TreeWriter/TreeWriter/data/'
 
+jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
+if isRealData: jecLevels.append('L2L3Residual')
 
-jecLevels = [ 'L1FastJet','L2Relative','L3Absolute' ]
-if isRealData: jecLevels.append( 'L2L3Residual' )
-
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-  src = cms.InputTag("slimmedJets"),
-  levels = jecLevels,
-  payload = 'AK4PFchs'
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+updateJetCollection(
+   process,
+   jetSource = cms.InputTag('slimmedJets'),
+   labelName = 'UpdatedJEC',
+   jetCorrections = ('AK4PFchs', cms.vstring(jecLevels), 'None')
 )
 
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-process.patJetsReapplyJEC = patJetsUpdated.clone(
-  jetSource = cms.InputTag("slimmedJets"),
-  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+
+##########################
+# MET                    #
+##########################
+# https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription
+from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+runMetCorAndUncFromMiniAOD(
+    process,
+    isData=isRealData,
 )
-
-######################
-# Jets               #
-######################
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-from CondCore.DBCommon.CondDBSetup_cfi import *
-
-process.jec = cms.ESSource("PoolDBESSource",
-                           DBParameters = cms.PSet(messageLevel = cms.untracked.int32(0)),
-                           timetype = cms.string('runnumber'),
-                           toGet = cms.VPSet(
-                               cms.PSet(
-                                   record = cms.string('JetCorrectionsRecord'),
-                                   tag    = (cms.string('JetCorrectorParametersCollection_Summer15_25nsV7_DATA_AK4PFchs') if isRealData
-                                             else cms.string('JetCorrectorParametersCollection_Summer15_25nsV7_MC_AK4PFchs')
-                                   ),
-                                   label  = cms.untracked.string('AK4PFchs')
-                               ),
-                           ),
-                           connect = (cms.string(localDataBasePath+'Summer15_25nsV7_DATA.db') if isRealData
-                                      else cms.string(localDataBasePath+'Summer15_25nsV7_MC.db'))
-)
-## add an es_prefer statement to resolve a possible conflict from simultaneous connection to a global tag
-process.es_prefer_jec = cms.ESPrefer('PoolDBESSource','jec')
-
-######################
-# MET Significance   #
-######################
-# https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETSignificance
-process.load("RecoMET/METProducers.METSignificance_cfi")
-process.load("RecoMET/METProducers.METSignificanceParams_cfi")
-
-process.load('Configuration.StandardSequences.Services_cff')
-process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
-from CondCore.DBCommon.CondDBSetup_cfi import *
-process.jer = cms.ESSource("PoolDBESSource",
-                           CondDBSetup,
-                           toGet = cms.VPSet(
-                               # Pt Resolution
-                               cms.PSet(
-                                   record = cms.string('JetResolutionRcd'),
-                                   tag    = cms.string('JR_MC_PtResolution_Summer15_25nsV6_AK4PFchs'),
-                                   label  = cms.untracked.string('AK4PFchs_pt')
-                               ),
-                               # Phi Resolution
-                               cms.PSet(
-                                   record = cms.string('JetResolutionRcd'),
-                                   tag    = cms.string('JR_MC_PhiResolution_Summer15_25nsV6_AK4PFchs'),
-                                   label  = cms.untracked.string('AK4PFchs_phi')
-                               ),
-                               # Scale factors
-                               cms.PSet(
-                                   record = cms.string('JetResolutionScaleFactorRcd'),
-                                   tag    = cms.string('JR_DATAMCSF_Summer15_25nsV6_AK4PFchs'),
-                                   label  = cms.untracked.string('AK4PFchs')
-                               ),
-                           ),
-                           connect = cms.string(localDataBasePath+'Summer15_25nsV6.db')
-)
-process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
-
-# rerun metcorrections and uncertainties ## Does not work in combination with met significance
-#from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-#runMetCorAndUncFromMiniAOD(process,isData=isRealData)
-#process.TreeWriter.mets = cms.InputTag("slimmedMETs","","TreeWriter"),
-#process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
-
 
 ################################
 # Define input and output      #
@@ -191,17 +128,16 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     minNumberElectrons_cut=cms.untracked.uint32(0),
                                     # physics objects
                                     photons = cms.InputTag("slimmedPhotons"),
-                                    jets = cms.InputTag("slimmedJets"),
+                                    jets = cms.InputTag("updatedPatJetsUpdatedJEC"),
                                     muons = cms.InputTag("slimmedMuons"),
                                     genJets=cms.InputTag("slimmedGenJets"),
                                     electrons = cms.InputTag("slimmedElectrons"),
-                                    mets = cms.InputTag("slimmedMETs"),
+                                    mets = cms.InputTag("slimmedMETs", "", "TreeWriter"),
                                     rho = cms.InputTag("fixedGridRhoFastjetAll"),
                                     vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
                                     prunedGenParticles = cms.InputTag("prunedGenParticles"),
                                     pileUpSummary = cms.InputTag('slimmedAddPileupInfo'),
                                     lheEventProduct = cms.InputTag('externalLHEProducer'),
-                                    metSig=cms.InputTag("METSignificance","METSignificance","TreeWriter"),
                                     packedCandidates=cms.InputTag("packedPFCandidates"),
                                     # electron IDs
                                     electronVetoIdMap   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-veto"),

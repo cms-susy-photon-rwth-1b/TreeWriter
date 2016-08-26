@@ -120,7 +120,6 @@ private:
    edm::EDGetTokenT<PileupSummaryInfoCollection>  pileUpSummaryToken_;
    edm::EDGetTokenT<LHEEventProduct>           LHEEventToken_;
 
-   edm::EDGetTokenT<double> METSignificance_;
    edm::EDGetTokenT<std::vector<pat::PackedCandidate>> packedCandidateToken_;
 
    // electron id
