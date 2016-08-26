@@ -231,6 +231,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     triggerNames=cms.vstring(),
                                     pfJetIDSelector=cms.PSet(version=cms.string('FIRSTDATA'), quality=cms.string('LOOSE')),
                                     triggerPrescales=cms.vstring(), # also useful to check whether a trigger was run
+                                    storeTriggerObjects=cms.untracked.bool(False),
 )
 
 ################################
@@ -257,20 +258,15 @@ if user=="kiesel":
     process.TreeWriter.jet_pT_cut=40
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT500_v",
-        "HLT_Photon90_v", #prescale: 90
+        "HLT_Photon90_CaloIdL_PFHT600_v",
+        "HLT_Photon90_v",
         "HLT_PFHT600_v",
         "HLT_PFHT800_v",
+        "HLT_PFHT900_v",
         "HLT_Photon175_v",
-        "HLT_PFHT475_v", #prescale: 60
+        "HLT_PFHT475_v",
     ]
     process.TreeWriter.triggerPrescales=process.TreeWriter.triggerNames
-    if dataset.startswith("SingleElectron") or dataset.startswith("/DY"):
-        process.TreeWriter.HT_cut=0.
-        process.TreeWriter.photon_pT_cut=90.
-        process.TreeWriter.minNumberPhotons_cut=0
-        process.TreeWriter.minNumberElectrons_cut=1
-        process.TreeWriter.triggerNames.append("HLT_Ele23_WPLoose_Gsf_v")
-
 
 elif user=="lange" or user=="jschulz":
     process.TreeWriter.jet_pT_cut=30.
