@@ -391,16 +391,6 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trPho.p.SetPtEtaPhi(pho->pt(),pho->superCluster()->eta(),pho->superCluster()->phi());
 
       const edm::Ptr<pat::Photon> phoPtr( photonColl, pho - photonColl->begin() );
-
-      // resolution:
-      /*
-      std::cout << "\n photon " << trPho.p << std::endl;
-      std::cout << "resolution E " << pho->resolE() << std::endl;
-      std::cout << "resolution Et " << pho->resolEt() << std::endl;
-      std::cout << "resolution P " << pho->resolP() << std::endl;
-      std::cout << "resolution Pt " << pho->resolPt() << std::endl;
-      std::cout << "resolution Eta " << pho->resolEta() << std::endl;
-      */
       trPho.sigmaPt = pho->getCorrectedEnergyError(pho->getCandidateP4type())*sin(trPho.p.Theta());
       trPho.sigmaIetaIeta=pho->full5x5_sigmaIetaIeta(); // from reco::Photon
       trPho.sigmaIphiIphi=pho->full5x5_showerShapeVariables().sigmaIphiIphi;
@@ -541,7 +531,6 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    nISR_=0;
    if (!isRealData) {
       nISR_=n_isr_jets(prunedGenParticles,vJets_);
-      // std::cout<<nISR_<<std::endl;
    }
 
    edm::Handle<reco::GenJetCollection> genJetColl;
