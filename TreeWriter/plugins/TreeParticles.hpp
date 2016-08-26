@@ -36,6 +36,7 @@ namespace tree
       Bool_t hasPixelSeed;
       Bool_t passElectronVeto;
       Float_t r9;
+      Float_t sigmaPt;
 
       Float_t cIso;
       Float_t nIso;

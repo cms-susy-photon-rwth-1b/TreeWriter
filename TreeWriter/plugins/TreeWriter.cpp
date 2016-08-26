@@ -398,6 +398,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       std::cout << "resolution Pt " << pho->resolPt() << std::endl;
       std::cout << "resolution Eta " << pho->resolEta() << std::endl;
       */
+      trPho.sigmaPt = pho->getCorrectedEnergyError(pho->getCandidateP4type())*sin(trPho.p.Theta());
       trPho.sigmaIetaIeta=pho->full5x5_sigmaIetaIeta(); // from reco::Photon
       trPho.sigmaIphiIphi=pho->full5x5_showerShapeVariables().sigmaIphiIphi;
       trPho.hOverE=pho->hadTowOverEm() ;
