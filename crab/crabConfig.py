@@ -195,6 +195,7 @@ if __name__ == '__main__':
         config.Data.unitsPerJob = 5 if isSim or isUser else 40
         if isSim:
             config.General.requestName = dataset.split('/')[1]
+            if "ext" in dataset: config.General.requestName += "_ext"
         else:
             config.General.requestName = '_'.join(dataset.split('/')[1:3])
          # CRABClient.ClientExceptions.ConfigurationException: Invalid CRAB configuration: Parameter General.requestName should not be longer than 100 characters.
