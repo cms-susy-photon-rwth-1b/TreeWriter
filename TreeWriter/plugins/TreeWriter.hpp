@@ -180,6 +180,10 @@ private:
 
    bool storeTriggerObjects_;
 
+   // met filter tokens
+   edm::EDGetTokenT<bool> BadChCandFilterToken_;
+   edm::EDGetTokenT<bool> BadPFMuonFilterToken_;
+
    // physics Objects
    std::vector<tree::Photon>   vPhotons_;
    std::vector<tree::Jet>      vJets_;

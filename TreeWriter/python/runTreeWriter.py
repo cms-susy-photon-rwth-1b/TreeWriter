@@ -107,6 +107,19 @@ runMetCorAndUncFromMiniAOD(
     isData=isRealData,
 )
 
+
+################################
+# MET Filter                   #
+################################
+process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
+process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
+process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+
+process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
+process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
+process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+
+
 ################################
 # Define input and output      #
 ################################
@@ -153,10 +166,10 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     metFilterNames=cms.untracked.vstring(
                                         "Flag_HBHENoiseFilter",
                                         "Flag_HBHENoiseIsoFilter",
-                                        "Flag_CSCTightHaloFilter",
                                         "Flag_EcalDeadCellTriggerPrimitiveFilter",
                                         "Flag_goodVertices",
                                         "Flag_eeBadScFilter",
+                                        "Flag_globalTightHalo2016Filter",
                                     ),
                                     phoWorstChargedIsolation = cms.InputTag("photonIDValueMapProducer:phoWorstChargedIsolation"),
                                     pileupHistogramName=cms.untracked.string("pileupWeight_mix_2015_25ns_FallMC_matchData_PoissonOOTPU"),
@@ -168,6 +181,8 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     pfJetIDSelector=cms.PSet(version=cms.string('FIRSTDATA'), quality=cms.string('LOOSE')),
                                     triggerPrescales=cms.vstring(), # also useful to check whether a trigger was run
                                     storeTriggerObjects=cms.untracked.bool(False),
+                                    BadChargedCandidateFilter = cms.InputTag("BadChargedCandidateFilter"),
+                                    BadPFMuonFilter = cms.InputTag("BadPFMuonFilter"),
 )
 
 ################################
@@ -308,5 +323,7 @@ for trig in process.TreeWriter.triggerPrescales:
 ####################
 
 process.p = cms.Path(
-    process.TreeWriter
+    process.BadPFMuonFilter
+    *process.BadChargedCandidateFilter
+    *process.TreeWriter
 )

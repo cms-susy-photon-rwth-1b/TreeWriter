@@ -115,6 +115,8 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , triggerNames_(iConfig.getParameter<std::vector<std::string>>("triggerNames"))
    , triggerPrescales_(iConfig.getParameter<std::vector<std::string>>("triggerPrescales"))
    , storeTriggerObjects_(iConfig.getUntrackedParameter<bool>("storeTriggerObjects"))
+   , BadChCandFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("BadChargedCandidateFilter")))
+   , BadPFMuonFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("BadPFMuonFilter")))
 {
    // declare consumptions that are used "byLabel" in analyze()
    mayConsume<GenLumiInfoHeader,edm::InLumi> (edm::InputTag("generator"));
@@ -327,6 +329,14 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (index>=allFilterNames.size()) std::cerr << "MET filter '" << name << "' not found!" << std::endl;
       if (!metFilterBits->accept(index)) return; // not passed
    }
+   edm::Handle<bool> ifilterbadChCand;
+   iEvent.getByToken(BadChCandFilterToken_, ifilterbadChCand);
+   if (!*ifilterbadChCand) return;
+
+   edm::Handle<bool> ifilterbadPFMuon;
+   iEvent.getByToken(BadPFMuonFilterToken_, ifilterbadPFMuon);
+   if (!*ifilterbadPFMuon) return;
+
    hCutFlow_->Fill("METfilters",mc_weight_*pu_weight_);
 
    // Get PV
