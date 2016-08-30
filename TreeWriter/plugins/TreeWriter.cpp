@@ -762,6 +762,8 @@ TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSe
       if (regex_match(modelName_, sm, std::regex(".*_(\\d+)_(\\d+)"))) {
          signal_m1_ = std::stoi(sm[1]);
          signal_m2_ = std::stoi(sm[2]);
+      } else if (regex_match(modelName_, sm, std::regex(".*_(\\d+)"))) {
+         signal_m1_ = std::stoi(sm[1]);
       }
    }
 
