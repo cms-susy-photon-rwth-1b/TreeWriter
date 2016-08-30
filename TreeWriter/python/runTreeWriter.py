@@ -83,7 +83,7 @@ for idmod in ph_id_modules:
 # where .db files are placed (e.g. for JEC, JER)
 # Crab will always be in the $CMSSW_BASE directory, so to run the code locally,
 # a symbolic link is added
-if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
+#if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
 
 jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
 if isRealData: jecLevels.append('L2L3Residual')
