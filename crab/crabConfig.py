@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
     user=getpass.getuser()
     if user=="kiesel":
-        config.Data.outputDatasetTag = 'v13'
+        config.Data.outputDatasetTag = 'v14'
         config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
     elif user=="lange":
         config.Data.outputDatasetTag = 'CMSSW_8_0_8_v01'
@@ -190,9 +190,7 @@ if __name__ == '__main__':
         config.Data.inputDBS = 'phys03' if isUser else 'global'
 
         if not isSim and not isUser:
-            # https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2664.html
-            # 2.6/fb
-            config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-279116_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt'
+            config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-279588_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt'
         else:
             try: del config.Data.lumiMask
             except: pass

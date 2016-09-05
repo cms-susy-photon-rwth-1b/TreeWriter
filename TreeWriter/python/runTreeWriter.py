@@ -172,7 +172,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                         "Flag_globalTightHalo2016Filter",
                                     ),
                                     phoWorstChargedIsolation = cms.InputTag("photonIDValueMapProducer:phoWorstChargedIsolation"),
-                                    pileupHistogramName=cms.untracked.string("pileupWeight_mix_2015_25ns_FallMC_matchData_PoissonOOTPU"),
+                                    pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU"),
                                     hardPUveto=cms.untracked.bool(False),
                                     # triggers to be saved
                                     # Warning: To be independent of the version number, the trigger result is saved if the trigger name begins
@@ -190,13 +190,10 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
 ################################
 
 process.TreeWriter.hardPUveto=dataset.startswith("/QCD_HT100to200")
-if "RunIISpring15MiniAODv2" in dataset: process.TreeWriter.pileupHistogramName="pileupWeight_mix_2015_25ns_Startup_PoissonOOTPU"
 
 if "Fast" in dataset:
     process.TreeWriter.metFilterNames = [] # no met filters for fastsim
     process.TreeWriter.lheEventProduct = "source"
-if dataset.endswith("3d7be4403ea17498be45eb057fcb0278/USER"): # miniAODv1
-    process.TreeWriter.pileUpSummary = "addPileupInfo"
 
 
 # determine user if not set by crab
