@@ -88,7 +88,6 @@ datasets["WJetsToLNu_HT"] = [
 
 def dataDatasets(datasetName):
     sets = [
-        "/{}/Run2016B-PromptReco-v1/MINIAOD",
         "/{}/Run2016B-PromptReco-v2/MINIAOD",
         "/{}/Run2016C-PromptReco-v2/MINIAOD",
         "/{}/Run2016D-PromptReco-v2/MINIAOD",
@@ -118,6 +117,7 @@ datasets["kiesel"] += datasets["WJetsToLNu_HT"]
 datasets["kiesel"] += datasets["ZJetsToNuNu_HT"]
 datasets["kiesel"] += dataDatasets("SinglePhoton")
 datasets["kiesel"] += dataDatasets("JetHT")
+datasets["kiesel"] = dataDatasets("JetHT")
 
 datasets["lange"] = [
     # data
@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
     user=getpass.getuser()
     if user=="kiesel":
-        config.Data.outputDatasetTag = 'v14'
+        config.Data.outputDatasetTag = 'v15'
         config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
     elif user=="lange":
         config.Data.outputDatasetTag = 'CMSSW_8_0_8_v01'

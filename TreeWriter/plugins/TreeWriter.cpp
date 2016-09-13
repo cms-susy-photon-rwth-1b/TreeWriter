@@ -19,7 +19,7 @@ static double computeHT(const std::vector<tree::Jet>& jets)
    double pt=0;
    for (const tree::Jet& jet: jets){
       pt=jet.p.Pt();
-      if (fabs(jet.p.Eta())<3.0 && pt>40) HT+=pt;
+      if (fabs(jet.p.Eta())<3.0 && pt>30) HT+=pt;
    }
    return HT;
 }
@@ -135,36 +135,36 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("muons"    , &vMuons_);
    eventTree_->Branch("met"      , &met_);
    eventTree_->Branch("met_raw"  , &met_raw_);
-   eventTree_->Branch("met_gen"  , &met_gen_);
-   eventTree_->Branch("met_JESu" , &met_JESu_);
-   eventTree_->Branch("met_JESd" , &met_JESd_);
-   eventTree_->Branch("met_JERu" , &met_JERu_);
-   eventTree_->Branch("met_JERd" , &met_JERd_);
+   //eventTree_->Branch("met_gen"  , &met_gen_);
+   //eventTree_->Branch("met_JESu" , &met_JESu_);
+   //eventTree_->Branch("met_JESd" , &met_JESd_);
+   //eventTree_->Branch("met_JERu" , &met_JERu_);
+   //eventTree_->Branch("met_JERd" , &met_JERd_);
    eventTree_->Branch("genParticles", &vGenParticles_);
    if (storeTriggerObjects_) eventTree_->Branch("triggerObjects", &vTriggerObjects_);
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
-   eventTree_->Branch("nPV"           , &nPV_           , "nPV/I");
-   eventTree_->Branch("true_nPV"      , &true_nPV_      , "true_nPV/I");
+   //eventTree_->Branch("nPV"           , &nPV_           , "nPV/I");
+   //eventTree_->Branch("true_nPV"      , &true_nPV_      , "true_nPV/I");
    eventTree_->Branch("nGoodVertices" , &nGoodVertices_ , "nGoodVertices/I");
-   eventTree_->Branch("nTracksPV"     , &nTracksPV_     , "nTracksPV/I");
-   eventTree_->Branch("rho"           , &rho_           , "rho/F");
+   //eventTree_->Branch("nTracksPV"     , &nTracksPV_     , "nTracksPV/I");
+   //eventTree_->Branch("rho"           , &rho_           , "rho/F");
 
    eventTree_->Branch("pu_weight"     , &pu_weight_     , "pu_weight/F");
    eventTree_->Branch("mc_weight"     , &mc_weight_     , "mc_weight/B");
-   eventTree_->Branch("pdf_weights"   , &vPdf_weights_);
+   //eventTree_->Branch("pdf_weights"   , &vPdf_weights_);
 
    eventTree_->Branch("genHt" , &genHt_ , "genHt/F");
-   eventTree_->Branch("nISR"  , &nISR_  , "nISR/I");
-   eventTree_->Branch("puPtHat" , &puPtHat_ , "puPtHat/F");
+   //eventTree_->Branch("nISR"  , &nISR_  , "nISR/I");
+   //eventTree_->Branch("puPtHat" , &puPtHat_ , "puPtHat/F");
 
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
    eventTree_->Branch("runNo", &runNo_, "runNo/i");
    eventTree_->Branch("lumNo", &lumNo_, "lumNo/i");
 
-   eventTree_->Branch("signal_m1", &signal_m1_, "signal_m1/s");
-   eventTree_->Branch("signal_m2", &signal_m2_, "signal_m2/s");
-   eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
+   //eventTree_->Branch("signal_m1", &signal_m1_, "signal_m1/s");
+   //eventTree_->Branch("signal_m2", &signal_m2_, "signal_m2/s");
+   //eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
 
    // Fill trigger maps
    for( const auto& n : triggerNames_ ){

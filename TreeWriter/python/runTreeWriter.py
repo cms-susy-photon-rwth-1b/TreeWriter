@@ -200,24 +200,18 @@ if "Fast" in dataset:
 user=options.user or getpass.getuser()
 # user settings
 if user=="kiesel":
-    process.TreeWriter.HT_cut=500.
+    process.TreeWriter.HT_cut=750.
     process.TreeWriter.photon_pT_cut=90.
     process.TreeWriter.minNumberPhotons_cut=0
-    process.TreeWriter.jet_pT_cut=40
     process.TreeWriter.triggerNames=[
-        "HLT_Photon90_CaloIdL_PFHT500_v",
         "HLT_Photon90_CaloIdL_PFHT600_v",
         "HLT_Photon90_v",
         "HLT_PFHT600_v",
         "HLT_PFHT800_v",
-        "HLT_PFHT900_v",
-        "HLT_Photon175_v",
-        "HLT_PFHT475_v",
     ]
     process.TreeWriter.triggerPrescales=process.TreeWriter.triggerNames
 
 elif user=="lange" or user=="jschulz":
-    process.TreeWriter.jet_pT_cut=30.
     process.TreeWriter.photon_pT_cut=100
     process.TreeWriter.storeTriggerObjects=False
     process.TreeWriter.triggerNames=[
