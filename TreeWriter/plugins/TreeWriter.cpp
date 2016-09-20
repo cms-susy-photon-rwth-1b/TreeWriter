@@ -311,8 +311,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       tree::Particle trObj;
       for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
          // obj.unpackPathNames(names);
-         auto ids = obj.filterIds();
-         if (obj.collection() != "hltEgammaCandidates::HLT") continue;
+         if (!std::count(obj.filterLabels().begin(),obj.filterLabels().end(), "hltEle27erWPLooseGsfTrackIsoFilter")) continue;
          trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
          vTriggerObjects_.push_back(trObj);
       }
