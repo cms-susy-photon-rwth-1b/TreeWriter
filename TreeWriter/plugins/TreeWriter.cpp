@@ -200,7 +200,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
 TH1F* TreeWriter::createCutFlowHist(std::string modelName)
 {
    std::string const name("hCutFlow"+modelName);
-   std::vector<TString> vCutBinNames{{"initial_unweighted","initial_mc_weighted","initial","METfilters","nGoodVertices", "photons","HT","final"}};
+   std::vector<TString> vCutBinNames{{"initial_unweighted","initial_mc_weighted","initial","trigger","METfilters","nGoodVertices", "photons","HT","final"}};
    TH1F* h = fs_->make<TH1F>(name.c_str(),name.c_str(),vCutBinNames.size(),0,vCutBinNames.size());
    for (uint i=0;i<vCutBinNames.size();i++) h->GetXaxis()->SetBinLabel(i+1,vCutBinNames.at(i));
    return h;
@@ -290,11 +290,16 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    } // found indices
 
    // set trigger decision
+   bool anyTriggerFired = false;
    for( auto& it : triggerIndex_ ) {
       if( it.second != -1 ) {
+         anyTriggerFired |= triggerBits->accept( it.second );
          triggerDecision_[it.first] = triggerBits->accept( it.second );
       }
    }
+   if (isRealData && !anyTriggerFired) return;
+   hCutFlow_->Fill("trigger",mc_weight_*pu_weight_);
+
    // store prescales
    for( std::string const& n : triggerPrescales_ ){
       int const index = triggerIndex_[n];
