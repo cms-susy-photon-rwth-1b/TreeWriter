@@ -3,14 +3,15 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 import os,re
 import getpass
 
-def guessDatasetFromFileName( filename ):
+def guessDatasetFromFileName(filename):
     # This reproduces the dataset roughly if the file is on /store
     # Not reproduced are e.g. the pileup scenario
     # For local files, specify your own rules or run it with the 'dataset' option
-    nParts=filename.split("/")
-    if len(nParts)>6:
-        return "/{}/{}-{}/{}".format(nParts[-5],nParts[-6],nParts[-3],nParts[-4])
-    return filename
+    nParts = filename.split("/")
+    if "store" not in nParts and len(nParts)<6:
+        return filename
+    nParts = nParts[nParts.index("store"):]
+    return "/{}/{}-{}/{}".format(nParts[3], nParts[2], nParts[5], nParts[4])
 
 options = VarParsing ('analysis')
 options.register ('dataset',
