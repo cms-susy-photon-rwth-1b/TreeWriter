@@ -26,9 +26,9 @@ options.register ('user',
                   "Name the user. If not set by crab, this script will determine it.")
 
 # defaults
-options.inputFiles = '/store/mc/RunIISpring16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/264A540A-571A-E611-8C5E-0025904E3FCE.root'
-options.inputFiles = '/store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
-options.inputFiles = '/store/data/Run2016G/SinglePhoton/MINIAOD/PromptReco-v1/000/278/969/00000/CE30EEA0-9666-E611-AB4F-02163E014411.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/264A540A-571A-E611-8C5E-0025904E3FCE.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016G/SinglePhoton/MINIAOD/PromptReco-v1/000/278/969/00000/CE30EEA0-9666-E611-AB4F-02163E014411.root'
 options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016G/SingleElectron/MINIAOD/PromptReco-v1/000/280/385/00000/FA5D4A3B-B278-E611-B674-FA163E0D7C05.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
