@@ -118,7 +118,8 @@ datasets["kiesel"] += datasets["WJetsToLNu_HT"]
 datasets["kiesel"] += datasets["ZJetsToNuNu_HT"]
 datasets["kiesel"] += dataDatasets("SinglePhoton")
 datasets["kiesel"] += dataDatasets("JetHT")
-datasets["kiesel"] = dataDatasets("JetHT")
+datasets["kiesel"] = dataDatasets("SingleElectron")
+datasets["kiesel"] += ['/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM',]
 
 datasets["lange"] = [
     # data
@@ -167,7 +168,7 @@ if __name__ == '__main__':
 
     user=getpass.getuser()
     if user=="kiesel":
-        config.Data.outputDatasetTag = 'v15'
+        config.Data.outputDatasetTag = 'v15a'
         config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
     elif user=="lange":
         config.Data.outputDatasetTag = 'CMSSW_8_0_8_v01'
