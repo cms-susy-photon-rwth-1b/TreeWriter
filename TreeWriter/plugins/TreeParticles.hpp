@@ -84,6 +84,7 @@ namespace tree
       bool isLoose;
       bool isMedium;
       bool isTight;
+      float rIso;
    };
 
    struct MET : public Particle
