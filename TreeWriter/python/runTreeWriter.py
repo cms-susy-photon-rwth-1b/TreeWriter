@@ -57,6 +57,37 @@ else:
 ######################
 # PHOTONS, ELECTRONS #
 ######################
+# Energy smearing: https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
+process.load('EgammaAnalysis.ElectronTools.calibratedPhotonsRun2_cfi')
+process.load('EgammaAnalysis.ElectronTools.calibratedElectronsRun2_cfi')
+process.load('Configuration.StandardSequences.Services_cff')
+process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+    calibratedPatElectrons = cms.PSet(
+        initialSeed = cms.untracked.uint32(81),
+        engineName = cms.untracked.string('TRandom3'),
+    ),
+    calibratedPatPhotons = cms.PSet(
+        initialSeed = cms.untracked.uint32(81),
+        engineName = cms.untracked.string('TRandom3'),
+    )
+)
+process.selectedElectrons = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("slimmedElectrons"),
+    cut = cms.string("pt > 5 && abs(eta)<2.5")
+)
+process.selectedPhotons = cms.EDFilter("PATPhotonSelector",
+    src = cms.InputTag("slimmedPhotons"),
+    cut = cms.string("pt > 5 && abs(eta)<2.5")
+)
+process.calibratedPatPhotons.isMC = not isRealData
+process.calibratedPatElectrons.isMC = not isRealData
+process.calibratedPatPhotons.photons = "selectedPhotons"
+process.calibratedPatElectrons.electrons = "selectedElectrons"
+process.calibratedPatPhotons.correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV2_2016_pho")
+process.calibratedPatElectrons.correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
+
+
+# Identification
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 from RecoEgamma.PhotonIdentification.PhotonIDValueMapProducer_cfi import *
 
@@ -77,6 +108,11 @@ for idmod in el_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 for idmod in ph_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
+
+process.photonIDValueMapProducer.srcMiniAOD = "calibratedPatPhotons"
+process.photonMVAValueMapProducer.srcMiniAOD = "calibratedPatPhotons"
+process.egmPhotonIDs.physicsObjectSrc = "calibratedPatPhotons"
+process.egmGsfElectronIDs.physicsObjectSrc = "calibratedPatElectrons"
 
 
 ##########################
@@ -142,11 +178,11 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     minNumberPhotons_cut=cms.untracked.uint32(1),
                                     minNumberElectrons_cut=cms.untracked.uint32(0),
                                     # physics objects
-                                    photons = cms.InputTag("slimmedPhotons"),
+                                    photons = cms.InputTag("calibratedPatPhotons"),
                                     jets = cms.InputTag("updatedPatJetsUpdatedJEC"),
                                     muons = cms.InputTag("slimmedMuons"),
                                     genJets=cms.InputTag("slimmedGenJets"),
-                                    electrons = cms.InputTag("slimmedElectrons"),
+                                    electrons = cms.InputTag("calibratedPatElectrons"),
                                     mets = cms.InputTag("slimmedMETs", "", "TreeWriter"),
                                     rho = cms.InputTag("fixedGridRhoFastjetAll"),
                                     vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
