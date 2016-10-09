@@ -238,7 +238,7 @@ if "Fast" in dataset:
 user=options.user or getpass.getuser()
 # user settings
 if user=="kiesel":
-    process.TreeWriter.HT_cut=750.
+    process.TreeWriter.HT_cut=500.
     process.TreeWriter.photon_pT_cut=90.
     process.TreeWriter.minNumberPhotons_cut=0
     process.TreeWriter.triggerNames=[
@@ -251,7 +251,7 @@ if user=="kiesel":
     if "SingleElectron" in dataset or "DY" in dataset:
         process.TreeWriter.triggerNames = ["HLT_Ele27_eta2p1_WPLoose_Gsf_v"]
         process.TreeWriter.HT_cut = 0.
-        process.TreeWriter.photon_pT_cut = 20.
+        process.TreeWriter.photon_pT_cut = 25.
         process.TreeWriter.minNumberPhotons_cut = 1
         process.TreeWriter.storeTriggerObjects = True
 
