@@ -192,7 +192,7 @@ if __name__ == '__main__':
         config.Data.inputDBS = 'phys03' if isUser else 'global'
 
         if not isSim and not isUser:
-            config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-279588_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt'
+            config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-280385_13TeV_PromptReco_Collisions16_JSON_NoL1T_v2.txt'
         else:
             try: del config.Data.lumiMask
             except: pass
