@@ -67,6 +67,11 @@ namespace tree
       float nef;
       int nch;
       int nconstituents;
+      float ptRes;
+      float phiRes;
+      float sfRes;
+      float sfResUp;
+      float sfResDn;
    };
 
    struct Muon: public Particle

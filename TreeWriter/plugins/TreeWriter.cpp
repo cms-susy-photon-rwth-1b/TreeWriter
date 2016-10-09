@@ -496,6 +496,10 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
    JetCorrectionUncertainty jecUnc(JetCorPar);
 
+   JME::JetResolution resolution_pt = JME::JetResolution::get(iSetup, "AK4PFchs_pt");
+   JME::JetResolution resolution_phi = JME::JetResolution::get(iSetup, "AK4PFchs_phi");
+   JME::JetResolutionScaleFactor resolution_sf = JME::JetResolutionScaleFactor::get(iSetup, "AK4PFchs");
+
    edm::Handle<pat::JetCollection> jetColl;
    iEvent.getByToken(jetCollectionToken_, jetColl);
 
@@ -509,6 +513,12 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       jecUnc.setJetEta(jet.eta());
       jecUnc.setJetPt(jet.pt());
       trJet.uncert = jecUnc.getUncertainty(true);
+      JME::JetParameters parameters = {{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, rho_}};
+      trJet.ptRes = resolution_pt.getResolution(parameters);
+      trJet.phiRes = resolution_phi.getResolution(parameters);
+      trJet.sfRes = resolution_sf.getScaleFactor(parameters);
+      trJet.sfResUp = resolution_sf.getScaleFactor(parameters, Variation::UP);
+      trJet.sfResDn = resolution_sf.getScaleFactor(parameters, Variation::DOWN);
       trJet.chf = jet.chargedHadronEnergyFraction();
       trJet.nhf = jet.neutralHadronEnergyFraction();
       trJet.cef = jet.chargedEmEnergyFraction();
