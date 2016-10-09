@@ -10,7 +10,6 @@
 
 #include "TreeWriter.hpp"
 
-#include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 
 // compute HT using RECO objects to "reproduce" the trigger requirements
 static double computeHT(const std::vector<tree::Jet>& jets)
