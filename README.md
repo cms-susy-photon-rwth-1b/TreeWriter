@@ -4,9 +4,14 @@
 Get CMSSW environment 80X
 
 ```
-cmsrel CMSSW_8_0_8
-cd CMSSW_8_0_8/src/
+cmsrel CMSSW_8_0_12
+cd CMSSW_8_0_12/src/
 cmsenv
+git cms-init
+git cms-merge-topic -u emanueledimarco:ecal_smear_fix_80X
+cd EgammaAnalysis/ElectronTools/data
+git clone -b ICHEP2016_v2 https://github.com/ECALELFS/ScalesSmearings.git
+cd $CMSSW_BASE/src
 ```
 
 Get and build the TreeWriter
@@ -45,11 +50,6 @@ python2 crabConfig.py
 in the python config, set
 - `HT_cut`: minimum HT
 - `photon_pT_cut`: minimum leading-photon pT
-
-## Input files ##
-located in `TreeWriter/data`:
-- `Summer15_25nsV6.db` for JER (used for MET Significance), taken from [cms-met](https://github.com/cms-met/cmssw/blob/f0ac9b3e56e85d03c8dbe6e5cb101274fb356520/RecoMET/METProducers/test/Summer15_25nsV6.db) which is [this](https://github.com/cms-jet/JRDatabase/blob/aa321717d57773d074b5d328c5e71d473e7cf836/SQLiteFiles/Summer15_25nsV6_MC.db)
-- `/Summer15_25nsV7_[DATA|MC].db` for JEC, taken from [recommendations](https://twiki.cern.ch/twiki/bin/view/CMS/JECDataMC)
 
 ## Objects ##
 ### Photons ###
