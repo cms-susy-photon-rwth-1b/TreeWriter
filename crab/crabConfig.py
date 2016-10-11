@@ -88,14 +88,14 @@ datasets["WJetsToLNu_HT"] = [
 
 def dataDatasets(datasetName):
     sets = [
-        "/{}/Run2016B-PromptReco-v1/MINIAOD",
+        #"/{}/Run2016B-PromptReco-v1/MINIAOD", # no valid ls in in json -> no jobs
         "/{}/Run2016B-PromptReco-v2/MINIAOD",
         "/{}/Run2016C-PromptReco-v2/MINIAOD",
         "/{}/Run2016D-PromptReco-v2/MINIAOD",
         "/{}/Run2016E-PromptReco-v2/MINIAOD",
         "/{}/Run2016F-PromptReco-v1/MINIAOD",
         "/{}/Run2016G-PromptReco-v1/MINIAOD",
-        "/{}/Run2016H-PromptReco-v1/MINIAOD",
+        #"/{}/Run2016H-PromptReco-v1/MINIAOD", # no valid ls in json -> no jobs
         "/{}/Run2016H-PromptReco-v2/MINIAOD",
     ]
     return [x.format(datasetName) for x in sets]
