@@ -11,8 +11,6 @@
 #include "TreeWriter.hpp"
 
 
-#include <SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h>
-
 // compute HT using RECO objects to "reproduce" the trigger requirements
 static double computeHT(const std::vector<tree::Jet>& jets)
 {
@@ -142,7 +140,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    //eventTree_->Branch("met_JERu" , &met_JERu_);
    //eventTree_->Branch("met_JERd" , &met_JERd_);
    eventTree_->Branch("genParticles", &vGenParticles_);
-   eventTree_->Branch("triggerObjects", &vTriggerObjects_);
+   if (storeTriggerObjects_) eventTree_->Branch("triggerObjects", &vTriggerObjects_);
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
    //eventTree_->Branch("nPV"           , &nPV_           , "nPV/I");

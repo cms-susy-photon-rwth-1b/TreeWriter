@@ -48,6 +48,7 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h"
 
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
@@ -165,8 +166,6 @@ private:
 
    Int_t nISR_;
 
-   Int_t nISR_;
-
    ULong64_t evtNo_;
    UInt_t    runNo_;
    UInt_t    lumNo_;
@@ -182,6 +181,7 @@ private:
    std::map<std::string, int > triggerPrescale_;
    std::map<std::string, int > triggerIndex_;
 
+   bool storeTriggerObjects_;
    std::string const triggerObjectPath_;
 
    // met filter tokens
