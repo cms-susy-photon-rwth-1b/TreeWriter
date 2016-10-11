@@ -36,6 +36,7 @@ namespace tree
       Bool_t hasPixelSeed;
       Bool_t passElectronVeto;
       Float_t r9;
+      Float_t sigmaPt;
 
       Float_t cIso;
       Float_t nIso;
@@ -61,6 +62,16 @@ namespace tree
       float bDiscriminator;
       float uncert;
       float chf;
+      float nhf;
+      float cef;
+      float nef;
+      int nch;
+      int nconstituents;
+      float ptRes;
+      float phiRes;
+      float sfRes;
+      float sfResUp;
+      float sfResDn;
    };
 
    struct Muon: public Particle
@@ -78,6 +89,7 @@ namespace tree
       bool isLoose;
       bool isMedium;
       bool isTight;
+      float rIso;
    };
 
    struct MET : public Particle

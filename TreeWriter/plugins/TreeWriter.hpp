@@ -4,6 +4,8 @@
 // system include files
 #include <memory>
 #include <vector>
+#include <algorithm>
+#include <regex>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -21,6 +23,7 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/VIDCutFlowResult.h"
+#include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -45,10 +48,12 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h"
 
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
+#include "JetMETCorrections/Modules/interface/JetResolution.h"
 
 #include "TMVA/Factory.h"
 #include "TMVA/Tools.h"
@@ -117,7 +122,6 @@ private:
    edm::EDGetTokenT<PileupSummaryInfoCollection>  pileUpSummaryToken_;
    edm::EDGetTokenT<LHEEventProduct>           LHEEventToken_;
 
-   edm::EDGetTokenT<double> METSignificance_;
    edm::EDGetTokenT<std::vector<pat::PackedCandidate>> packedCandidateToken_;
 
    // electron id
@@ -157,6 +161,9 @@ private:
    std::vector<float> vPdf_weights_;
 
    Float_t genHt_;
+   Float_t puPtHat_;
+
+   Int_t nISR_;
 
    Int_t nISR_;
 
@@ -164,7 +171,9 @@ private:
    UInt_t    runNo_;
    UInt_t    lumNo_;
 
-   std::string modelName_;
+   UShort_t signal_m1_; // usually mass of first particle in decay chain
+   UShort_t signal_m2_; // usually neutarlino mass
+   UShort_t signal_nBinos_; // 2 for T5gg, 1 for T5Wg, 0 for T5WW
 
    // Trigger decisions
    std::vector<std::string> triggerNames_;
@@ -175,6 +184,10 @@ private:
 
    std::string const triggerObjectPath_;
 
+   // met filter tokens
+   edm::EDGetTokenT<bool> BadChCandFilterToken_;
+   edm::EDGetTokenT<bool> BadPFMuonFilterToken_;
+
    // physics Objects
    std::vector<tree::Photon>   vPhotons_;
    std::vector<tree::Jet>      vJets_;
@@ -183,6 +196,7 @@ private:
    std::vector<tree::Muon>     vMuons_;
    tree::MET                   met_;
    tree::MET                   met_raw_;
+   tree::MET                   met_gen_;
    tree::MET                   met_JESu_;
    tree::MET                   met_JESd_;
    tree::MET                   met_JERu_;

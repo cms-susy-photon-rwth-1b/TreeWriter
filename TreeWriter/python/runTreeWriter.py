@@ -3,7 +3,15 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 import os,re
 import getpass
 
-cmssw_src=os.environ['CMSSW_BASE']+'/src/'
+def guessDatasetFromFileName(filename):
+    # This reproduces the dataset roughly if the file is on /store
+    # Not reproduced are e.g. the pileup scenario
+    # For local files, specify your own rules or run it with the 'dataset' option
+    nParts = filename.split("/")
+    if "store" not in nParts and len(nParts)<6:
+        return filename
+    nParts = nParts[nParts.index("store"):]
+    return "/{}/{}-{}/{}".format(nParts[3], nParts[2], nParts[5], nParts[4])
 
 options = VarParsing ('analysis')
 options.register ('dataset',
@@ -16,42 +24,20 @@ options.register ('user',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.string,
                   "Name the user. If not set by crab, this script will determine it.")
-options.register ('fastSim',
-                  '',
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.bool,
-                  "Whether the sample is simulated with fast-sim. (Default: False)")
-options.register ('miniAODv',
-                  '',
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "The MiniAOD version. (Default: 2)")
 
 # defaults
-options.inputFiles = 'root://xrootd.unl.edu//store/mc/RunIISpring15MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/0CB41EBB-CA6D-E511-A28E-002618943C3A.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/264A540A-571A-E611-8C5E-0025904E3FCE.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016G/SinglePhoton/MINIAOD/PromptReco-v1/000/278/969/00000/CE30EEA0-9666-E611-AB4F-02163E014411.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016G/SingleElectron/MINIAOD/PromptReco-v1/000/280/385/00000/FA5D4A3B-B278-E611-B674-FA163E0D7C05.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
-options.fastSim=False
-options.miniAODv=2
 # get and parse the command line arguments
 options.parseArguments()
 
-isCrabSubmission=bool(options.dataset) # only set for crab sumission
-
-# determine if Data or Simulation
-isRealData=True
-if isCrabSubmission:
-    isRealData=(not "AODSIM" in options.dataset)
-else: # running locally
-    isRealData=("SIM" not in options.inputFiles[0])
-
-options.fastSim = (options.fastSim
-                   or bool(re.match( "/SMS-.*/.*/USER", options.dataset )) # signal scan
-                   )
-
-# where .db files are placed (e.g. for JEC, JER)
-localDataBasePath=('sqlite_file:src/TreeWriter/TreeWriter/data/' if isCrabSubmission
-                   else 'sqlite_file:'+cmssw_src+'/TreeWriter/TreeWriter/data/')
+dataset=options.dataset or guessDatasetFromFileName(options.inputFiles[0])
+print "Assumed dataset:", dataset
+isRealData=not dataset.endswith("SIM")
 
 # the actual TreeWriter module
 process = cms.Process("TreeWriter")
@@ -60,55 +46,87 @@ process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
-process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 
 # determine global tag
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
-from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-gtName = "auto:run2_data" if isRealData else "auto:run2_mc"
-# for further global tags, see here:
-# https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD
-process.GlobalTag = GlobalTag(process.GlobalTag, gtName, '')
-
-hardPUveto=True if options.dataset.startswith("/QCD_HT100to200") else False
-
-#
-# Define input data to read
-#
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32( options.maxEvents ) )
-process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring(
-    options.inputFiles
-))
-
-###############################
-# Define MET Filters to apply #
-###############################
-# See https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#MiniAOD_76X_v2_produced_with_the
-applyMetFilters=cms.untracked.vstring(
-    "Flag_HBHENoiseFilter",
-    "Flag_HBHENoiseIsoFilter",
-    "Flag_CSCTightHalo2015Filter",
-    "Flag_EcalDeadCellTriggerPrimitiveFilter",
-    "Flag_goodVertices",
-    "Flag_eeBadScFilter",
-)
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+if isRealData:
+    process.GlobalTag.globaltag = "80X_dataRun2_Prompt_ICHEP16JEC_v0"
+else:
+    process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_miniAODv2_v1"
 
 ######################
-# Jets               #
+# PHOTONS, ELECTRONS #
 ######################
-pfJetIDSelector = cms.PSet(
-    version = cms.string('FIRSTDATA'),
-    quality = cms.string('LOOSE')
+# Energy smearing: https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
+process.load('EgammaAnalysis.ElectronTools.calibratedPhotonsRun2_cfi')
+process.load('EgammaAnalysis.ElectronTools.calibratedElectronsRun2_cfi')
+process.load('Configuration.StandardSequences.Services_cff')
+process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+    calibratedPatElectrons = cms.PSet(
+        initialSeed = cms.untracked.uint32(81),
+        engineName = cms.untracked.string('TRandom3'),
+    ),
+    calibratedPatPhotons = cms.PSet(
+        initialSeed = cms.untracked.uint32(81),
+        engineName = cms.untracked.string('TRandom3'),
+    )
 )
+process.selectedElectrons = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("slimmedElectrons"),
+    cut = cms.string("pt > 5 && abs(eta)<2.5")
+)
+process.selectedPhotons = cms.EDFilter("PATPhotonSelector",
+    src = cms.InputTag("slimmedPhotons"),
+    cut = cms.string("pt > 5 && abs(eta)<2.5")
+)
+process.calibratedPatPhotons.isMC = not isRealData
+process.calibratedPatElectrons.isMC = not isRealData
+process.calibratedPatPhotons.photons = "selectedPhotons"
+process.calibratedPatElectrons.electrons = "selectedElectrons"
+process.calibratedPatPhotons.correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV2_2016_pho")
+process.calibratedPatElectrons.correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
 
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-from CondCore.DBCommon.CondDBSetup_cfi import *
 
-# https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
+# Identification
+process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
+from RecoEgamma.PhotonIdentification.PhotonIDValueMapProducer_cfi import *
+
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+dataFormat = DataFormat.MiniAOD
+
+# turn on VID producer, indicate data format to be DataFormat.MiniAOD
+switchOnVIDElectronIdProducer(process, dataFormat)
+switchOnVIDPhotonIdProducer  (process, dataFormat)
+
+# define which IDs we want to produce
+el_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Spring15_25ns_V1_cff']
+ph_id_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring15_25ns_V1_cff',
+                 'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring15_25ns_nonTrig_V2_cff']
+
+#add them to the VID producer
+for idmod in el_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+for idmod in ph_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
+
+process.photonIDValueMapProducer.srcMiniAOD = "calibratedPatPhotons"
+process.photonMVAValueMapProducer.srcMiniAOD = "calibratedPatPhotons"
+process.egmPhotonIDs.physicsObjectSrc = "calibratedPatPhotons"
+process.egmGsfElectronIDs.physicsObjectSrc = "calibratedPatElectrons"
+
+
+##########################
+# Jet Energy Corrections #
+##########################
+# where .db files are placed (e.g. for JEC, JER)
+# Crab will always be in the $CMSSW_BASE directory, so to run the code locally,
+# a symbolic link is added
+#if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
+
+jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
+if isRealData: jecLevels.append('L2L3Residual')
+
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
-jecLevels = [ 'L1FastJet','L2Relative','L3Absolute' ]
-if isRealData: jecLevels.append( 'L2L3Residual' )
-
 updateJetCollection(
    process,
    jetSource = cms.InputTag('slimmedJets'),
@@ -116,49 +134,37 @@ updateJetCollection(
    jetCorrections = ('AK4PFchs', cms.vstring(jecLevels), 'None')
 )
 
-######################
-# MET Significance   #
-######################
-# https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETSignificance
-process.load("RecoMET/METProducers.METSignificance_cfi")
-process.load("RecoMET/METProducers.METSignificanceParams_cfi")
 
-process.load('Configuration.StandardSequences.Services_cff')
-process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
-from CondCore.DBCommon.CondDBSetup_cfi import *
-process.jer = cms.ESSource("PoolDBESSource",
-                           CondDBSetup,
-                           toGet = cms.VPSet(
-                               # Pt Resolution
-                               cms.PSet(
-                                   record = cms.string('JetResolutionRcd'),
-                                   tag    = cms.string('JR_Fall15_25nsV2_DATA_PtResolution_AK4PFchs' if isRealData
-                                                       else 'JR_Fall15_25nsV2_MC_PtResolution_AK4PFchs'),
-                                   label  = cms.untracked.string('AK4PFchs_pt')
-                               ),
-                               # Phi Resolution
-                               cms.PSet(
-                                   record = cms.string('JetResolutionRcd'),
-                                   tag    = cms.string('JR_Fall15_25nsV2_DATA_PhiResolution_AK4PFchs' if isRealData
-                                                       else 'JR_Fall15_25nsV2_MC_PhiResolution_AK4PFchs'),
-                                   label  = cms.untracked.string('AK4PFchs_phi')
-                               ),
-                               # Scale factors
-                               cms.PSet(
-                                   record = cms.string('JetResolutionScaleFactorRcd'),
-                                   tag    = cms.string('JR_Fall15_25nsV2_DATA_SF_AK4PFchs' if isRealData
-                                                       else 'JR_Fall15_25nsV2_MC_SF_AK4PFchs'),
-                                   label  = cms.untracked.string('AK4PFchs')
-                               ),
-                           ),
-                           connect = cms.string(localDataBasePath+('JER/Fall15_25nsV2_DATA.db' if isRealData
-                                                                   else "JER/Fall15_25nsV2_MC.db"))
-)
-process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
-
-# rerun metcorrections and uncertainties
+##########################
+# MET                    #
+##########################
+# https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-runMetCorAndUncFromMiniAOD(process,isData=isRealData)
+runMetCorAndUncFromMiniAOD(
+    process,
+    isData=isRealData,
+)
+
+
+################################
+# MET Filter                   #
+################################
+process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
+process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
+process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+
+process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
+process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
+process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+
+
+################################
+# Define input and output      #
+################################
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(options.maxEvents))
+process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(options.inputFiles))
+process.TFileService = cms.Service("TFileService", fileName=cms.string(options.outputFile))
+
 
 ################################
 # The actual TreeWriter module #
@@ -172,18 +178,17 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     minNumberPhotons_cut=cms.untracked.uint32(1),
                                     minNumberElectrons_cut=cms.untracked.uint32(0),
                                     # physics objects
-                                    photons = cms.InputTag("slimmedPhotons"),
-                                    jets = cms.InputTag("selectedUpdatedPatJetsUpdatedJEC"),
+                                    photons = cms.InputTag("calibratedPatPhotons"),
+                                    jets = cms.InputTag("updatedPatJetsUpdatedJEC"),
                                     muons = cms.InputTag("slimmedMuons"),
                                     genJets=cms.InputTag("slimmedGenJets"),
-                                    electrons = cms.InputTag("slimmedElectrons"),
-                                    mets = cms.InputTag("slimmedMETs","","TreeWriter"),
+                                    electrons = cms.InputTag("calibratedPatElectrons"),
+                                    mets = cms.InputTag("slimmedMETs", "", "TreeWriter"),
                                     rho = cms.InputTag("fixedGridRhoFastjetAll"),
                                     vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
                                     prunedGenParticles = cms.InputTag("prunedGenParticles"),
                                     pileUpSummary = cms.InputTag('slimmedAddPileupInfo'),
                                     lheEventProduct = cms.InputTag('externalLHEProducer'),
-                                    metSig=cms.InputTag("METSignificance","METSignificance","TreeWriter"),
                                     packedCandidates=cms.InputTag("packedPFCandidates"),
                                     # electron IDs
                                     electronVetoIdMap   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-veto"),
@@ -196,53 +201,64 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     photonTightIdMap   = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-25ns-V1-standalone-tight"),
                                     photonMvaValuesMap = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring15NonTrig25nsV2Values"),
                                     # met filters to apply
-                                    metFilterNames=applyMetFilters,
+                                    metFilterNames=cms.untracked.vstring(
+                                        "Flag_HBHENoiseFilter",
+                                        "Flag_HBHENoiseIsoFilter",
+                                        "Flag_EcalDeadCellTriggerPrimitiveFilter",
+                                        "Flag_goodVertices",
+                                        "Flag_eeBadScFilter",
+                                        "Flag_globalTightHalo2016Filter",
+                                    ),
                                     phoWorstChargedIsolation = cms.InputTag("photonIDValueMapProducer:phoWorstChargedIsolation"),
-                                    pileupHistogramName=cms.untracked.string("pileupWeight_mix_2015_25ns_FallMC_matchData_PoissonOOTPU"),
-                                    hardPUveto=cms.untracked.bool(hardPUveto),
+                                    pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU"),
+                                    hardPUveto=cms.untracked.bool(False),
                                     # triggers to be saved
                                     # Warning: To be independent of the version number, the trigger result is saved if the trigger name begins
                                     # with the strings given here. E.g. "HLT" would always be true if any of the triggers fired.
                                     triggerNames=cms.vstring(),
+                                    pfJetIDSelector=cms.PSet(version=cms.string('FIRSTDATA'), quality=cms.string('LOOSE')),
                                     triggerPrescales=cms.vstring(), # also useful to check whether a trigger was run
-                                    # if trigger objects are stored
-                                    triggerObjectPath=cms.untracked.string("HLT_PhotonThisDoesNotExist_v"), # change for users!
-                                    pfJetIDSelector=pfJetIDSelector,
+                                    storeTriggerObjects=cms.untracked.bool(False),
+                                    BadChargedCandidateFilter = cms.InputTag("BadChargedCandidateFilter"),
+                                    BadPFMuonFilter = cms.InputTag("BadPFMuonFilter"),
 )
+
+################################
+# Modify the TreeWriter module #
+################################
+
+process.TreeWriter.hardPUveto=dataset.startswith("/QCD_HT100to200")
+
+if "Fast" in dataset:
+    process.TreeWriter.metFilterNames = [] # no met filters for fastsim
+    process.TreeWriter.lheEventProduct = "source"
+
 
 # determine user if not set by crab
 user=options.user or getpass.getuser()
-
-# check for 74X samples and use right PU histogram
-if (isCrabSubmission and "RunIISpring15MiniAODv2" in options.dataset) \
-   or (len (options.inputFiles)==1 and '/ggm/' in options.inputFiles[0]):
-    process.TreeWriter.pileupHistogramName="pileupWeight_mix_2015_25ns_Startup_PoissonOOTPU"
-
 # user settings
 if user=="kiesel":
     process.TreeWriter.HT_cut=500.
     process.TreeWriter.photon_pT_cut=90.
     process.TreeWriter.minNumberPhotons_cut=0
-    process.TreeWriter.jet_pT_cut=40
     process.TreeWriter.triggerNames=[
-        "HLT_Photon90_CaloIdL_PFHT500_v",
-        "HLT_Photon90_v", #prescale: 90
+        "HLT_Photon90_CaloIdL_PFHT600_v",
+        "HLT_Photon90_v",
         "HLT_PFHT600_v",
-        "HLT_Photon175_v",
-        "HLT_PFHT475_v", #prescale: 60
-        "HLT_Ele23_WP75_Gsf_v",
-        "HLT_Ele22_eta2p1_WP75_Gsf_v",
-        "HLT_Ele22_eta2p1_WPLoose_Gsf_v",
+        "HLT_PFHT800_v",
         "HLT_Ele27_eta2p1_WPLoose_Gsf_v",
     ]
-    if "SingleElectron" in options.dataset or "DY" in options.dataset:
-        process.TreeWriter.HT_cut=0.
-        process.TreeWriter.minNumberElectrons_cut=1
+    process.TreeWriter.triggerPrescales=process.TreeWriter.triggerNames
+    if "SingleElectron" in dataset or "DY" in dataset:
+        process.TreeWriter.triggerNames = ["HLT_Ele27_eta2p1_WPLoose_Gsf_v"]
+        process.TreeWriter.HT_cut = 0.
+        process.TreeWriter.photon_pT_cut = 25.
+        process.TreeWriter.minNumberPhotons_cut = 1
+        process.TreeWriter.storeTriggerObjects = True
 
 elif user=="lange" or user=="jschulz":
-    process.TreeWriter.jet_pT_cut=30.
     process.TreeWriter.photon_pT_cut=100
-    process.TreeWriter.triggerObjectPath="HLT_Photon165_HE10_v"
+    process.TreeWriter.storeTriggerObjects=False
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT500_v",
         "HLT_PFHT600_v",
@@ -269,7 +285,10 @@ elif user=="lange" or user=="jschulz":
         "HLT_Photon135_PFMET100_NoiseCleaned_v", # used for MC
         "HLT_Photon175_v",
         "HLT_Photon500_v",
-        "HLT_PFMET170_v",
+        "HLT_PFMET170_NoiseCleaned_v",
+        "HLT_PFMET170_HBHECleaned_v",
+        "HLT_PFMET170_JetIdCleaned_v",
+        "HLT_PFMET170_NotCleaned_v",
         "HLT_IsoMu18_v",
         "HLT_IsoMu20_v",
         "HLT_IsoMu22_v",
@@ -283,6 +302,7 @@ elif user=="lange" or user=="jschulz":
         "HLT_Ele27_eta2p1_WPTight_Gsf_v",
         "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
          # HT
+        "HLT_PFHT125_v",
         "HLT_PFHT200_v",
         "HLT_PFHT250_v",
         "HLT_PFHT300_v",
@@ -309,6 +329,7 @@ elif user=="lange" or user=="jschulz":
         "HLT_Mu20_v",
         "HLT_Mu17_Photon22_CaloIdL_L1ISO_v",
         # HT
+        "HLT_PFHT125_v",
         "HLT_PFHT200_v",
         "HLT_PFHT250_v",
         "HLT_PFHT300_v",
@@ -333,59 +354,12 @@ else:
 for trig in process.TreeWriter.triggerPrescales:
     assert(trig in process.TreeWriter.triggerNames),"Trigger '"+trig+"' is not used, so prescale cannot be stored!"
 
-if options.fastSim:
-    process.TreeWriter.metFilterNames = [] # no met filters for fastsim
-    process.TreeWriter.lheEventProduct = "source"
-if options.miniAODv==1:
-    process.TreeWriter.pileUpSummary = "addPileupInfo"
-
-process.TFileService = cms.Service("TFileService",fileName = cms.string(options.outputFile))
-
-
-######################
-# PHOTONS, ELECTRONS #
-######################
-from RecoEgamma.PhotonIdentification.PhotonIDValueMapProducer_cfi import *
-
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-dataFormat = DataFormat.MiniAOD
-
-# turn on VID producer, indicate data format to be DataFormat.MiniAOD
-switchOnVIDElectronIdProducer(process, dataFormat)
-switchOnVIDPhotonIdProducer  (process, dataFormat)
-
-# define which IDs we want to produce
-el_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Spring15_25ns_V1_cff']
-ph_id_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring15_25ns_V1_cff',
-                 'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring15_25ns_nonTrig_V2_cff']
-
-#add them to the VID producer
-for idmod in el_id_modules:
-    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
-for idmod in ph_id_modules:
-    setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
-
 ####################
 #     RUN          #
 ####################
 
 process.p = cms.Path(
-    process.METSignificance
-    *process.photonIDValueMapProducer
-    *process.egmGsfElectronIDSequence
-    *process.egmPhotonIDSequence
-    )
-process.p*=process.TreeWriter
-
-print "#########################################################"
-print "This is what I think I am processing..."
-print "  user           ",user
-print "  CRAB submission",isCrabSubmission
-print "  dataset        ",options.dataset
-print "  isRealData     ",isRealData
-print "  Global Tag     ",gtName
-print "  fastSim        ",options.fastSim
-print "  MiniAODv       ",options.miniAODv
-print "  hardPUveto     ",hardPUveto
-print "  PU             ",process.TreeWriter.pileupHistogramName.pythonValue()
-print "#########################################################"
+    process.BadPFMuonFilter
+    *process.BadChargedCandidateFilter
+    *process.TreeWriter
+)

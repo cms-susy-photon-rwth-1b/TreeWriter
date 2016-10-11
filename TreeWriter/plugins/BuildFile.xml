@@ -8,4 +8,5 @@
 <use name="PhysicsTools/SelectorUtils"/>
 <use name="CondFormats/JetMETObjects"/>
 <use name="JetMETCorrections/Objects"/>
+<use name="JetMETCorrections/Modules"/>
 <flags EDM_PLUGIN="1"/>

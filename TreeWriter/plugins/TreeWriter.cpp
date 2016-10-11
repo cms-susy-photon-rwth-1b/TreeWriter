@@ -10,7 +10,6 @@
 
 #include "TreeWriter.hpp"
 
-#include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 
 #include <SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h>
 
@@ -21,7 +20,7 @@ static double computeHT(const std::vector<tree::Jet>& jets)
    double pt=0;
    for (const tree::Jet& jet: jets){
       pt=jet.p.Pt();
-      if (fabs(jet.p.Eta())<3.0 && pt>40) HT+=pt;
+      if (fabs(jet.p.Eta())<3.0 && pt>30) HT+=pt;
    }
    return HT;
 }
@@ -96,7 +95,6 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , prunedGenToken_         (consumes<edm::View<reco::GenParticle> >(iConfig.getParameter<edm::InputTag>("prunedGenParticles")))
    , pileUpSummaryToken_     (consumes<PileupSummaryInfoCollection>(iConfig.getParameter<edm::InputTag>("pileUpSummary")))
    , LHEEventToken_          (consumes<LHEEventProduct>(iConfig.getParameter<edm::InputTag>("lheEventProduct")))
-   , METSignificance_        (consumes<double> (iConfig.getParameter<edm::InputTag>("metSig")))
    , packedCandidateToken_   (consumes<std::vector<pat::PackedCandidate>> (iConfig.getParameter<edm::InputTag>("packedCandidates")))
    // electron id
    , electronVetoIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronVetoIdMap"   )))
@@ -117,10 +115,12 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , jetIdSelector(iConfig.getParameter<edm::ParameterSet>("pfJetIDSelector"))
    , triggerNames_(iConfig.getParameter<std::vector<std::string>>("triggerNames"))
    , triggerPrescales_(iConfig.getParameter<std::vector<std::string>>("triggerPrescales"))
-   , triggerObjectPath_(iConfig.getUntrackedParameter<std::string>("triggerObjectPath"))
+   , storeTriggerObjects_(iConfig.getUntrackedParameter<bool>("storeTriggerObjects"))
+   , BadChCandFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("BadChargedCandidateFilter")))
+   , BadPFMuonFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("BadPFMuonFilter")))
 {
    // declare consumptions that are used "byLabel" in analyze()
-   mayConsume<LHERunInfoProduct,edm::InRun> (edm::InputTag("externalLHEProducer"));
+   mayConsume<GenLumiInfoHeader,edm::InLumi> (edm::InputTag("generator"));
    consumes<GenEventInfoProduct>(edm::InputTag("generator"));
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","","HLT"));
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults",""));
@@ -136,31 +136,36 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("muons"    , &vMuons_);
    eventTree_->Branch("met"      , &met_);
    eventTree_->Branch("met_raw"  , &met_raw_);
-   eventTree_->Branch("met_JESu" , &met_JESu_);
-   eventTree_->Branch("met_JESd" , &met_JESd_);
-   eventTree_->Branch("met_JERu" , &met_JERu_);
-   eventTree_->Branch("met_JERd" , &met_JERd_);
+   //eventTree_->Branch("met_gen"  , &met_gen_);
+   //eventTree_->Branch("met_JESu" , &met_JESu_);
+   //eventTree_->Branch("met_JESd" , &met_JESd_);
+   //eventTree_->Branch("met_JERu" , &met_JERu_);
+   //eventTree_->Branch("met_JERd" , &met_JERd_);
    eventTree_->Branch("genParticles", &vGenParticles_);
    eventTree_->Branch("triggerObjects", &vTriggerObjects_);
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
-   eventTree_->Branch("nPV"           , &nPV_           , "nPV/I");
-   eventTree_->Branch("true_nPV"      , &true_nPV_      , "true_nPV/I");
+   //eventTree_->Branch("nPV"           , &nPV_           , "nPV/I");
+   //eventTree_->Branch("true_nPV"      , &true_nPV_      , "true_nPV/I");
    eventTree_->Branch("nGoodVertices" , &nGoodVertices_ , "nGoodVertices/I");
-   eventTree_->Branch("nTracksPV"     , &nTracksPV_     , "nTracksPV/I");
-   eventTree_->Branch("rho"           , &rho_           , "rho/F");
+   //eventTree_->Branch("nTracksPV"     , &nTracksPV_     , "nTracksPV/I");
+   //eventTree_->Branch("rho"           , &rho_           , "rho/F");
 
    eventTree_->Branch("pu_weight"     , &pu_weight_     , "pu_weight/F");
    eventTree_->Branch("mc_weight"     , &mc_weight_     , "mc_weight/B");
-   eventTree_->Branch("pdf_weights"   , &vPdf_weights_);
+   //eventTree_->Branch("pdf_weights"   , &vPdf_weights_);
 
    eventTree_->Branch("genHt" , &genHt_ , "genHt/F");
-   eventTree_->Branch("nISR"  , &nISR_  , "nISR/I");
+   //eventTree_->Branch("nISR"  , &nISR_  , "nISR/I");
+   //eventTree_->Branch("puPtHat" , &puPtHat_ , "puPtHat/F");
 
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
    eventTree_->Branch("runNo", &runNo_, "runNo/i");
    eventTree_->Branch("lumNo", &lumNo_, "lumNo/i");
-   eventTree_->Branch("modelName", &modelName_);
+
+   //eventTree_->Branch("signal_m1", &signal_m1_, "signal_m1/s");
+   //eventTree_->Branch("signal_m2", &signal_m2_, "signal_m2/s");
+   //eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
 
    // Fill trigger maps
    for( const auto& n : triggerNames_ ){
@@ -196,7 +201,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
 TH1F* TreeWriter::createCutFlowHist(std::string modelName)
 {
    std::string const name("hCutFlow"+modelName);
-   std::vector<TString> vCutBinNames{{"initial_unweighted","initial_mc_weighted","initial","METfilters","nGoodVertices", "photons","HT","final"}};
+   std::vector<TString> vCutBinNames{{"initial_unweighted","initial_mc_weighted","initial","trigger","METfilters","nGoodVertices", "photons","HT","final"}};
    TH1F* h = fs_->make<TH1F>(name.c_str(),name.c_str(),vCutBinNames.size(),0,vCutBinNames.size());
    for (uint i=0;i<vCutBinNames.size();i++) h->GetXaxis()->SetBinLabel(i+1,vCutBinNames.at(i));
    return h;
@@ -216,32 +221,10 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    Bool_t  isRealData; // data or MC
    isRealData=iEvent.isRealData();
 
-   // get model name
-   modelName_ = "";
-   if( !isRealData ) {
-      edm::Handle<LHEEventProduct> lheInfoHandle;
-      iEvent.getByToken(LHEEventToken_, lheInfoHandle);
-      if (lheInfoHandle.isValid()) {
-         if (lheInfoHandle->comments_size()){
-           modelName_=lheInfoHandle->getComment(0);
-           // Typical model name is '# model T5Wg_1100_1000\n'
-           // cut out only interesting part
-           if (modelName_.find("# model")!=0) modelName_="";
-           else if (modelName_.size()>8) modelName_=modelName_.substr(8,modelName_.size()-9);
-         }
-      }
-   }
-   // create the cutflow histogram for the model if not there yet
-   // (modelName="" for non-signal samples)
-   if (!hCutFlowMap_.count(modelName_)) {
-      hCutFlowMap_[modelName_] = createCutFlowHist(modelName_);
-   }
-   // point to the right cut flow histogram
-   hCutFlow_ = hCutFlowMap_.at(modelName_);
-
    hCutFlow_->Fill("initial_unweighted",1);
 
    // PileUp weights
+   puPtHat_=0;
    if (!isRealData){
       edm::Handle<PileupSummaryInfoCollection>  PupInfo;
       iEvent.getByToken(pileUpSummaryToken_, PupInfo);
@@ -250,6 +233,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          int BX = PVI.getBunchCrossing();
          if(BX == 0) {
             Tnpv = PVI.getTrueNumInteractions();
+            auto ptHats = PVI.getPU_pT_hats();
+            puPtHat_ = ptHats.size() ? *max_element(ptHats.begin(),ptHats.end()) : 0;
             continue;
          }
       }
@@ -267,22 +252,13 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       iEvent.getByLabel("generator", GenEventInfoHandle);
       mc_weight_= sign(GenEventInfoHandle->weight());
 
-      // muR, muF, PDF variations
-      // see https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW
-      vPdf_weights_.clear();
-      edm::Handle<LHEEventProduct> EvtHandle;
-      iEvent.getByToken(LHEEventToken_, EvtHandle);
-      if (EvtHandle.isValid()) { // else: Pythia-only simulation: info not available
-         unsigned iMax=110; // these are 9 scale variations and 100 variation of the first pdf set
-         // for the case that the weights vector is shorter for some reason
-         if (iMax>EvtHandle->weights().size()) iMax=EvtHandle->weights().size();
-         vPdf_weights_=std::vector<float>(iMax,1.0);
-         for (unsigned i=0; i<iMax; i++) {
-            // it's possible to check the "id" that is used in the LHE record:
-            // std::cout<<EvtHandle->weights()[i].id<<" "<<EvtHandle->weights()[i].wgt/EvtHandle->originalXWGTUP()<<std::endl;
-
-            vPdf_weights_[i]=EvtHandle->weights()[i].wgt/EvtHandle->originalXWGTUP();
-         }
+      unsigned iMax=110; // these are 9 scale variations and 100 variation of the first pdf set
+      if (iMax+1>GenEventInfoHandle->weights().size()) iMax=GenEventInfoHandle->weights().size()-1;
+      vPdf_weights_=std::vector<float>(iMax,1.0);
+      for (unsigned i=0; i<iMax; i++) {
+         // 0 and 1 are the same for 80X scans
+         // https://hypernews.cern.ch/HyperNews/CMS/get/susy-interpretations/242/1/1.html
+         vPdf_weights_[i]=GenEventInfoHandle->weights()[i+1]/GenEventInfoHandle->weights()[1];
       }
    }
 
@@ -315,11 +291,16 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    } // found indices
 
    // set trigger decision
+   bool anyTriggerFired = false;
    for( auto& it : triggerIndex_ ) {
       if( it.second != -1 ) {
+         anyTriggerFired |= triggerBits->accept( it.second );
          triggerDecision_[it.first] = triggerBits->accept( it.second );
       }
    }
+   if (isRealData && !anyTriggerFired) return;
+   hCutFlow_->Fill("trigger",mc_weight_*pu_weight_);
+
    // store prescales
    for( std::string const& n : triggerPrescales_ ){
       int const index = triggerIndex_[n];
@@ -327,27 +308,18 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       triggerPrescale_[n] = index == -1 ? 0 : triggerPrescales->getPrescaleForIndex(triggerIndex_[n]);
    }
 
+   if (storeTriggerObjects_) {
+      edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
+      edm::InputTag triggerObjects_("selectedPatTrigger");
+      iEvent.getByLabel(triggerObjects_, triggerObjects);
 
-   edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
-   edm::InputTag triggerObjects_("selectedPatTrigger");
-   iEvent.getByLabel(triggerObjects_, triggerObjects);
-
-   vTriggerObjects_.clear();
-   tree::Particle trObj;
-   for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
-      const edm::TriggerNames &triggerNames = iEvent.triggerNames(*triggerBits);
-      obj.unpackPathNames(triggerNames);
-      // only consider objects in egamma collection
-      if (obj.collection() != "hltEgammaCandidates::HLT") continue;
-
-      // check all paths for the signal trigger
-      std::vector<std::string> pathNamesAll = obj.pathNames(false);
-      for (std::string p: pathNamesAll){
-         if (p.find(triggerObjectPath_) != std::string::npos) {
-            trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
-            vTriggerObjects_.push_back(trObj);
-            break;
-         }
+      vTriggerObjects_.clear();
+      tree::Particle trObj;
+      for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
+         // obj.unpackPathNames(names);
+         if (!std::count(obj.filterLabels().begin(),obj.filterLabels().end(), "hltEle27erWPLooseGsfTrackIsoFilter")) continue;
+         trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
+         vTriggerObjects_.push_back(trObj);
       }
    }
 
@@ -358,9 +330,18 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // go through the filters and check if they were passed
    const edm::TriggerNames &allFilterNames = iEvent.triggerNames(*metFilterBits);
    for (std::string const &name: metFilterNames_){
-      const int index=allFilterNames.triggerIndex(name);
+      const unsigned index=allFilterNames.triggerIndex(name);
+      if (index>=allFilterNames.size()) std::cerr << "MET filter '" << name << "' not found!" << std::endl;
       if (!metFilterBits->accept(index)) return; // not passed
    }
+   edm::Handle<bool> ifilterbadChCand;
+   iEvent.getByToken(BadChCandFilterToken_, ifilterbadChCand);
+   if (!*ifilterbadChCand) return;
+
+   edm::Handle<bool> ifilterbadPFMuon;
+   iEvent.getByToken(BadPFMuonFilterToken_, ifilterbadPFMuon);
+   if (!*ifilterbadPFMuon) return;
+
    hCutFlow_->Fill("METfilters",mc_weight_*pu_weight_);
 
    // Get PV
@@ -424,7 +405,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trPho.p.SetPtEtaPhi(pho->pt(),pho->superCluster()->eta(),pho->superCluster()->phi());
 
       const edm::Ptr<pat::Photon> phoPtr( photonColl, pho - photonColl->begin() );
-
+      trPho.sigmaPt = pho->getCorrectedEnergyError(pho->getCandidateP4type())*sin(trPho.p.Theta());
       trPho.sigmaIetaIeta=pho->full5x5_sigmaIetaIeta(); // from reco::Photon
       trPho.sigmaIphiIphi=pho->full5x5_showerShapeVariables().sigmaIphiIphi;
       trPho.hOverE=pho->hadTowOverEm() ;
@@ -504,6 +485,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trEl.isTight =(*tight_id_decisions) [elPtr];
       trEl.p.SetPtEtaPhi(el->pt(),el->superCluster()->eta(),el->superCluster()->phi());
       trEl.charge=el->charge();
+      auto const & pfIso = el->pfIsolationVariables();
+      trEl.rIso=(pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();
       vElectrons_.push_back(trEl);
    }
    sort(vElectrons_.begin(), vElectrons_.end(), tree::PtGreater);
@@ -514,6 +497,10 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iSetup.get<JetCorrectionsRecord>().get("AK4PFchs",JetCorParColl);
    JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
    JetCorrectionUncertainty jecUnc(JetCorPar);
+
+   JME::JetResolution resolution_pt = JME::JetResolution::get(iSetup, "AK4PFchs_pt");
+   JME::JetResolution resolution_phi = JME::JetResolution::get(iSetup, "AK4PFchs_phi");
+   JME::JetResolutionScaleFactor resolution_sf = JME::JetResolutionScaleFactor::get(iSetup, "AK4PFchs");
 
    edm::Handle<pat::JetCollection> jetColl;
    iEvent.getByToken(jetCollectionToken_, jetColl);
@@ -528,7 +515,18 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       jecUnc.setJetEta(jet.eta());
       jecUnc.setJetPt(jet.pt());
       trJet.uncert = jecUnc.getUncertainty(true);
+      JME::JetParameters parameters = {{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, rho_}};
+      trJet.ptRes = resolution_pt.getResolution(parameters);
+      trJet.phiRes = resolution_phi.getResolution(parameters);
+      trJet.sfRes = resolution_sf.getScaleFactor(parameters);
+      trJet.sfResUp = resolution_sf.getScaleFactor(parameters, Variation::UP);
+      trJet.sfResDn = resolution_sf.getScaleFactor(parameters, Variation::DOWN);
       trJet.chf = jet.chargedHadronEnergyFraction();
+      trJet.nhf = jet.neutralHadronEnergyFraction();
+      trJet.cef = jet.chargedEmEnergyFraction();
+      trJet.nef = jet.neutralEmEnergyFraction();
+      trJet.nch = jet.chargedMultiplicity();
+      trJet.nconstituents = jet.numberOfDaughters();
       // object matching
       trJet.hasPhotonMatch=false;
       for (tree::Photon const &ph: vPhotons_){
@@ -559,7 +557,6 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    nISR_=0;
    if (!isRealData) {
       nISR_=n_isr_jets(prunedGenParticles,vJets_);
-      // std::cout<<nISR_<<std::endl;
    }
 
    edm::Handle<reco::GenJetCollection> genJetColl;
@@ -596,6 +593,11 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    double metPt=met.pt();
    met_.p.SetPtEtaPhi(metPt,met.eta(),met.phi());
 
+   if( !isRealData ) {
+      const reco::GenMET *genMet=met.genMET();
+      met_gen_.p.SetPtEtaPhi(genMet->pt(),genMet->eta(),genMet->phi());
+   }
+
    // jet resolution shift is set to 0 for 74X
    met_.uncertainty=0;
    // loop over all up-shifts save for last one (=NoShift)
@@ -624,9 +626,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    metShifted=met.shiftedP4(pat::MET::JetResDown);
    met_JERd_.p.SetPtEtaPhi(metShifted.pt(),metShifted.eta(),metShifted.phi());
 
-   edm::Handle<double> METSignificance;
-   iEvent.getByToken(METSignificance_, METSignificance);
-   met_.sig=float(*METSignificance);
+   met_.sig = met.metSignificance();
    met_raw_.sig=met_.sig;
    met_JESu_.sig=met_.sig;
    met_JESd_.sig=met_.sig;
@@ -676,8 +676,13 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    if (!isRealData){
       // Get generator level info
       // Pruned particles are the one containing "important" stuff
+      auto countBinos = signal_nBinos_ == 10;
+      if (countBinos) signal_nBinos_ = 0;
       for (const reco::GenParticle &genP: *prunedGenParticles){
          auto absId = abs(genP.pdgId());
+         // estimate number of binos
+         if (countBinos && absId == 1000023 && abs(genP.mother(0)->pdgId()) != 1000023) signal_nBinos_++;
+
          if (absId==23||absId==24){ // store intermediate bosons
             int iNdaugh=genP.numberOfDaughters();
             if (iNdaugh>1){ // skip "decays" V->V
@@ -780,9 +785,34 @@ TreeWriter::endRun(edm::Run const& iRun, edm::EventSetup const&)
 // ------------ method called when starting to processes a luminosity block  ------------
 
 void
-TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
+TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSetup const&)
 {
    newLumiBlock_=true;
+
+   edm::Handle<GenLumiInfoHeader> gen_header;
+   iLumi.getByLabel("generator", gen_header);
+   std::string modelName_ = "";
+   signal_m1_ = 0;
+   signal_m2_ = 0;
+   signal_nBinos_ = 10; // initial value
+   if (gen_header.isValid()) {
+      modelName_ = gen_header->configDescription();
+      std::smatch sm;
+      if (regex_match(modelName_, sm, std::regex(".*_(\\d+)_(\\d+)"))) {
+         signal_m1_ = std::stoi(sm[1]);
+         signal_m2_ = std::stoi(sm[2]);
+      } else if (regex_match(modelName_, sm, std::regex(".*_(\\d+)"))) {
+         signal_m1_ = std::stoi(sm[1]);
+      }
+   }
+
+   // create the cutflow histogram for the model if not there yet
+   // (modelName="" for non-signal samples)
+   if (!hCutFlowMap_.count(modelName_)) {
+      hCutFlowMap_[modelName_] = createCutFlowHist(modelName_);
+   }
+   // point to the right cut flow histogram
+   hCutFlow_ = hCutFlowMap_.at(modelName_);
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
