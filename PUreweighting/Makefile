@@ -15,11 +15,11 @@ data/puWeights.root: data createWeights.py nTrueVertexMC.root nTrueVertexData.ro
 nTrueVertexMC.root: createMChist.py
 	python2.7 $^ $@
 
-# For the cross section and its uncertainty, see https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2543.html
+# For the cross section and its uncertainty, see https://twiki.cern.ch/twiki/bin/view/CMS/PileupJSONFileforData
 nTrueVertexData.root: $(ANA_JSON) $(PU_JSON) Makefile
-	$(PU_CALC) --minBiasXsec 69000 --pileupHistName pileup tmpHist1.root
-	$(PU_CALC) --minBiasXsec 72450 --pileupHistName pileupUp tmpHist2.root
-	$(PU_CALC) --minBiasXsec 65550 --pileupHistName pileupDown tmpHist3.root
+	$(PU_CALC) --minBiasXsec 69200 --pileupHistName pileup tmpHist1.root
+	$(PU_CALC) --minBiasXsec 72383 --pileupHistName pileupUp tmpHist2.root
+	$(PU_CALC) --minBiasXsec 66017 --pileupHistName pileupDown tmpHist3.root
 	hadd -f $@ tmpHist1.root tmpHist2.root tmpHist3.root
 	rm tmpHist1.root tmpHist2.root tmpHist3.root
 
