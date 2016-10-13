@@ -700,10 +700,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          }
 
          // save particles
-         if (genP.status() != 1) continue; // only final state particles
-         if (genP.pt() < 20)     continue;
-         if (absId==11 || absId==22 || absId==13       // e+-, photon, muon
-             || absId==12 || absId==14 || absId==16) { // neutrino
+         if (genP.status()==22 || genP.status()==23 || // some generator particles
+               (genP.status() == 1 && genP.pt()>20 && (absId==22 || (11 <= absId && absId <= 16)))) { // status 1 photons and leptons (including neutrinos)
             trP.pdgId = genP.pdgId();
             trP.isPrompt = genP.statusFlags().isPrompt();
             trP.fromHardProcess = genP.statusFlags().fromHardProcess();
