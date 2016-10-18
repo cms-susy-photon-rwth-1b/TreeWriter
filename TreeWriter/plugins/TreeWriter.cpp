@@ -23,6 +23,20 @@ static double computeHT(const std::vector<tree::Jet>& jets)
    return HT;
 }
 
+// checks if a particle has a special mother. Treats anti-particles as particles
+bool hasAncestor(int index, const lhef::HEPEUP& info, int searchId) {
+   if (index < 2 or index > info.NUP) {
+      return false;
+   } else if (abs(info.IDUP[index]) == searchId) {
+      return true;
+   } else {
+      auto mothers = info.MOTHUP[index];
+      return
+         (index != mothers.first-1 and hasAncestor(mothers.first-1, info, searchId))
+         or (index != mothers.second-1 and hasAncestor(mothers.second-1, info, searchId));
+   }
+}
+
 // taken from https://github.com/manuelfs/babymaker/blob/0136340602ee28caab14e3f6b064d1db81544a0a/bmaker/plugins/bmaker_full.cc#L1268-L1295
 // "recipe" https://indico.cern.ch/event/557678/contributions/2247944/attachments/1311994/1963568/16-07-19_ana_manuelf_isr.pdf
 int n_isr_jets(edm::Handle<edm::View<reco::GenParticle>> const &genParticles,
@@ -649,7 +663,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          genHt_ = 0;
          for (unsigned int i = 0; i < statusCodes.size(); i++) {
             auto absId = abs(lheParticleInfo.IDUP[i]);
-            if (statusCodes[i] == 1 && ( absId < 11 || absId > 16 ) && absId != 22  ) {
+            if (statusCodes[i] == 1 && ( absId < 11 || absId > 16 ) && absId != 22 && !hasAncestor(i, lheParticleInfo, 6)) {
                genHt_ += sqrt(pow(allParticles[i][0], 2) + pow(allParticles[i][1], 2));
             }
          } // end paricle loop
