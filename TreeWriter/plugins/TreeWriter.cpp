@@ -843,9 +843,7 @@ TreeWriter::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
    descriptions.addDefault(desc);
 }
 
-int TreeWriter::matchToTruth(const pat::Photon &pho,
-                                              const edm::Handle<edm::View<reco::GenParticle>>
-                                              &genParticles)
+int TreeWriter::matchToTruth(const pat::Photon &pho, const edm::Handle<edm::View<reco::GenParticle>> &genParticles)
 {
    //
    // Explicit loop and geometric matching method
@@ -888,12 +886,10 @@ int TreeWriter::matchToTruth(const pat::Photon &pho,
          return MATCHED_FROM_OTHER_SOURCES;
    }
    return MATCHED_FROM_GUDSCB;
-
 }
 
-void TreeWriter::findFirstNonPhotonMother(const reco::Candidate *particle,
-                                                           int &ancestorPID, int &ancestorStatus){
-
+void TreeWriter::findFirstNonPhotonMother(const reco::Candidate *particle, int &ancestorPID, int &ancestorStatus)
+{
    if( particle == 0 ){
       printf("TreeWriter: ERROR! null candidate pointer, this should never happen\n");
       return;
@@ -911,12 +907,8 @@ void TreeWriter::findFirstNonPhotonMother(const reco::Candidate *particle,
    return;
 }
 
-int TreeWriter::matchToTruthAlternative(const pat::Photon &pho,
-                                                         const edm::Handle<edm::View<reco::GenParticle>>
-                                                         &genParticles)
+int TreeWriter::matchToTruthAlternative(const pat::Photon &pho, const edm::Handle<edm::View<reco::GenParticle>> &genParticles)
 {
-
-
    //
    // Explicit loop and geometric matching method
    //
