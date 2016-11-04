@@ -26,7 +26,7 @@ config.Data.splitting = 'LumiBased'
 config.Data.unitsPerJob = 500
 config.Data.publication = False
 # This string is used to construct the output dataset name
-config.Data.outputDatasetTag = 'V05'
+config.Data.outputDatasetTag = 'V06'
 config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
 
 config.section_("Site")
@@ -105,6 +105,7 @@ def dataDatasets(datasetName):
         "/{}/Run2016G-PromptReco-v1/MINIAOD",
         #"/{}/Run2016H-PromptReco-v1/MINIAOD", # no valid ls in json -> no jobs
         "/{}/Run2016H-PromptReco-v2/MINIAOD",
+        "/{}/Run2016H-PromptReco-v3/MINIAOD",
     ]
     return [x.format(datasetName) for x in sets]
 
