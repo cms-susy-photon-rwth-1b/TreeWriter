@@ -96,15 +96,17 @@ datasets["TTJets_HT"] = [
 
 def dataDatasets(datasetName):
     sets = [
-        #"/{}/Run2016B-PromptReco-v1/MINIAOD", # no valid ls in in json -> no jobs
-        "/{}/Run2016B-PromptReco-v2/MINIAOD",
-        "/{}/Run2016C-PromptReco-v2/MINIAOD",
-        "/{}/Run2016D-PromptReco-v2/MINIAOD",
-        "/{}/Run2016E-PromptReco-v2/MINIAOD",
-        "/{}/Run2016F-PromptReco-v1/MINIAOD",
-        "/{}/Run2016G-PromptReco-v1/MINIAOD",
+        "/{}/Run2016B-23Sep2016-v1/MINIAOD", # probably no valid ls in json
+        "/{}/Run2016B-23Sep2016-v3/MINIAOD",
+        "/{}/Run2016C-23Sep2016-v1/MINIAOD",
+        "/{}/Run2016D-23Sep2016-v1/MINIAOD",
+        "/{}/Run2016E-23Sep2016-v1/MINIAOD",
+        "/{}/Run2016F-23Sep2016-v1/MINIAOD",
+        "/{}/Run2016G-23Sep2016-v1/MINIAOD",
         #"/{}/Run2016H-PromptReco-v1/MINIAOD", # no valid ls in json -> no jobs
         "/{}/Run2016H-PromptReco-v2/MINIAOD",
+        "/{}/Run2016H-PromptReco-v3/MINIAOD",
+
     ]
     return [x.format(datasetName) for x in sets]
 
