@@ -26,7 +26,7 @@ config.Data.splitting = 'LumiBased'
 config.Data.unitsPerJob = 500
 config.Data.publication = False
 # This string is used to construct the output dataset name
-config.Data.outputDatasetTag = 'V05'
+config.Data.outputDatasetTag = 'V06'
 config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
 
 config.section_("Site")
@@ -106,7 +106,6 @@ def dataDatasets(datasetName):
         #"/{}/Run2016H-PromptReco-v1/MINIAOD", # no valid ls in json -> no jobs
         "/{}/Run2016H-PromptReco-v2/MINIAOD",
         "/{}/Run2016H-PromptReco-v3/MINIAOD",
-
     ]
     return [x.format(datasetName) for x in sets]
 
@@ -121,6 +120,7 @@ datasets["kiesel"] = [
     '/ZNuNuGJets_MonoPhoton_PtG-40to130_TuneCUETP8M1_13TeV-madgraph/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
     '/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
     '/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+   "/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM",
     '/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
     '/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM',
     '/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
@@ -215,8 +215,8 @@ if __name__ == '__main__':
         config.Data.inputDBS = 'phys03' if isUser else 'global'
 
         if not isSim and not isUser:
-            # https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2721.html 27.22/fb
-            config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-280385_13TeV_PromptReco_Collisions16_JSON_NoL1T_v2.txt'
+            # https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2744.html 36.53 /fb
+            config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt'
         else:
             try: del config.Data.lumiMask
             except: pass

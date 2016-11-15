@@ -10,6 +10,7 @@ cmsenv
 git cms-init
 git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
 git cms-merge-topic -u emanueledimarco:ecal_smear_fix_80X
+git cms-merge-topic ikrav:egm_id_80X_v1
 cd EgammaAnalysis/ElectronTools/data
 git clone -b ICHEP2016_v2 https://github.com/ECALELFS/ScalesSmearings.git
 cd $CMSSW_BASE/src
