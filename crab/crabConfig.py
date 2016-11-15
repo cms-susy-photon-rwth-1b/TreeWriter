@@ -213,7 +213,7 @@ if __name__ == '__main__':
         config.Data.inputDBS = 'phys03' if isUser else 'global'
 
         if not isSim and not isUser:
-            # https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2744.html 36.53 /fb
+            # https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2750.html 36.22/fb
             config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt'
         else:
             try: del config.Data.lumiMask
