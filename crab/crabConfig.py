@@ -168,12 +168,6 @@ datasets["lange"] = [
 
 datasets["jschulz"] = datasets["lange"]
 
-datasets["rmeyer"] = [
-    '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
-    '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_HCALDebug_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
-    '/SingleElectron/Run2015C_25ns-16Dec2015-v1/MINIAOD',
-    '/SingleElectron/Run2015D-16Dec2015-v1/MINIAOD',
-]
 #datasets["SMS-T5gg-private"] = searchUserDatasets( "/SMS-T5gg/kiesel-*/USER" )
 
 # call with 'python crabConfig.py'
@@ -192,9 +186,6 @@ if __name__ == '__main__':
     elif user=="jschulz":
         config.Data.outputDatasetTag = 'CMSSW_8_0_8_v01'
         config.Data.outLFNDirBase = "/store/user/jschulz/run2/"
-    elif user=="rmeyer":
-        config.Data.outputDatasetTag = 'V01'
-        config.Data.outLFNDirBase = "/store/user/rmeyer/13TeV/nTuples/"
     else:
         print "you shall not pass!"
         print "(unkown user '%s')"%user
