@@ -168,8 +168,6 @@ datasets["lange"] = [
 
 datasets["jschulz"] = datasets["lange"]
 
-#datasets["SMS-T5gg-private"] = searchUserDatasets( "/SMS-T5gg/kiesel-*/USER" )
-
 # call with 'python crabConfig.py'
 if __name__ == '__main__':
     import getpass
