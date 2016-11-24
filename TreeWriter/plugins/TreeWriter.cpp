@@ -154,7 +154,10 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    //eventTree_->Branch("met_JERu" , &met_JERu_);
    //eventTree_->Branch("met_JERd" , &met_JERd_);
    eventTree_->Branch("genParticles", &vGenParticles_);
-   if (storeTriggerObjects_) eventTree_->Branch("triggerObjects", &vTriggerObjects_);
+   if (storeTriggerObjects_) {
+     eventTree_->Branch("triggerElectronsLoose", &vTriggerElectronsLoose_);
+     eventTree_->Branch("triggerElectronsTight", &vTriggerElectronsTight_);
+   }
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
    //eventTree_->Branch("nPV"           , &nPV_           , "nPV/I");
@@ -325,13 +328,19 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       edm::InputTag triggerObjects_("selectedPatTrigger");
       iEvent.getByLabel(triggerObjects_, triggerObjects);
 
-      vTriggerObjects_.clear();
+      vTriggerElectronsLoose_.clear();
+      vTriggerElectronsTight_.clear();
       tree::Particle trObj;
       for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
          // obj.unpackPathNames(names);
-         if (!std::count(obj.filterLabels().begin(),obj.filterLabels().end(), "hltEle27erWPLooseGsfTrackIsoFilter")) continue;
-         trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
-         vTriggerObjects_.push_back(trObj);
+         if (std::count(obj.filterLabels().begin(),obj.filterLabels().end(), "hltEle27erWPLooseGsfTrackIsoFilter")) {
+            trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
+            vTriggerElectronsLoose_.push_back(trObj);
+         }
+         if (std::count(obj.filterLabels().begin(),obj.filterLabels().end(), "hltEle27erWPTightGsfTrackIsoFilter")) {
+            trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
+            vTriggerElectronsTight_.push_back(trObj);
+         }
       }
    }
 

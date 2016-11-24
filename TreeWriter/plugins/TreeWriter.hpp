@@ -202,7 +202,8 @@ private:
    tree::MET                   met_JERu_;
    tree::MET                   met_JERd_;
    std::vector<tree::Particle> vGenPhotons_;
-   std::vector<tree::Particle> vTriggerObjects_;
+   std::vector<tree::Particle> vTriggerElectronsLoose_;
+   std::vector<tree::Particle> vTriggerElectronsTight_;
 
    std::vector<tree::GenParticle> vGenParticles_;
    std::vector<tree::IntermediateGenParticle> vIntermediateGenParticles_;
