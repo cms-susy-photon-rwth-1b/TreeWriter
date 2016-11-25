@@ -36,8 +36,8 @@ options.maxEvents = -1
 # get and parse the command line arguments
 options.parseArguments()
 
-#dataset=options.dataset or guessDatasetFromFileName(options.inputFiles[0])
-dataset="SIM"
+dataset=options.dataset or guessDatasetFromFileName(options.inputFiles[0])
+#dataset="SIM"
 print "Assumed dataset:", dataset
 isRealData=not dataset.endswith("SIM")
 
@@ -368,7 +368,8 @@ for trig in process.TreeWriter.triggerPrescales:
 ####################
 
 process.p = cms.Path(
-    process.BadPFMuonFilter
+    process.fullPatMetSequence
+    *process.BadPFMuonFilter
     *process.BadChargedCandidateFilter
     *process.TreeWriter
 )
