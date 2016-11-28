@@ -8,10 +8,12 @@ def guessDatasetFromFileName(filename):
     # Not reproduced are e.g. the pileup scenario
     # For local files, specify your own rules or run it with the 'dataset' option
     nParts = filename.split("/")
-    if "store" not in nParts and len(nParts)<6:
-        return filename
-    nParts = nParts[nParts.index("store"):]
-    return "/{}/{}-{}/{}".format(nParts[3], nParts[2], nParts[5], nParts[4])
+    if "store" in nParts and len(nParts)>6:
+        nParts = nParts[nParts.index("store"):]
+        return "/{}/{}-{}/{}".format(nParts[3], nParts[2], nParts[5], nParts[4])
+    if "user" in nParts:
+        return nParts[-1].replace(".root", "")
+    return filename
 
 options = VarParsing ('analysis')
 options.register ('dataset',
