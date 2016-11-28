@@ -26,16 +26,18 @@ options.register ('user',
                   "Name the user. If not set by crab, this script will determine it.")
 
 # defaults
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/264A540A-571A-E611-8C5E-0025904E3FCE.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016G/SinglePhoton/MINIAOD/PromptReco-v1/000/278/969/00000/CE30EEA0-9666-E611-AB4F-02163E014411.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016G/SingleElectron/MINIAOD/PromptReco-v1/000/280/385/00000/FA5D4A3B-B278-E611-B674-FA163E0D7C05.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/264A540A-571A-E611-8C5E-0025904E3FCE.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016G/SinglePhoton/MINIAOD/PromptReco-v1/000/278/969/00000/CE30EEA0-9666-E611-AB4F-02163E014411.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016G/SingleElectron/MINIAOD/PromptReco-v1/000/280/385/00000/FA5D4A3B-B278-E611-B674-FA163E0D7C05.root'
+options.inputFiles = 'root:///user/jschulz/CMSSW_8_0_12/src/TreeWriter/tools/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_MINIAODSIM.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
 # get and parse the command line arguments
 options.parseArguments()
 
 dataset=options.dataset or guessDatasetFromFileName(options.inputFiles[0])
+#dataset="SIM"
 print "Assumed dataset:", dataset
 isRealData=not dataset.endswith("SIM")
 
@@ -269,7 +271,7 @@ if user=="kiesel":
         process.TreeWriter.minNumberPhotons_cut = 1
         process.TreeWriter.storeTriggerObjects = True
 
-elif user=="lange" or user=="jschulz":
+elif user=="jschulz":
     process.TreeWriter.photon_pT_cut=100
     process.TreeWriter.storeTriggerObjects=False
     process.TreeWriter.triggerNames=[
@@ -353,12 +355,6 @@ elif user=="lange" or user=="jschulz":
         "HLT_PFHT650_v",
         "HLT_PFHT800_v",
     ]
-elif user=="rmeyer":
-    process.TreeWriter.triggerNames=[
-        "HLT_Photon90_CaloIdL_PFHT500_v",
-        "HLT_Photon36_R9Id90_HE10_Iso40_EBOnly_PFMET40_v",
-        "HLT_Photon36_R9Id85_OR_CaloId24b40e_Iso50T80L_Photon22_AND_HE10_R9Id65_Eta2_Mass15_v",
-    ]
 else:
     print "you shall not pass!"
     print "(unkown user '%s')"%user
@@ -372,7 +368,8 @@ for trig in process.TreeWriter.triggerPrescales:
 ####################
 
 process.p = cms.Path(
-    process.BadPFMuonFilter
+    process.fullPatMetSequence
+    *process.BadPFMuonFilter
     *process.BadChargedCandidateFilter
     *process.TreeWriter
 )
