@@ -263,6 +263,8 @@ if user=="kiesel":
         "HLT_PFHT800_v",
         "HLT_Ele27_eta2p1_WPLoose_Gsf_v",
         "HLT_Ele27_eta2p1_WPTight_Gsf_v",
+        "HLT_PFJet450_v",
+        "HLT_AK8PFJet450_v",
     ]
     process.TreeWriter.triggerPrescales=process.TreeWriter.triggerNames
     if "SingleElectron" in dataset or "DY" in dataset:
