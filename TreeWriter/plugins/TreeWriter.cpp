@@ -429,9 +429,9 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trPho.sigmaPt = pho->getCorrectedEnergyError(pho->getCandidateP4type())*sin(trPho.p.Theta());
       trPho.sigmaIetaIeta=pho->full5x5_sigmaIetaIeta(); // from reco::Photon
       trPho.sigmaIphiIphi=pho->full5x5_showerShapeVariables().sigmaIphiIphi;
-      trPho.hOverE=pho->hadTowOverEm() ;
-      trPho.hasPixelSeed=pho->hasPixelSeed() ;
-      trPho.passElectronVeto= pho->passElectronVeto() ;
+      trPho.hOverE=pho->hadTowOverEm();
+      trPho.hasPixelSeed=pho->hasPixelSeed();
+      trPho.passElectronVeto= pho->passElectronVeto();
       trPho.r9  = pho->r9();
 
       vid::CutFlowResult cutFlow = (*loose_id_cutflow)[phoPtr];
