@@ -245,7 +245,8 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
 process.TreeWriter.hardPUveto=dataset.startswith("/QCD_HT100to200")
 
 if "Fast" in dataset:
-    process.TreeWriter.metFilterNames = [] # no met filters for fastsim
+    process.TreeWriter.metFilterNames.remove("Flag_globalTightHalo2016Filter")
+    process.TreeWriter.metFilterNames.remove("Flag_eeBadScFilter")
     process.TreeWriter.lheEventProduct = "source"
 
 
