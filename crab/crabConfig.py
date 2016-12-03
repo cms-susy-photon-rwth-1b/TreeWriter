@@ -191,7 +191,7 @@ if __name__ == '__main__':
 
     user=getpass.getuser()
     if user=="kiesel":
-        config.Data.outputDatasetTag = 'v16'
+        config.Data.outputDatasetTag = 'v17'
         config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
     elif user=="jschulz":
         config.Data.outputDatasetTag = 'v4'
