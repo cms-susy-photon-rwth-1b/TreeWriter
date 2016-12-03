@@ -13,7 +13,7 @@ def getLumiMask():
         lines = f.readlines()
     for l in lines:
         if l.startswith("ANA_JSON="):
-            out = l[9:]
+            out = l[9:-1]
     if not out:
         print "ERROR: could not find lumi mask"
     return out
