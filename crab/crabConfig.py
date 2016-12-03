@@ -6,6 +6,18 @@ import subprocess
 def searchUserDatasets( name ):
     return subprocess.check_output( 'das_client.py --limit=0 --query="dataset={} instance=prod/phys03"'.format(name), shell=True ).split("\n")[0:-1]
 
+def getLumiMask():
+    """Extracts the Lumi-Mask path from the makefile used to calculate the pileup reweighting"""
+    out = ""
+    with open(cmssw_src+"TreeWriter/PUreweighting/Makefile") as f:
+        lines = f.readlines()
+    for l in lines:
+        if l.startswith("ANA_JSON="):
+            out = l[9:]
+    if not out:
+        print "ERROR: could not find lumi mask"
+    return out
+
 cmssw_src=os.environ['CMSSW_BASE']+'/src/'
 
 config = Configuration()
@@ -204,8 +216,7 @@ if __name__ == '__main__':
         config.Data.inputDBS = 'phys03' if isUser else 'global'
 
         if not isSim and not isUser:
-            # https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2755.html 36.26 /fb
-            config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
+            config.Data.lumiMask = getLumiMask()
         else:
             try: del config.Data.lumiMask
             except: pass
