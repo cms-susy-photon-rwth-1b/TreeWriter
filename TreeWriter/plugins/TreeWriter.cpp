@@ -4,10 +4,6 @@
 // Class:      TreeWriter
 //
 
-//
-// Original Author:  Johannes Lange (adapted parts from Ilya Kravchenko)
-//
-
 #include "TreeWriter.hpp"
 
 
@@ -75,19 +71,6 @@ template <typename T> int sign(T val) {
    return (T(0) < val) - (val < T(0));
 }
 
-
-//
-// constants, enums and typedefs
-//
-
-
-//
-// static data member definitions
-//
-
-//
-// constructors and destructor
-//
 TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    : dHT_cut_(iConfig.getUntrackedParameter<double>("HT_cut"))
    , dPhoton_pT_cut_(iConfig.getUntrackedParameter<double>("photon_pT_cut"))
@@ -224,10 +207,6 @@ TH1F* TreeWriter::createCutFlowHist(std::string modelName)
 
 
 TreeWriter::~TreeWriter(){}
-
-//
-// member functions
-//
 
 // ------------ method called for each event  ------------
 void
