@@ -463,6 +463,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    tree::Muon trMuon;
    for (const pat::Muon &mu : *muonColl) {
       if (!mu.isLooseMuon()) continue;
+      if (mu.pt()<5) continue;
       trMuon.p.SetPtEtaPhi(mu.pt(),mu.eta(),mu.phi());
       trMuon.isTight=mu.isTightMuon(firstGoodVertex);
       auto const& pfIso=mu.pfIsolationR04();
@@ -489,6 +490,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    vElectrons_.clear();
    tree::Electron trEl;
    for(edm::View<pat::Electron>::const_iterator el = electronColl->begin();el != electronColl->end(); el++){
+      if (el->pt()<5) continue;
       const edm::Ptr<pat::Electron> elPtr(electronColl, el - electronColl->begin() );
       if (!(*veto_id_decisions)[elPtr]) continue; // take only 'veto' electrons
       trEl.isLoose =(*loose_id_decisions) [elPtr];
