@@ -4,10 +4,6 @@
 // Class:      TreeWriter
 //
 
-//
-// Original Author:  Johannes Lange (adapted parts from Ilya Kravchenko)
-//
-
 #include "TreeWriter.hpp"
 
 
@@ -75,19 +71,6 @@ template <typename T> int sign(T val) {
    return (T(0) < val) - (val < T(0));
 }
 
-
-//
-// constants, enums and typedefs
-//
-
-
-//
-// static data member definitions
-//
-
-//
-// constructors and destructor
-//
 TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    : dHT_cut_(iConfig.getUntrackedParameter<double>("HT_cut"))
    , dPhoton_pT_cut_(iConfig.getUntrackedParameter<double>("photon_pT_cut"))
@@ -154,7 +137,10 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("met_JERu" , &met_JERu_);
    eventTree_->Branch("met_JERd" , &met_JERd_);
    eventTree_->Branch("genParticles", &vGenParticles_);
-   if (storeTriggerObjects_) eventTree_->Branch("triggerObjects", &vTriggerObjects_);
+   if (storeTriggerObjects_) {
+     eventTree_->Branch("triggerElectronsLoose", &vTriggerElectronsLoose_);
+     eventTree_->Branch("triggerElectronsTight", &vTriggerElectronsTight_);
+   }
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
    //eventTree_->Branch("nPV"           , &nPV_           , "nPV/I");
@@ -222,10 +208,6 @@ TH1F* TreeWriter::createCutFlowHist(std::string modelName)
 
 TreeWriter::~TreeWriter(){}
 
-//
-// member functions
-//
-
 // ------------ method called for each event  ------------
 void
 TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -263,14 +245,25 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       edm::Handle<GenEventInfoProduct> GenEventInfoHandle;
       iEvent.getByLabel("generator", GenEventInfoHandle);
       mc_weight_= sign(GenEventInfoHandle->weight());
-
-      unsigned iMax=110; // these are 9 scale variations and 100 variation of the first pdf set
-      if (iMax+1>GenEventInfoHandle->weights().size()) iMax=GenEventInfoHandle->weights().size()-1;
-      vPdf_weights_=std::vector<float>(iMax,1.0);
-      for (unsigned i=0; i<iMax; i++) {
-         // 0 and 1 are the same for 80X scans
-         // https://hypernews.cern.ch/HyperNews/CMS/get/susy-interpretations/242/1/1.html
-         vPdf_weights_[i]=GenEventInfoHandle->weights()[i+1]/GenEventInfoHandle->weights()[1];
+      auto weightsize = GenEventInfoHandle->weights().size();
+      if (weightsize < 2) {   // for most SM samples
+         edm::Handle<LHEEventProduct> LHEEventProductHandle;
+         iEvent.getByToken(LHEEventToken_, LHEEventProductHandle);
+         unsigned iMax=110; // these are 9 scale variations and 100 variation of the first pdf set
+         if (iMax>LHEEventProductHandle->weights().size()-1) iMax=LHEEventProductHandle->weights().size()-1;
+         vPdf_weights_=std::vector<float>(iMax,1.0);
+         for (unsigned i=0; i<iMax; i++) {
+            // 0 and 1 are the same for 80X scans
+            // https://hypernews.cern.ch/HyperNews/CMS/get/susy-interpretations/242/1/1.html
+            vPdf_weights_[i]=LHEEventProductHandle->weights()[i+1].wgt/LHEEventProductHandle->weights()[1].wgt;
+         }
+      } else { // for SMS scans
+         unsigned iMax=110;
+         if (iMax>GenEventInfoHandle->weights().size()-1) iMax=GenEventInfoHandle->weights().size()-1;
+         vPdf_weights_=std::vector<float>(iMax,1.0);
+         for (unsigned i=0; i<iMax; i++) {
+            vPdf_weights_[i]=GenEventInfoHandle->weights()[i+1]/GenEventInfoHandle->weights()[1];
+         }
       }
    }
 
@@ -325,13 +318,19 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       edm::InputTag triggerObjects_("selectedPatTrigger");
       iEvent.getByLabel(triggerObjects_, triggerObjects);
 
-      vTriggerObjects_.clear();
+      vTriggerElectronsLoose_.clear();
+      vTriggerElectronsTight_.clear();
       tree::Particle trObj;
       for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
          // obj.unpackPathNames(names);
-         if (!std::count(obj.filterLabels().begin(),obj.filterLabels().end(), "hltEle27erWPLooseGsfTrackIsoFilter")) continue;
-         trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
-         vTriggerObjects_.push_back(trObj);
+         if (std::count(obj.filterLabels().begin(),obj.filterLabels().end(), "hltEle27erWPLooseGsfTrackIsoFilter")) {
+            trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
+            vTriggerElectronsLoose_.push_back(trObj);
+         }
+         if (std::count(obj.filterLabels().begin(),obj.filterLabels().end(), "hltEle27erWPTightGsfTrackIsoFilter")) {
+            trObj.p.SetPtEtaPhi(obj.pt(),obj.eta(),obj.phi());
+            vTriggerElectronsTight_.push_back(trObj);
+         }
       }
    }
 
@@ -420,9 +419,9 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trPho.sigmaPt = pho->getCorrectedEnergyError(pho->getCandidateP4type())*sin(trPho.p.Theta());
       trPho.sigmaIetaIeta=pho->full5x5_sigmaIetaIeta(); // from reco::Photon
       trPho.sigmaIphiIphi=pho->full5x5_showerShapeVariables().sigmaIphiIphi;
-      trPho.hOverE=pho->hadTowOverEm() ;
-      trPho.hasPixelSeed=pho->hasPixelSeed() ;
-      trPho.passElectronVeto= pho->passElectronVeto() ;
+      trPho.hOverE=pho->hadTowOverEm();
+      trPho.hasPixelSeed=pho->hasPixelSeed();
+      trPho.passElectronVeto= pho->passElectronVeto();
       trPho.r9  = pho->r9();
 
       vid::CutFlowResult cutFlow = (*loose_id_cutflow)[phoPtr];

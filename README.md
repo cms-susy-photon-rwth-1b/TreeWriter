@@ -4,16 +4,16 @@
 Get CMSSW environment 80X
 
 ```
-cmsrel CMSSW_8_0_20
-cd CMSSW_8_0_20/src/
+cmsrel CMSSW_8_0_24_patch1
+cd CMSSW_8_0_24_patch1/src/
 cmsenv
 git cms-init
+git cms-merge-topic shervin86:Moriond2017_JEC_energyScales
 git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
 git cms-merge-topic cms-met:METRecipe_8020
-git cms-merge-topic -u emanueledimarco:ecal_smear_fix_80X
 git cms-merge-topic ikrav:egm_id_80X_v1
 cd EgammaAnalysis/ElectronTools/data
-git clone -b ICHEP2016_v2 https://github.com/ECALELFS/ScalesSmearings.git
+git clone git@github.com:ECALELFS/ScalesSmearings.git
 cd $CMSSW_BASE/src
 ```
 
