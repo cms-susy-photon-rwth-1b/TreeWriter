@@ -763,6 +763,8 @@ TreeWriter::beginRun(edm::Run const& iRun, edm::EventSetup const&)
 {
    // use this to print the weight indices that are used for muR, muF and PDF variations
    // see https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW
+   // Please also add "consumes<LHERunInfoProduct,edm::InRun>(edm::InputTag("externalLHEProducer"));"
+   // in the constructor
 
    // try {
    //    edm::Handle<LHERunInfoProduct> run;
