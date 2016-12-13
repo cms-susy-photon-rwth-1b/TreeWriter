@@ -9,6 +9,10 @@ enum PhotonMatchType {UNMATCHED = 0,
                       MATCHED_FROM_PI0,
                       MATCHED_FROM_OTHER_SOURCES};
 
+enum PromptStatusType {
+  DIRECTPROMPT, FRAGMENTPROMPT, NOPROMPT
+};
+
 namespace tree
 {
    struct Particle
@@ -21,6 +25,7 @@ namespace tree
       Int_t pdgId=0;
       bool isPrompt;
       bool fromHardProcess;
+      Int_t promptStatus;
    };
 
    struct IntermediateGenParticle: public GenParticle

@@ -67,6 +67,19 @@ int n_isr_jets(edm::Handle<edm::View<reco::GenParticle>> const &genParticles,
    return nisr;
 }
 
+// taken from https://twiki.cern.ch/twiki/bin/view/CMS/SUSYRecommendationsForZinv#Photon_jets_control_region
+PromptStatusType getPromptStatus(const reco::GenParticle& p, const edm::Handle<edm::View<reco::GenParticle>>& particles) {
+   if (p.status()==1 && p.numberOfMothers() && (abs(p.mother(0)->pdgId())<=22 || p.mother(0)->pdgId() == 2212)) {
+      for (auto& genP : *particles) {
+         if ((fabs(genP.pdgId())==21 || fabs(genP.pdgId())<6) && genP.status()==23 && ROOT::Math::VectorUtil::DeltaR(p.p4(), genP.p4())<0.4) {
+            return FRAGMENTPROMPT;
+         }
+      }
+      return DIRECTPROMPT;
+   }
+   return NOPROMPT;
+};
+
 template <typename T> int sign(T val) {
    return (T(0) < val) - (val < T(0));
 }
@@ -722,6 +735,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             trP.isPrompt = genP.statusFlags().isPrompt();
             trP.fromHardProcess = genP.statusFlags().fromHardProcess();
             trP.p.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
+            trP.promptStatus = getPromptStatus(genP, prunedGenParticles);
             vGenParticles_.push_back(trP);
          }
       }
