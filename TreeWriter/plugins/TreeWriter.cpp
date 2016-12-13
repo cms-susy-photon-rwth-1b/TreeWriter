@@ -148,11 +148,11 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("muons"    , &vMuons_);
    eventTree_->Branch("met"      , &met_);
    eventTree_->Branch("met_raw"  , &met_raw_);
-   //eventTree_->Branch("met_gen"  , &met_gen_);
-   //eventTree_->Branch("met_JESu" , &met_JESu_);
-   //eventTree_->Branch("met_JESd" , &met_JESd_);
-   //eventTree_->Branch("met_JERu" , &met_JERu_);
-   //eventTree_->Branch("met_JERd" , &met_JERd_);
+   eventTree_->Branch("met_gen"  , &met_gen_);
+   eventTree_->Branch("met_JESu" , &met_JESu_);
+   eventTree_->Branch("met_JESd" , &met_JESd_);
+   eventTree_->Branch("met_JERu" , &met_JERu_);
+   eventTree_->Branch("met_JERd" , &met_JERd_);
    eventTree_->Branch("genParticles", &vGenParticles_);
    if (storeTriggerObjects_) eventTree_->Branch("triggerObjects", &vTriggerObjects_);
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
@@ -165,7 +165,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
 
    eventTree_->Branch("pu_weight"     , &pu_weight_     , "pu_weight/F");
    eventTree_->Branch("mc_weight"     , &mc_weight_     , "mc_weight/B");
-   //eventTree_->Branch("pdf_weights"   , &vPdf_weights_);
+   eventTree_->Branch("pdf_weights"   , &vPdf_weights_);
 
    eventTree_->Branch("genHt" , &genHt_ , "genHt/F");
    //eventTree_->Branch("nISR"  , &nISR_  , "nISR/I");
