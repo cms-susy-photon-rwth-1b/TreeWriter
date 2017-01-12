@@ -144,11 +144,11 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("muons"    , &vMuons_);
    eventTree_->Branch("met"      , &met_);
    eventTree_->Branch("met_raw"  , &met_raw_);
-   //eventTree_->Branch("met_gen"  , &met_gen_);
-   //eventTree_->Branch("met_JESu" , &met_JESu_);
-   //eventTree_->Branch("met_JESd" , &met_JESd_);
-   //eventTree_->Branch("met_JERu" , &met_JERu_);
-   //eventTree_->Branch("met_JERd" , &met_JERd_);
+   eventTree_->Branch("met_gen"  , &met_gen_);
+   eventTree_->Branch("met_JESu" , &met_JESu_);
+   eventTree_->Branch("met_JESd" , &met_JESd_);
+   eventTree_->Branch("met_JERu" , &met_JERu_);
+   eventTree_->Branch("met_JERd" , &met_JERd_);
    eventTree_->Branch("genParticles", &vGenParticles_);
    if (storeTriggerObjects_) {
      eventTree_->Branch("triggerElectronsLoose", &vTriggerElectronsLoose_);
