@@ -77,6 +77,7 @@ namespace tree
       float sfRes;
       float sfResUp;
       float sfResDn;
+      float uncorJecFactor; // uncorrected jet momentum over corrected jet momentum
    };
 
    struct Muon: public Particle

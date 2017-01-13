@@ -548,6 +548,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trJet.sfRes = resolution_sf.getScaleFactor(parameters);
       trJet.sfResUp = resolution_sf.getScaleFactor(parameters, Variation::UP);
       trJet.sfResDn = resolution_sf.getScaleFactor(parameters, Variation::DOWN);
+      trJet.uncorJecFactor = jet.jecFactor(0);
       trJet.chf = jet.chargedHadronEnergyFraction();
       trJet.nhf = jet.neutralHadronEnergyFraction();
       trJet.cef = jet.chargedEmEnergyFraction();
