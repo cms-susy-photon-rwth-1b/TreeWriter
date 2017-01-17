@@ -252,6 +252,8 @@ if "Fast" in dataset:
     process.TreeWriter.metFilterNames.remove("Flag_eeBadScFilter")
     process.TreeWriter.lheEventProduct = "source"
 
+if "PUMoriond17" in dataset:
+    process.TreeWriter.pileupHistogramName "pileupWeight_mix_2016_25ns_Moriond17MC_PoissonOOTPU"
 
 # determine user if not set by crab
 user=options.user or getpass.getuser()
