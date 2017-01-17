@@ -48,9 +48,8 @@ in the python config, set
 
 ## Objects ##
 ### Photons ###
-- official cut-based ID and general purpose MVA are taken from [TWiki](https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2)
+- official cut-based ID for Spring16 and Spring15 are stored [TWiki](https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2)
 - all photons are used. boolean flags for: loose/medium/tight
-- general purpose MVA value is stored
 
 ### Jets ###
 - ak4PFJetsCHS
