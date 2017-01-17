@@ -98,8 +98,6 @@ process.calibratedPatPhotons.isMC = not isRealData
 process.calibratedPatElectrons.isMC = not isRealData
 process.calibratedPatPhotons.photons = "selectedPhotons"
 process.calibratedPatElectrons.electrons = "selectedElectrons"
-process.calibratedPatPhotons.correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV2_2016_pho")
-process.calibratedPatElectrons.correctionFile = cms.string("EgammaAnalysis/ElectronTools/data/ScalesSmearings/80X_ichepV1_2016_ele")
 
 
 # Identification
