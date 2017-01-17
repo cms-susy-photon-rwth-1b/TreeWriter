@@ -110,6 +110,9 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , electronMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronMediumIdMap" )))
    , electronTightIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronTightIdMap"  )))
    // photon id
+   , photonLooseId15MapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonLooseId15Map"  )))
+   , photonMediumId15MapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonMediumId15Map" )))
+   , photonTightId15MapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonTightId15Map"  )))
    , photonLooseIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonLooseIdMap"  )))
    , photonMediumIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonMediumIdMap" )))
    , photonTightIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonTightIdMap"  )))
@@ -404,14 +407,21 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<edm::ValueMap<float> > phoWorstChargedIsolationMap;
    iEvent.getByToken(phoWorstChargedIsolationToken_, phoWorstChargedIsolationMap);
 
+   edm::Handle<edm::ValueMap<bool> > loose_id15_dec;
+   edm::Handle<edm::ValueMap<bool> > medium_id15_dec;
+   edm::Handle<edm::ValueMap<bool> > tight_id15_dec;
    edm::Handle<edm::ValueMap<bool> > loose_id_dec;
    edm::Handle<edm::ValueMap<bool> > medium_id_dec;
    edm::Handle<edm::ValueMap<bool> > tight_id_dec;
    edm::Handle<edm::ValueMap<float>> mva_value;
    edm::Handle<edm::ValueMap<vid::CutFlowResult> > loose_id_cutflow;
+   iEvent.getByToken(photonLooseId15MapToken_  ,loose_id15_dec);
+   iEvent.getByToken(photonMediumId15MapToken_ ,medium_id15_dec);
+   iEvent.getByToken(photonTightId15MapToken_  ,tight_id15_dec);
    iEvent.getByToken(photonLooseIdMapToken_  ,loose_id_dec);
    iEvent.getByToken(photonMediumIdMapToken_ ,medium_id_dec);
    iEvent.getByToken(photonTightIdMapToken_  ,tight_id_dec);
+
    iEvent.getByToken(photonMvaValuesMapToken_,mva_value);
    iEvent.getByToken(phoLooseIdFullInfoMapToken_,loose_id_cutflow);
 
@@ -455,12 +465,14 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
 
       // check photon working points
+      trPho.isLoose15 = (*loose_id15_dec) [phoPtr];
+      trPho.isMedium15= (*medium_id15_dec)[phoPtr];
+      trPho.isTight15 = (*tight_id15_dec) [phoPtr];
       trPho.isLoose = (*loose_id_dec) [phoPtr];
       trPho.isMedium= (*medium_id_dec)[phoPtr];
       trPho.isTight = (*tight_id_dec) [phoPtr];
-
       // write the photon to collection
-      if (isolatedPhotons_ && !trPho.isLoose) continue;
+      if (isolatedPhotons_ && !trPho.isLoose15 && !trPho.isLoose) continue;
       vPhotons_.push_back(trPho);
    } // photon loop
 

@@ -52,6 +52,9 @@ namespace tree
       Int_t isTrueAlternative;
 
       // IDs
+      Bool_t  isLoose15;
+      Bool_t  isMedium15;
+      Bool_t  isTight15;
       Bool_t  isLoose;
       Bool_t  isMedium;
       Bool_t  isTight;
