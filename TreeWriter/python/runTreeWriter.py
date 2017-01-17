@@ -28,11 +28,11 @@ options.register ('user',
                   "Name the user. If not set by crab, this script will determine it.")
 
 # defaults
-#options.inputFiles = 'root:///user/jschulz/CMSSW_8_0_12/src/TreeWriter/tools/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_MINIAODSIM.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/264A540A-571A-E611-8C5E-0025904E3FCE.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016G/SinglePhoton/MINIAOD/23Sep2016-v1/910000/7C5AF7C1-A889-E611-9290-001E67792760.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016H/SingleElectron/MINIAOD/PromptReco-v3/000/284/068/00000/5CF1D1BD-909F-E611-80DC-02163E014696.root'
+options.inputFiles = 'root:///user/jschulz/CMSSW_8_0_20/src/TreeWriter/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_MINIAODSIM.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/264A540A-571A-E611-8C5E-0025904E3FCE.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016G/SinglePhoton/MINIAOD/23Sep2016-v1/910000/7C5AF7C1-A889-E611-9290-001E67792760.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016H/SingleElectron/MINIAOD/PromptReco-v3/000/284/068/00000/5CF1D1BD-909F-E611-80DC-02163E014696.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
 # get and parse the command line arguments
@@ -253,7 +253,7 @@ if "Fast" in dataset:
     process.TreeWriter.lheEventProduct = "source"
 
 if "PUMoriond17" in dataset:
-    process.TreeWriter.pileupHistogramName "pileupWeight_mix_2016_25ns_Moriond17MC_PoissonOOTPU"
+    process.TreeWriter.pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_Moriond17MC_PoissonOOTPU")
 
 # determine user if not set by crab
 user=options.user or getpass.getuser()
