@@ -4,8 +4,8 @@
 Get CMSSW environment 80X
 
 ```
-cmsrel CMSSW_8_0_24_patch1
-cd CMSSW_8_0_24_patch1/src/
+cmsrel CMSSW_8_0_25
+cd CMSSW_8_0_25/src/
 cmsenv
 git cms-merge-topic shervin86:Moriond2017_JEC_energyScales
 git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
