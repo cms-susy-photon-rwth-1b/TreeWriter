@@ -25,6 +25,9 @@
 #include "DataFormats/PatCandidates/interface/VIDCutFlowResult.h"
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/EcalDetId/interface/EBDetId.h"
+
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
@@ -119,6 +122,7 @@ private:
    edm::EDGetTokenT<edm::View<pat::Electron> > electronCollectionToken_;
    edm::EDGetTokenT<pat::METCollection>        metCollectionToken_;
    edm::EDGetTokenT<double>                    rhoToken_;
+   edm::EDGetTokenT<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> > > ebRecHitsToken_;
    edm::EDGetTokenT<edm::View<reco::GenParticle> > prunedGenToken_;
    edm::EDGetTokenT<PileupSummaryInfoCollection>  pileUpSummaryToken_;
    edm::EDGetTokenT<LHEEventProduct>           LHEEventToken_;
@@ -139,6 +143,8 @@ private:
    edm::EDGetTokenT<edm::ValueMap<bool> > photonTightIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<float>> photonMvaValuesMapToken_;
    edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult>> phoLooseIdFullInfoMapToken_;
+
+   edm::Handle<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> > > ebRecHits;
 
    // met filters to apply
    const std::vector<std::string> metFilterNames_;

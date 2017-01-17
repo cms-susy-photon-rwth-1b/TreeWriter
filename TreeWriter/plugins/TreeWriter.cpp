@@ -80,6 +80,35 @@ PromptStatusType getPromptStatus(const reco::GenParticle& p, const edm::Handle<e
    return NOPROMPT;
 };
 
+float seedCrystalEnergyEB(const reco::SuperCluster& sc, const edm::Handle<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit>>>& ebRecHits)
+{
+   float energy = -1;
+   DetId detid = sc.seed()->seed();
+   const EcalRecHit* rh = NULL;
+   if (detid.subdetId() == EcalBarrel) {
+      auto rh_i = ebRecHits->find(detid);
+      if (rh_i != ebRecHits->end()) {
+        rh = &(*rh_i);
+      }
+   }
+   if (rh != NULL) {
+     energy = rh->energy();
+   }
+   return energy;
+}
+
+// On top of the EGMSmearer corrections, residual scale corrections are to be
+// applied on data only for BARREL only in bins of energy of the seed crystal.
+// https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
+float EGMSmearResidualScale(float crystalEnergy)
+{
+   float scale = 1.;
+   if (200 < crystalEnergy && crystalEnergy < 300) scale = 1.0199;
+   else if (300 < crystalEnergy && crystalEnergy < 400) scale = 1.052;
+   else if (400 < crystalEnergy && crystalEnergy < 500) scale = 1.015;
+   return scale;
+}
+
 template <typename T> int sign(T val) {
    return (T(0) < val) - (val < T(0));
 }
@@ -100,6 +129,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , electronCollectionToken_(consumes<edm::View<pat::Electron> >(iConfig.getParameter<edm::InputTag>("electrons")))
    , metCollectionToken_     (consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("mets")))
    , rhoToken_               (consumes<double> (iConfig.getParameter<edm::InputTag>("rho")))
+   , ebRecHitsToken_         (consumes<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit>>>(iConfig.getParameter<edm::InputTag>("ebRecHits")))
    , prunedGenToken_         (consumes<edm::View<reco::GenParticle> >(iConfig.getParameter<edm::InputTag>("prunedGenParticles")))
    , pileUpSummaryToken_     (consumes<PileupSummaryInfoCollection>(iConfig.getParameter<edm::InputTag>("pileUpSummary")))
    , LHEEventToken_          (consumes<LHEEventProduct>(iConfig.getParameter<edm::InputTag>("lheEventProduct")))
@@ -424,6 +454,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 //   iEvent.getByToken(photonMvaValuesMapToken_,mva_value);
    iEvent.getByToken(phoLooseIdFullInfoMapToken_,loose_id_cutflow);
+   iEvent.getByToken(ebRecHitsToken_, ebRecHits);
 
    // photon collection
    edm::Handle<edm::View<pat::Photon> > photonColl;
@@ -438,6 +469,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       trPho.p.SetPtEtaPhi(pho->pt(),pho->superCluster()->eta(),pho->superCluster()->phi());
 
+      trPho.seedCrystalE = seedCrystalEnergyEB(*pho->superCluster(), ebRecHits);
+      trPho.p *= EGMSmearResidualScale(trPho.seedCrystalE);
       const edm::Ptr<pat::Photon> phoPtr( photonColl, pho - photonColl->begin() );
       trPho.sigmaPt = pho->getCorrectedEnergyError(pho->getCandidateP4type())*sin(trPho.p.Theta());
       trPho.sigmaIetaIeta=pho->full5x5_sigmaIetaIeta(); // from reco::Photon
@@ -522,6 +555,8 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trEl.isMedium=(*medium_id_decisions)[elPtr];
       trEl.isTight =(*tight_id_decisions) [elPtr];
       trEl.p.SetPtEtaPhi(el->pt(),el->superCluster()->eta(),el->superCluster()->phi());
+      trEl.seedCrystalE = seedCrystalEnergyEB(*el->superCluster(), ebRecHits);
+      trEl.p *= EGMSmearResidualScale(trEl.seedCrystalE);
       trEl.charge=el->charge();
       auto const & pfIso = el->pfIsolationVariables();
       trEl.rIso=(pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();

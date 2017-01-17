@@ -42,6 +42,7 @@ namespace tree
       Bool_t passElectronVeto;
       Float_t r9;
       Float_t sigmaPt;
+      Float_t seedCrystalE;
 
       Float_t cIso;
       Float_t nIso;
@@ -99,6 +100,7 @@ namespace tree
       bool isMedium;
       bool isTight;
       float rIso;
+      Float_t seedCrystalE;
    };
 
    struct MET : public Particle
