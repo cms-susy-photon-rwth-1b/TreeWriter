@@ -116,7 +116,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , photonLooseIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonLooseIdMap"  )))
    , photonMediumIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonMediumIdMap" )))
    , photonTightIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonTightIdMap"  )))
-   , photonMvaValuesMapToken_(consumes<edm::ValueMap<float>>(iConfig.getParameter<edm::InputTag>("photonMvaValuesMap")))
+//   , photonMvaValuesMapToken_(consumes<edm::ValueMap<float>>(iConfig.getParameter<edm::InputTag>("photonMvaValuesMap")))
    , phoLooseIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("photonLooseIdMap" )))
    // met filters to apply
    , metFilterNames_(iConfig.getUntrackedParameter<std::vector<std::string>>("metFilterNames"))
@@ -413,7 +413,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<edm::ValueMap<bool> > loose_id_dec;
    edm::Handle<edm::ValueMap<bool> > medium_id_dec;
    edm::Handle<edm::ValueMap<bool> > tight_id_dec;
-   edm::Handle<edm::ValueMap<float>> mva_value;
+//   edm::Handle<edm::ValueMap<float>> mva_value;
    edm::Handle<edm::ValueMap<vid::CutFlowResult> > loose_id_cutflow;
    iEvent.getByToken(photonLooseId15MapToken_  ,loose_id15_dec);
    iEvent.getByToken(photonMediumId15MapToken_ ,medium_id15_dec);
@@ -422,7 +422,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByToken(photonMediumIdMapToken_ ,medium_id_dec);
    iEvent.getByToken(photonTightIdMapToken_  ,tight_id_dec);
 
-   iEvent.getByToken(photonMvaValuesMapToken_,mva_value);
+//   iEvent.getByToken(photonMvaValuesMapToken_,mva_value);
    iEvent.getByToken(phoLooseIdFullInfoMapToken_,loose_id_cutflow);
 
    // photon collection
@@ -453,7 +453,7 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trPho.pIso = cutFlow.getValueCutUpon(6);
       trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
 
-      trPho.mvaValue=(*mva_value)[phoPtr];
+//      trPho.mvaValue=(*mva_value)[phoPtr];
 
       // MC match
       if (!isRealData){

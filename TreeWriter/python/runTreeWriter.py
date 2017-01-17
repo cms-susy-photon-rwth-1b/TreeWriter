@@ -114,8 +114,8 @@ switchOnVIDPhotonIdProducer  (process, dataFormat)
 # define which IDs we want to produce
 el_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff']
 ph_id_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring15_25ns_V1_cff',
-                 'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring16_V2p2_cff',
-                 'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring15_25ns_nonTrig_V2_cff']
+                 'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring16_V2p2_cff']
+#                 ,'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring16_nonTrig_V1_cff']
 
 #add them to the VID producer
 for idmod in el_id_modules:
@@ -124,7 +124,7 @@ for idmod in ph_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
 
 process.photonIDValueMapProducer.srcMiniAOD = "calibratedPatPhotons"
-process.photonMVAValueMapProducer.srcMiniAOD = "calibratedPatPhotons"
+#process.photonMVAValueMapProducer.srcMiniAOD = "calibratedPatPhotons"
 process.egmPhotonIDs.physicsObjectSrc = "calibratedPatPhotons"
 process.egmGsfElectronIDs.physicsObjectSrc = "calibratedPatElectrons"
 
@@ -216,7 +216,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     photonLooseIdMap   = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-loose"),
                                     photonMediumIdMap  = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-medium"),
                                     photonTightIdMap   = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-tight"),
-                                    photonMvaValuesMap = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring15NonTrig25nsV2Values"),
+#                                    photonMvaValuesMap = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring16NonTrigV1Values"),
                                     # met filters to apply
                                     metFilterNames=cms.untracked.vstring(
                                         "Flag_HBHENoiseFilter",
