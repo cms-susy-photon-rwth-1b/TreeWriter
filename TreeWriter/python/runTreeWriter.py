@@ -67,7 +67,12 @@ if isRealData:
         print "Do not know which global tag to assign to dataset", dataset
         exit()
 else:
-    process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_miniAODv2_v1"
+    if "80X_mcRun2_asymptotic_2016_TrancheIV_v6" in dataset:
+        process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_TrancheIV_v6"
+    elif "80X_mcRun2_asymptotic_2016_miniAODv2" in dataset:
+        process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_miniAODv2_v1"
+    else:
+        print "Could not guess correct global tag"
 
 ######################
 # PHOTONS, ELECTRONS #
