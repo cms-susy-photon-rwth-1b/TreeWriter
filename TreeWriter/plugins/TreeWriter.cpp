@@ -470,7 +470,9 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trPho.p.SetPtEtaPhi(pho->pt(),pho->superCluster()->eta(),pho->superCluster()->phi());
 
       trPho.seedCrystalE = seedCrystalEnergyEB(*pho->superCluster(), ebRecHits);
-      trPho.p *= EGMSmearResidualScale(trPho.seedCrystalE);
+      if (isRealData) {
+         trPho.p *= EGMSmearResidualScale(trPho.seedCrystalE);
+      }
       const edm::Ptr<pat::Photon> phoPtr( photonColl, pho - photonColl->begin() );
       trPho.sigmaPt = pho->getCorrectedEnergyError(pho->getCandidateP4type())*sin(trPho.p.Theta());
       trPho.sigmaIetaIeta=pho->full5x5_sigmaIetaIeta(); // from reco::Photon
@@ -556,7 +558,9 @@ TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       trEl.isTight =(*tight_id_decisions) [elPtr];
       trEl.p.SetPtEtaPhi(el->pt(),el->superCluster()->eta(),el->superCluster()->phi());
       trEl.seedCrystalE = seedCrystalEnergyEB(*el->superCluster(), ebRecHits);
-      trEl.p *= EGMSmearResidualScale(trEl.seedCrystalE);
+      if (isRealData) {
+         trEl.p *= EGMSmearResidualScale(trEl.seedCrystalE);
+      }
       trEl.charge=el->charge();
       auto const & pfIso = el->pfIsolationVariables();
       trEl.rIso=(pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();
