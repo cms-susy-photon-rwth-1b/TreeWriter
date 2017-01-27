@@ -71,6 +71,7 @@
 
 
 typedef std::vector<PileupSummaryInfo> PileupSummaryInfoCollection;
+typedef edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit>> EcalRecHitCollection;
 
 
 //
@@ -80,17 +81,17 @@ typedef std::vector<PileupSummaryInfo> PileupSummaryInfoCollection;
 class TreeWriter : public edm::EDAnalyzer {
 public:
    explicit TreeWriter(const edm::ParameterSet&);
-   ~TreeWriter();
+   ~TreeWriter() {};
 
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-   virtual void beginJob() override;
+   virtual void beginJob() override {};
    virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
-   virtual void endJob() override;
+   virtual void endJob() override {};
 
    virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
-   virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
+   virtual void endRun(edm::Run const&, edm::EventSetup const&) override {};
    virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
    //virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 
@@ -115,42 +116,40 @@ private:
    bool newLumiBlock_;
 
    edm::EDGetTokenT<reco::VertexCollection>    vtxToken_;
-   edm::EDGetTokenT<edm::View<pat::Photon> >   photonCollectionToken_;
+   edm::EDGetTokenT<edm::View<pat::Photon>>    photonCollectionToken_;
    edm::EDGetTokenT<pat::JetCollection>        jetCollectionToken_;
    edm::EDGetTokenT<reco::GenJetCollection>    genJetCollectionToken_;
    edm::EDGetTokenT<pat::MuonCollection>       muonCollectionToken_;
-   edm::EDGetTokenT<edm::View<pat::Electron> > electronCollectionToken_;
+   edm::EDGetTokenT<edm::View<pat::Electron>>  electronCollectionToken_;
    edm::EDGetTokenT<pat::METCollection>        metCollectionToken_;
    edm::EDGetTokenT<double>                    rhoToken_;
-   edm::EDGetTokenT<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> > > ebRecHitsToken_;
-   edm::EDGetTokenT<edm::View<reco::GenParticle> > prunedGenToken_;
+   edm::EDGetTokenT<EcalRecHitCollection>      ebRecHitsToken_;
+   edm::EDGetTokenT<edm::View<reco::GenParticle>> prunedGenToken_;
    edm::EDGetTokenT<PileupSummaryInfoCollection>  pileUpSummaryToken_;
    edm::EDGetTokenT<LHEEventProduct>           LHEEventToken_;
 
    edm::EDGetTokenT<std::vector<pat::PackedCandidate>> packedCandidateToken_;
 
    // electron id
-   edm::EDGetTokenT<edm::ValueMap<bool> > electronVetoIdMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool> > electronLooseIdMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool> > electronMediumIdMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool> > electronTightIdMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<bool>> electronVetoIdMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<bool>> electronLooseIdMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<bool>> electronMediumIdMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<bool>> electronTightIdMapToken_;
    // photon id
-   edm::EDGetTokenT<edm::ValueMap<bool> > photonLooseId15MapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool> > photonMediumId15MapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool> > photonTightId15MapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool> > photonLooseIdMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool> > photonMediumIdMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool> > photonTightIdMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<bool>> photonLooseId15MapToken_;
+   edm::EDGetTokenT<edm::ValueMap<bool>> photonMediumId15MapToken_;
+   edm::EDGetTokenT<edm::ValueMap<bool>> photonTightId15MapToken_;
+   edm::EDGetTokenT<edm::ValueMap<bool>> photonLooseIdMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<bool>> photonMediumIdMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<bool>> photonTightIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<float>> photonMvaValuesMapToken_;
    edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult>> phoLooseIdFullInfoMapToken_;
-
-   edm::Handle<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> > > ebRecHits;
 
    // met filters to apply
    const std::vector<std::string> metFilterNames_;
 
    // from photon ID value map producer
-   edm::EDGetTokenT<edm::ValueMap<float> > phoWorstChargedIsolationToken_;
+   edm::EDGetTokenT<edm::ValueMap<float>> phoWorstChargedIsolationToken_;
 
    const std::string pileupHistogramName_;
    const bool hardPUveto_;
@@ -164,10 +163,10 @@ private:
    Int_t   true_nPV_;   // true number of reconsrtucted primary vertices
    Int_t   nGoodVertices_;
    Int_t   nTracksPV_;
-   Float_t rho_;   // the rho variable
+   Float_t rho_;
 
-   Float_t pu_weight_; // pileup weight
-   Char_t mc_weight_; // +1 or -1 event weights (take care when reading with python, this is a character!)
+   Float_t pu_weight_;
+   Char_t  mc_weight_; // +1 or -1 event weights (take care when reading with python, this is a character!)
    std::vector<float> vPdf_weights_;
 
    Float_t genHt_;
@@ -184,11 +183,11 @@ private:
    UShort_t signal_nBinos_; // 2 for T5gg, 1 for T5Wg, 0 for T5WW
 
    // Trigger decisions
-   std::vector<std::string> triggerNames_;
-   std::vector<std::string> triggerPrescales_;
-   std::map<std::string, Bool_t > triggerDecision_;
-   std::map<std::string, int > triggerPrescale_;
-   std::map<std::string, int > triggerIndex_;
+   std::vector<std::string>      triggerNames_;
+   std::vector<std::string>      triggerPrescales_;
+   std::map<std::string, Bool_t> triggerDecision_;
+   std::map<std::string, int>    triggerPrescale_;
+   std::map<std::string, int>    triggerIndex_;
 
    bool storeTriggerObjects_;
    std::string const triggerObjectPath_;
@@ -216,7 +215,6 @@ private:
 
    std::vector<tree::GenParticle> vGenParticles_;
    std::vector<tree::IntermediateGenParticle> vIntermediateGenParticles_;
-   // === ========  ===
 
    // File Service to store things to a root file
    edm::Service<TFileService> fs_;
@@ -227,8 +225,6 @@ private:
 
    // Pileup histogram(s)
    TH1F hPU_;
-
 };
-
 
 #endif /* TREEWRITER_HPP__ */
