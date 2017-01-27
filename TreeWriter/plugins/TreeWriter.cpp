@@ -69,11 +69,14 @@ int n_isr_jets(edm::Handle<edm::View<reco::GenParticle>> const &genParticles,
 
 // taken from https://twiki.cern.ch/twiki/bin/view/CMS/SUSYRecommendationsForZinv#Photon_jets_control_region
 PromptStatusType getPromptStatus(const reco::GenParticle& p, const edm::Handle<edm::View<reco::GenParticle>>& particles) {
-   if (p.status()==1 && p.numberOfMothers() && (abs(p.mother(0)->pdgId())<=22 || p.mother(0)->pdgId() == 2212)) {
+   if (p.status()==1 && p.numberOfMothers() && (fabs(p.mother(0)->pdgId())<=22 || p.mother(0)->pdgId() == 2212)) {
       for (auto& genP : *particles) {
-         if ((fabs(genP.pdgId())==21 || fabs(genP.pdgId())<6) && genP.status()==23 && ROOT::Math::VectorUtil::DeltaR(p.p4(), genP.p4())<0.4) {
-            return FRAGMENTPROMPT;
+         auto absId = fabs(genP.pdgId());
+         if (genP.status()==23 && ROOT::Math::VectorUtil::DeltaR(p.p4(), genP.p4())<0.4) {
+             if (absId==21 || absId<6) return FRAGMENTPROMPT;
+             if (absId==11 || absId==13 || absId==15) return LEPTONPROMPT;
          }
+
       }
       return DIRECTPROMPT;
    }
