@@ -474,7 +474,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
       trPho.seedCrystalE = seedCrystalEnergyEB(*pho->superCluster(), ebRecHits);
       if (isRealData) {
-         trPho.p *= EGMSmearResidualScale(trPho.seedCrystalE);
+//         trPho.p *= EGMSmearResidualScale(trPho.seedCrystalE);
       }
       const edm::Ptr<pat::Photon> phoPtr( photonColl, pho - photonColl->begin() );
       trPho.sigmaPt = pho->getCorrectedEnergyError(pho->getCandidateP4type())*sin(trPho.p.Theta());
@@ -562,7 +562,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trEl.p.SetPtEtaPhi(el->pt(), el->superCluster()->eta(), el->superCluster()->phi());
       trEl.seedCrystalE = seedCrystalEnergyEB(*el->superCluster(), ebRecHits);
       if (isRealData) {
-         trEl.p *= EGMSmearResidualScale(trEl.seedCrystalE);
+//         trEl.p *= EGMSmearResidualScale(trEl.seedCrystalE);
       }
       trEl.charge = el->charge();
       auto const & pfIso = el->pfIsolationVariables();
