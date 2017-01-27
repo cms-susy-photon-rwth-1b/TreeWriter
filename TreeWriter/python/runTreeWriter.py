@@ -140,14 +140,15 @@ process.egmGsfElectronIDs.physicsObjectSrc = "calibratedPatElectrons"
 # where .db files are placed (e.g. for JEC, JER)
 # Crab will always be in the $CMSSW_BASE directory, so to run the code locally,
 # a symbolic link is added
-#if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
+if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
+dbPath = 'sqlite_file:src/TreeWriter/TreeWriter/data/'
 
 from CondCore.CondDB.CondDB_cfi import CondDB
 CondDB.__delattr__('connect')
 
 process.jec = cms.ESSource('PoolDBESSource',
     CondDB,
-    connect = cms.string('sqlite_fip:Spring16_25nsFastSimV1_MC.db'),
+    connect = cms.string(dbPath+'Spring16_25nsFastSimV1_MC.db'),
     toGet = cms.VPSet(
         cms.PSet(
             record = cms.string('JetCorrectionsRecord'),
@@ -157,10 +158,10 @@ process.jec = cms.ESSource('PoolDBESSource',
     )
 )
 if isRealData:
-    process.jec.connect = "sqlite_fip:Summer16_23Sep2016AllV3_DATA.db"
+    process.jec.connect = dbPath + "Summer16_23Sep2016AllV3_DATA.db"
     process.jec.toGet[0].tag = "JetCorrectorParametersCollection_Summer16_23Sep2016AllV3_DATA_AK4PFchs"
 elif "Fast" not in dataset:
-    process.jec.connect = "sqlite_fip:Summer16_23Sep2016V3_MC.db"
+    process.jec.connect = dbPath + "Summer16_23Sep2016V3_MC.db"
     process.jec.toGet[0].tag = "JetCorrectorParametersCollection_Summer16_23Sep2016V3_MC_AK4PFchs"
 
 # Add an ESPrefer to override JEC that might be available from the global tag
