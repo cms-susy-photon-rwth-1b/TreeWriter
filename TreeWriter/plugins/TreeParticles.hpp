@@ -18,6 +18,11 @@ namespace tree
    struct Particle
    {
       TVector3 p;
+      bool isEB() { return fabs(p.Eta())<1.4442; }
+      bool isEE() {
+         auto aEta = fabs(p.Eta());
+         return 1.566<aEta && aEta < 2.5;
+      }
    };
 
    struct GenParticle: public Particle
