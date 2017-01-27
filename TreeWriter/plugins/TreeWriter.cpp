@@ -188,7 +188,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
    //eventTree_->Branch("nPV", &nPV_, "nPV/I");
-   //eventTree_->Branch("true_nPV", &true_nPV_, "true_nPV/I");
+   eventTree_->Branch("true_nPV", &true_nPV_, "true_nPV/I");
    eventTree_->Branch("nGoodVertices" , &nGoodVertices_ , "nGoodVertices/I");
    eventTree_->Branch("nTracksPV", &nTracksPV_, "nTracksPV/I");
    eventTree_->Branch("rho", &rho_, "rho/F");
