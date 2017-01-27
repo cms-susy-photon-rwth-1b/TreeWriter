@@ -248,7 +248,7 @@ if __name__ == '__main__':
             except: pass
 
         config.Data.splitting = 'FileBased' if isSim or isUser else 'LumiBased'
-        config.Data.unitsPerJob = 5 if isSim or isUser else 100
+        config.Data.unitsPerJob = 3 if isSim or isUser else 100
         if isSim:
             config.General.requestName = dataset.split('/')[1]
             if "ext" in dataset: config.General.requestName += "_ext"
