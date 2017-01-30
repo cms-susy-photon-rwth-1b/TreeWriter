@@ -301,12 +301,14 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       if (weightsize < 2) {   // for most SM samples
          edm::Handle<LHEEventProduct> LHEEventProductHandle;
          iEvent.getByToken(LHEEventToken_, LHEEventProductHandle);
-         unsigned iMax = 110; // these are 9 scale variations and 100 variation of the first pdf set
-         if (iMax>LHEEventProductHandle->weights().size()) iMax = LHEEventProductHandle->weights().size();
-         vPdf_weights_ = std::vector<float>(iMax, 1.0);
-         for (unsigned i=0; i<iMax; i++) {
-            // https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideDataFormatGeneratorInterface#Retrieving_information_on_LHE_ev
-            vPdf_weights_[i] = LHEEventProductHandle->weights()[i].wgt/LHEEventProductHandle->originalXWGTUP();
+         if (LHEEventProductHandle.isValid()) {
+            unsigned iMax = 110; // these are 9 scale variations and 100 variation of the first pdf set
+            if (iMax>LHEEventProductHandle->weights().size()) iMax = LHEEventProductHandle->weights().size();
+            vPdf_weights_ = std::vector<float>(iMax, 1.0);
+            for (unsigned i=0; i<iMax; i++) {
+               // https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideDataFormatGeneratorInterface#Retrieving_information_on_LHE_ev
+               vPdf_weights_[i] = LHEEventProductHandle->weights()[i].wgt/LHEEventProductHandle->originalXWGTUP();
+            }
          }
       } else { // for SMS scans
          unsigned iMax = 110;
