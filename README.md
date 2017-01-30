@@ -14,9 +14,9 @@ git cms-merge-topic ikrav:egm_id_80X_v3_photons
 git clone git@github.com:ECALELFS/ScalesSmearings.git EgammaAnalysis/ElectronTools/data/ScalesSmearings
 git clone git@github.com:cms-susy-photon-rwth-1b/TreeWriter.git -b photonIdAndSmeaingTest
 # get JEC and JER files
-wget -qP TreeWriter/TreeWriter/data https://github.com/cms-jet/JECDatabase/raw/master/SQLiteFiles/Spring16_25nsFastSimV1_MC.db
-wget -qP TreeWriter/TreeWriter/data https://github.com/cms-jet/JECDatabase/raw/master/SQLiteFiles/Summer16_23Sep2016V3_MC.db
-wget -qP TreeWriter/TreeWriter/data https://github.com/cms-jet/JECDatabase/raw/master/SQLiteFiles/Summer16_23Sep2016AllV3_DATA.db
+wget -qP TreeWriter/TreeWriter https://github.com/cms-jet/JECDatabase/raw/master/SQLiteFiles/Spring16_25nsFastSimV1_MC.db
+wget -qP TreeWriter/TreeWriter https://github.com/cms-jet/JECDatabase/raw/master/SQLiteFiles/Summer16_23Sep2016V3_MC.db
+wget -qP TreeWriter/TreeWriter https://github.com/cms-jet/JECDatabase/raw/master/SQLiteFiles/Summer16_23Sep2016AllV3_DATA.db
 scram b -j7
 cd TreeWriter
 ```
