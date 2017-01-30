@@ -302,18 +302,19 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
          edm::Handle<LHEEventProduct> LHEEventProductHandle;
          iEvent.getByToken(LHEEventToken_, LHEEventProductHandle);
          unsigned iMax = 110; // these are 9 scale variations and 100 variation of the first pdf set
-         if (iMax>LHEEventProductHandle->weights().size()-1) iMax=LHEEventProductHandle->weights().size()-1;
+         if (iMax>LHEEventProductHandle->weights().size()) iMax = LHEEventProductHandle->weights().size();
          vPdf_weights_ = std::vector<float>(iMax, 1.0);
          for (unsigned i=0; i<iMax; i++) {
-            // 0 and 1 are the same for 80X scans
-            // https://hypernews.cern.ch/HyperNews/CMS/get/susy-interpretations/242/1/1.html
-            vPdf_weights_[i] = LHEEventProductHandle->weights()[i+1].wgt/LHEEventProductHandle->weights()[1].wgt;
+            // https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideDataFormatGeneratorInterface#Retrieving_information_on_LHE_ev
+            vPdf_weights_[i] = LHEEventProductHandle->weights()[i].wgt/LHEEventProductHandle->originalXWGTUP();
          }
       } else { // for SMS scans
          unsigned iMax = 110;
          if (iMax>GenEventInfoHandle->weights().size()-1) iMax=GenEventInfoHandle->weights().size()-1;
          vPdf_weights_ = std::vector<float>(iMax, 1.0);
          for (unsigned i=0; i<iMax; i++) {
+            // 0 and 1 are the same for 80X scans
+            // https://hypernews.cern.ch/HyperNews/CMS/get/susy-interpretations/242/1/1.html
             vPdf_weights_[i] = GenEventInfoHandle->weights()[i+1]/GenEventInfoHandle->weights()[1];
          }
       }
