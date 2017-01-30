@@ -140,8 +140,8 @@ process.egmGsfElectronIDs.physicsObjectSrc = "calibratedPatElectrons"
 # where .db files are placed (e.g. for JEC, JER)
 # Crab will always be in the $CMSSW_BASE directory, so to run the code locally,
 # a symbolic link is added
-if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
-dbPath = 'sqlite_file:src/TreeWriter/TreeWriter/data/'
+#if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
+dbPath = 'sqlite:'
 
 from CondCore.CondDB.CondDB_cfi import CondDB
 CondDB.__delattr__('connect')
