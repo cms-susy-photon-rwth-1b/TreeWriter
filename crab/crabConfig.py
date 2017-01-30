@@ -1,12 +1,16 @@
 #!/usr/bin/env python2
-from WMCore.Configuration import Configuration
+import getpass
 import os
 import subprocess
+import CRABClient
+from CRABAPI.RawCommand import crabCommand
+from WMCore.Configuration import Configuration
+
 
 def searchUserDatasets( name ):
     return subprocess.check_output( 'das_client.py --limit=0 --query="dataset={} instance=prod/phys03"'.format(name), shell=True ).split("\n")[0:-1]
 
-def getLumiMask():
+def getLumiMask(cmssw_src):
     """Extracts the Lumi-Mask path from the makefile used to calculate the pileup reweighting"""
     out = ""
     with open(cmssw_src+"TreeWriter/PUreweighting/Makefile") as f:
@@ -18,32 +22,20 @@ def getLumiMask():
         print "ERROR: could not find lumi mask"
     return out
 
-cmssw_src=os.environ['CMSSW_BASE']+'/src/'
+def getRequestName(dataset, isSim):
+    out = ""
+    d1, d2, d3, d4 = dataset.split("/")
+    if isSim:
+        out = d2
+        if "ext" in dataset: out += "_ext"
+    else:
+        out = "{}_{}".format(d2,d3)
+    # CRABClient.ClientExceptions.ConfigurationException: Invalid CRAB configuration: Parameter General.requestName should not be longer than 100 characters.
+    out = out[:100]
+    return out
 
-config = Configuration()
+cmssw_src = os.environ['CMSSW_BASE']+'/src/'
 
-config.section_("General")
-config.General.requestName   = 'requestName'
-config.General.transferOutputs = True
-config.General.transferLogs = True
-
-config.section_("JobType")
-config.JobType.pluginName  = 'Analysis'
-# Name of the CMSSW configuration file
-config.JobType.psetName    = cmssw_src+'TreeWriter/TreeWriter/python/runTreeWriter.py'
-
-config.section_("Data")
-config.Data.inputDataset = '/SinglePhoton/Run2015C-PromptReco-v1/MINIAOD'
-config.Data.splitting = 'LumiBased'
-config.Data.unitsPerJob = 500
-config.Data.publication = False
-# This string is used to construct the output dataset name
-config.Data.outputDatasetTag = 'V06'
-config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
-
-config.section_("Site")
-# Where the output files will be transmitted to
-config.Site.storageSite = 'T2_DE_RWTH'
 
 datasets={}
 
@@ -147,10 +139,10 @@ def dataDatasets(datasetName):
     return [x.format(datasetName) for x in sets]
 
 datasets["kiesel"] = [
-    "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_HCALDebug_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
-    "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_minus10percentMaterial_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
-    "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-herwigpp_30M/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
-    "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM",
+    #"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_HCALDebug_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_minus10percentMaterial_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-herwigpp_30M/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM",
     "/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     "/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
     "/WGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
@@ -177,6 +169,11 @@ datasets["kiesel"] += datasets["TTJets_HT"]
 datasets["kiesel"] += dataDatasets("SinglePhoton")
 datasets["kiesel"] += dataDatasets("JetHT")
 datasets["kiesel"] += dataDatasets("SingleElectron")
+
+datasets["kiesel"] = [
+    "/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    "/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+    ]
 
 datasets["jschulz"] = [
     # standard MC
@@ -211,55 +208,53 @@ datasets["jschulz"] = [
 
 # call with 'python crabConfig.py'
 if __name__ == '__main__':
-    import getpass
-    from CRABAPI.RawCommand import crabCommand
-    import CRABClient
+    user = getpass.getuser()
 
-    user=getpass.getuser()
-    if user=="kiesel":
-        config.Data.outputDatasetTag = 'v19'
-        config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
-    elif user=="jschulz":
-        config.Data.outputDatasetTag = 'v6'
-        config.Data.outLFNDirBase = "/store/user/jschulz/run2/"
-    else:
-        print "you shall not pass!"
-        print "(unkown user '%s')"%user
-        exit()
-
-    iSub=0
-    failed=[]
+    iSub = 0
+    failed = []
     for dataset in datasets[user]:
 
         isSim = 'SIM' in dataset
-        isUser = dataset.endswith("/USER")
+        isFastSim = "Fast" in dataset
 
-        isFastSim = "True" if "Fast" in dataset else "False"
-        if "GGM" in dataset: isFastSim="True"
+        config = Configuration()
 
-        miniAODv="1" if dataset.endswith("3d7be4403ea17498be45eb057fcb0278/USER") else "2"
+        config.section_("General")
+        config.General.requestName = getRequestName(dataset, isSim)
+        config.General.transferOutputs = True
+        config.General.transferLogs = True
 
-        config.Data.inputDBS = 'phys03' if isUser else 'global'
-
-        if not isSim and not isUser:
-            config.Data.lumiMask = getLumiMask()
-        else:
-            try: del config.Data.lumiMask
-            except: pass
-
-        config.Data.splitting = 'FileBased' if isSim or isUser else 'LumiBased'
-        config.Data.unitsPerJob = 3 if isSim or isUser else 100
-        if isSim:
-            config.General.requestName = dataset.split('/')[1]
-            if "ext" in dataset: config.General.requestName += "_ext"
-        else:
-            config.General.requestName = '_'.join(dataset.split('/')[1:3])
-         # CRABClient.ClientExceptions.ConfigurationException: Invalid CRAB configuration: Parameter General.requestName should not be longer than 100 characters.
-        config.General.requestName = config.General.requestName[:100]
-
+        config.section_("JobType")
+        config.JobType.pluginName = 'Analysis'
+        config.JobType.psetName = cmssw_src + 'TreeWriter/TreeWriter/python/runTreeWriter.py'
         config.JobType.pyCfgParams = ["dataset="+dataset,"user="+user]
+        config.JobType.inputFiles  = [cmssw_src+"TreeWriter/TreeWriter/"+x for x in ["Spring16_25nsFastSimV1_MC.db", "Summer16_23Sep2016V3_MC.db", "Summer16_23Sep2016AllV3_DATA.db"]]
 
+
+        config.section_("Data")
         config.Data.inputDataset = dataset
+        config.Data.splitting = 'FileBased' if isSim else 'LumiBased'
+        config.Data.unitsPerJob = 3 if isSim else 100
+        config.Data.publication = False
+        config.Data.outputDatasetTag = 'outputDatasetTag'
+        config.Data.outLFNDirBase = "outLFNDirBase"
+
+        config.section_("Site")
+        config.Site.storageSite = 'T2_DE_RWTH'
+
+        if not isSim:
+            config.Data.lumiMask = getLumiMask(cmssw_src)
+
+        if user=="kiesel":
+            config.Data.outputDatasetTag = 'v19'
+            config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
+        elif user=="jschulz":
+            config.Data.outputDatasetTag = 'v6'
+            config.Data.outLFNDirBase = "/store/user/jschulz/run2/"
+        else:
+            print "you shall not pass!"
+            print "(unkown user '%s')"%user
+            exit()
 
         try:
             print "submitting",dataset
