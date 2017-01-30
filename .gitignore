@@ -94,4 +94,5 @@ target/
 # === CRAB Files === #
 crab/crab_*/
 crab/.*_crab_*/
-/TreeWriter/python/__init__.py
+TreeWriter/python/__init__.py
+TreeWriter/*db
