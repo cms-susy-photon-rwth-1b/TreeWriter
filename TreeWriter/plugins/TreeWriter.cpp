@@ -754,12 +754,11 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    if (!isRealData) {
       // Get generator level info
       // Pruned particles are the one containing "important" stuff
-      auto countBinos = signal_nBinos_ == 10;
-      if (countBinos) signal_nBinos_ = 0;
+      signal_nBinos_ = 0;
       for (const reco::GenParticle &genP: *prunedGenParticles){
          auto absId = abs(genP.pdgId());
          // estimate number of binos
-         if (countBinos && absId == 1000023 && abs(genP.mother(0)->pdgId()) != 1000023) signal_nBinos_++;
+         if (absId == 1000023 && abs(genP.mother(0)->pdgId()) != 1000023) signal_nBinos_++;
 
          if (absId==23||absId==24) { // store intermediate bosons
             int iNdaugh = genP.numberOfDaughters();
@@ -846,7 +845,6 @@ void TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::Ev
    std::string modelName_ = "";
    signal_m1_ = 0;
    signal_m2_ = 0;
-   signal_nBinos_ = 10; // initial value
    if (gen_header.isValid()) {
       modelName_ = gen_header->configDescription();
       std::smatch sm;
