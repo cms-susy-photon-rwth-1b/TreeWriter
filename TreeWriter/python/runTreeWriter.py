@@ -281,9 +281,10 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
 
 process.TreeWriter.hardPUveto=dataset.startswith("/QCD_HT100to200")
 
+if not isRealData:
+    process.TreeWriter.metFilterNames.remove("Flag_eeBadScFilter")
 if "Fast" in dataset:
     process.TreeWriter.metFilterNames.remove("Flag_globalTightHalo2016Filter")
-    process.TreeWriter.metFilterNames.remove("Flag_eeBadScFilter")
     process.TreeWriter.lheEventProduct = "source"
     if "T5Wg" in dataset:
         process.TreeWriter.numberBinos_cut = 1
