@@ -120,6 +120,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , isolatedPhotons_(iConfig.getUntrackedParameter<bool>("isolatedPhotons"))
    , minNumberPhotons_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberPhotons_cut"))
    , minNumberElectrons_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberElectrons_cut"))
+   , numberBinos_cut_(iConfig.getUntrackedParameter<int>("numberBinos_cut"))
    , newLumiBlock_(true)
    , vtxToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices")))
    , photonCollectionToken_  (consumes<edm::View<pat::Photon> >(iConfig.getParameter<edm::InputTag>("photons")))
@@ -254,6 +255,7 @@ TH1F* TreeWriter::createCutFlowHist(std::string modelName)
       "nGoodVertices",
       "photons",
       "HT",
+      "nBinos",
       "final"}};
    TH1F* h = fs_->make<TH1F>(name.c_str(), name.c_str(), vCutBinNames.size(), 0, vCutBinNames.size());
    for (uint i=0; i<vCutBinNames.size(); i++) { h->GetXaxis()->SetBinLabel(i+1, vCutBinNames.at(i)); }
@@ -791,6 +793,8 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       }
       sort(vGenParticles_.begin(), vGenParticles_.end(), tree::PtGreater);
    }
+   if (numberBinos_cut_>0 && numberBinos_cut_ != signal_nBinos_) return;
+   hCutFlow_->Fill("nBinos", mc_weight_*pu_weight_);
 
    // number of tracks
    edm::Handle<std::vector<pat::PackedCandidate>> packedCandidates;
