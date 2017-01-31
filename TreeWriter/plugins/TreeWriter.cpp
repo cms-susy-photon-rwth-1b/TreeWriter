@@ -76,7 +76,6 @@ PromptStatusType getPromptStatus(const reco::GenParticle& p, const edm::Handle<e
              if (absId==21 || absId<6) return FRAGMENTPROMPT;
              if (absId==11 || absId==13 || absId==15) return LEPTONPROMPT;
          }
-
       }
       return DIRECTPROMPT;
    }
