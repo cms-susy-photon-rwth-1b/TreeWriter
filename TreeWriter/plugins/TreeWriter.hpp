@@ -112,7 +112,7 @@ private:
    bool isolatedPhotons_;
    unsigned minNumberPhotons_cut_;
    unsigned minNumberElectrons_cut_;
-   int numberBinos_cut_;
+   unsigned minNumberBinos_cut_;
 
    bool newLumiBlock_;
 

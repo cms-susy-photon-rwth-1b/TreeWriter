@@ -246,7 +246,7 @@ if __name__ == '__main__':
             config.Data.lumiMask = getLumiMask(cmssw_src)
 
         if user=="kiesel":
-            config.Data.outputDatasetTag = 'v19'
+            config.Data.outputDatasetTag = 'v20'
             config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
         elif user=="jschulz":
             config.Data.outputDatasetTag = 'v6'

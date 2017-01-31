@@ -120,7 +120,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , isolatedPhotons_(iConfig.getUntrackedParameter<bool>("isolatedPhotons"))
    , minNumberPhotons_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberPhotons_cut"))
    , minNumberElectrons_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberElectrons_cut"))
-   , numberBinos_cut_(iConfig.getUntrackedParameter<int>("numberBinos_cut"))
+   , minNumberBinos_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberBinos_cut"))
    , newLumiBlock_(true)
    , vtxToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices")))
    , photonCollectionToken_  (consumes<edm::View<pat::Photon> >(iConfig.getParameter<edm::InputTag>("photons")))
@@ -210,7 +210,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
 
    eventTree_->Branch("signal_m1", &signal_m1_, "signal_m1/s");
    eventTree_->Branch("signal_m2", &signal_m2_, "signal_m2/s");
-//   eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
+   eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
 
    // Fill trigger maps
    for (const auto& n : triggerNames_) {
@@ -793,7 +793,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       }
       sort(vGenParticles_.begin(), vGenParticles_.end(), tree::PtGreater);
    }
-   if (numberBinos_cut_>0 && numberBinos_cut_ != signal_nBinos_) return;
+   if (signal_nBinos_ < minNumberBinos_cut_) return;
    hCutFlow_->Fill("nBinos", mc_weight_*pu_weight_);
 
    // number of tracks

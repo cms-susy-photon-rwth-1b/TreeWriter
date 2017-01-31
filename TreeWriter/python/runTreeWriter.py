@@ -224,7 +224,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     isolatedPhotons=cms.untracked.bool(True), # for all photons in the collection
                                     minNumberPhotons_cut=cms.untracked.uint32(1),
                                     minNumberElectrons_cut=cms.untracked.uint32(0),
-                                    numberBinos_cut=cms.untracked.int32(-1),
+                                    minNumberBinos_cut=cms.untracked.uint32(0),
                                     # physics objects
                                     photons = cms.InputTag("calibratedPatPhotons"),
                                     jets = cms.InputTag("updatedPatJetsUpdatedJEC"),
@@ -286,8 +286,8 @@ if not isRealData:
 if "Fast" in dataset:
     process.TreeWriter.metFilterNames.remove("Flag_globalTightHalo2016Filter")
     process.TreeWriter.lheEventProduct = "source"
-    if "T5Wg" in dataset:
-        process.TreeWriter.numberBinos_cut = 1
+    if "T5Wg" in dataset or "T6Wg":
+        process.TreeWriter.minNumberBinos_cut = 1
 
 if "PUMoriond17" in dataset:
     process.TreeWriter.pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_Moriond17MC_PoissonOOTPU")
