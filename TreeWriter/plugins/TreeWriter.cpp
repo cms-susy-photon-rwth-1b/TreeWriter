@@ -210,7 +210,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
 
    eventTree_->Branch("signal_m1", &signal_m1_, "signal_m1/s");
    eventTree_->Branch("signal_m2", &signal_m2_, "signal_m2/s");
-   eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
+//   eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
 
    // Fill trigger maps
    for (const auto& n : triggerNames_) {
