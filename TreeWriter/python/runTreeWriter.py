@@ -56,22 +56,16 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 # determine global tag
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if isRealData:
-    if "Run2016B-23Sep2016-v3" in dataset:
-        process.GlobalTag.globaltag = "80X_dataRun2_2016SeptRepro_v4"
-    elif "Run2016C-23Sep2016-v1" in dataset \
-      or "Run2016D-23Sep2016-v1" in dataset \
-      or "Run2016E-23Sep2016-v1" in dataset \
-      or "Run2016F-23Sep2016-v1" in dataset \
-      or "Run2016G-23Sep2016-v1" in dataset:
-        process.GlobalTag.globaltag = "80X_dataRun2_2016SeptRepro_v3"
+    if "Run2016" in dataset and "-23Sep2016-v" in dataset:
+        process.GlobalTag.globaltag = "80X_dataRun2_2016SeptRepro_v7"
     elif "Run2016H-PromptReco-v" in dataset:
-        process.GlobalTag.globaltag = "80X_dataRun2_Prompt_v14"
+        process.GlobalTag.globaltag = "80X_dataRun2_Prompt_v16"
     else:
         print "Do not know which global tag to assign to dataset", dataset
         exit()
 else:
     if "80X_mcRun2_asymptotic_2016_TrancheIV_v6" in dataset:
-        process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_TrancheIV_v6"
+        process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_TrancheIV_v8"
     elif "80X_mcRun2_asymptotic_2016_miniAODv2" in dataset:
         process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_miniAODv2_v1"
     else:
