@@ -233,6 +233,8 @@ if __name__ == '__main__':
         config.Data.publication = False
         config.Data.outputDatasetTag = 'outputDatasetTag'
         config.Data.outLFNDirBase = "outLFNDirBase"
+        if dataset == "/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM":
+            config.Data.allowNonValidInputDataset = True
 
         config.section_("Site")
         config.Site.storageSite = 'T2_DE_RWTH'
