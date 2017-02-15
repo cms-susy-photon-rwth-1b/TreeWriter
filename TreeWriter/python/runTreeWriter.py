@@ -162,18 +162,6 @@ runMetCorAndUncFromMiniAOD(
 
 
 ################################
-# MET Filter                   #
-################################
-process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
-process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
-process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
-
-process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
-process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
-process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
-
-
-################################
 # Define input and output      #
 ################################
 process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(options.maxEvents))
@@ -228,6 +216,8 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                         "Flag_goodVertices",
                                         "Flag_eeBadScFilter",
                                         "Flag_globalTightHalo2016Filter",
+                                        "Flag_chargedHadronTrackResolutionFilter",
+                                        "Flag_muonBadTrackFilter",
                                     ),
                                     phoWorstChargedIsolation = cms.InputTag("photonIDValueMapProducer:phoWorstChargedIsolation"),
                                     pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU"),
@@ -386,7 +376,6 @@ for trig in process.TreeWriter.triggerPrescales:
 ####################
 
 process.p = cms.Path(
-    process.BadPFMuonFilter
-    *process.BadChargedCandidateFilter
+    process.regressionApplication
     *process.TreeWriter
 )

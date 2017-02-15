@@ -389,14 +389,6 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       if (index >= allFilterNames.size()) std::cerr << "MET filter '" << name << "' not found!" << std::endl;
       if (!metFilterBits->accept(index)) return; // not passed
    }
-   edm::Handle<bool> ifilterbadChCand;
-   iEvent.getByToken(BadChCandFilterToken_, ifilterbadChCand);
-   if (!*ifilterbadChCand) return;
-
-   edm::Handle<bool> ifilterbadPFMuon;
-   iEvent.getByToken(BadPFMuonFilterToken_, ifilterbadPFMuon);
-   if (!*ifilterbadPFMuon) return;
-
    hCutFlow_->Fill("METfilters", mc_weight_*pu_weight_);
 
    // Get PV
