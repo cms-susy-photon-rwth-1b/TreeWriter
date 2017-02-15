@@ -383,6 +383,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    iEvent.getByLabel(metFilterTag, metFilterBits);
    // go through the filters and check if they were passed
    const edm::TriggerNames &allFilterNames = iEvent.triggerNames(*metFilterBits);
+   //for (unsigned i=0; i<allFilterNames.size(); i++) std::cout << allFilterNames.triggerName(i) << std::endl;
    for (std::string const &name: metFilterNames_) {
       const unsigned index = allFilterNames.triggerIndex(name);
       if (index >= allFilterNames.size()) std::cerr << "MET filter '" << name << "' not found!" << std::endl;
