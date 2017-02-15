@@ -4,19 +4,14 @@
 Get CMSSW environment 80X
 
 ```
-cmsrel CMSSW_8_0_25
-cd CMSSW_8_0_25/src/
+cmsrel CMSSW_8_0_26_patch1
+cd CMSSW_8_0_26_patch1/src/
 cmsenv
-git cms-merge-topic shervin86:Moriond2017_JEC_energyScales
-git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
 git cms-merge-topic cms-met:METRecipe_8020
 git cms-merge-topic ikrav:egm_id_80X_v3_photons
-git clone git@github.com:ECALELFS/ScalesSmearings.git EgammaAnalysis/ElectronTools/data/ScalesSmearings
 git clone git@github.com:cms-susy-photon-rwth-1b/TreeWriter.git
-# get JEC and JER files
+git clone git@github.com:ECALELFS/ScalesSmearings.git EgammaAnalysis/ElectronTools/data/ScalesSmearings
 wget -qP TreeWriter/TreeWriter https://github.com/cms-jet/JECDatabase/raw/master/SQLiteFiles/Spring16_25nsFastSimV1_MC.db
-wget -qP TreeWriter/TreeWriter https://github.com/cms-jet/JECDatabase/raw/master/SQLiteFiles/Summer16_23Sep2016V3_MC.db
-wget -qP TreeWriter/TreeWriter https://github.com/cms-jet/JECDatabase/raw/master/SQLiteFiles/Summer16_23Sep2016AllV3_DATA.db
 scram b -j7
 cd TreeWriter
 ```
