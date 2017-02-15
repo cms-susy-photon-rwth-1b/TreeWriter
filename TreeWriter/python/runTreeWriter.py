@@ -135,35 +135,8 @@ process.egmGsfElectronIDs.physicsObjectSrc = "calibratedPatElectrons"
 ##########################
 # Jet Energy Corrections #
 ##########################
-# where .db files are placed (e.g. for JEC, JER)
-# Crab will always be in the $CMSSW_BASE directory, so to run the code locally,
-# a symbolic link is added
-#if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
-dbPath = 'sqlite:'
 
-from CondCore.CondDB.CondDB_cfi import CondDB
-CondDB.__delattr__('connect')
-
-process.jec = cms.ESSource('PoolDBESSource',
-    CondDB,
-    connect = cms.string(dbPath+'Spring16_25nsFastSimV1_MC.db'),
-    toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string('JetCorrectionsRecord'),
-            tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsFastSimMC_V1_AK4PFchs'),
-            label  = cms.untracked.string('AK4PFchs')
-        )
-    )
-)
-if isRealData:
-    process.jec.connect = dbPath + "Summer16_23Sep2016AllV3_DATA.db"
-    process.jec.toGet[0].tag = "JetCorrectorParametersCollection_Summer16_23Sep2016AllV3_DATA_AK4PFchs"
-elif "Fast" not in dataset:
-    process.jec.connect = dbPath + "Summer16_23Sep2016V3_MC.db"
-    process.jec.toGet[0].tag = "JetCorrectorParametersCollection_Summer16_23Sep2016V3_MC_AK4PFchs"
-
-# Add an ESPrefer to override JEC that might be available from the global tag
-process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
+# TODO: Use different jet corrections for FastSim
 
 jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
 if isRealData: jecLevels.append('L2L3Residual')
