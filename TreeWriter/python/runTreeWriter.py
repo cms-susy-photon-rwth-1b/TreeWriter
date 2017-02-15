@@ -70,6 +70,11 @@ else:
 ######################
 # PHOTONS, ELECTRONS #
 ######################
+# Regression: https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMRegression
+from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
+process = regressionWeights(process)
+process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
+
 # Energy smearing: https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
 process.load('EgammaAnalysis.ElectronTools.calibratedPhotonsRun2_cfi')
 process.load('EgammaAnalysis.ElectronTools.calibratedElectronsRun2_cfi')
