@@ -127,14 +127,14 @@ datasets["TTJets_HT"] = [
 
 def dataDatasets(datasetName):
     sets = [
-        "/{}/Run2016B-23Sep2016-v3/MINIAOD",
-        "/{}/Run2016C-23Sep2016-v1/MINIAOD",
-        "/{}/Run2016D-23Sep2016-v1/MINIAOD",
-        "/{}/Run2016E-23Sep2016-v1/MINIAOD",
-        "/{}/Run2016F-23Sep2016-v1/MINIAOD",
-        "/{}/Run2016G-23Sep2016-v1/MINIAOD",
-        "/{}/Run2016H-PromptReco-v2/MINIAOD",
-        "/{}/Run2016H-PromptReco-v3/MINIAOD",
+        "/{}/Run2016B-03Feb2017_ver2-v2/MINIAOD",
+        "/{}/Run2016C-03Feb2017-v1/MINIAOD",
+        "/{}/Run2016D-03Feb2017-v1/MINIAOD",
+        "/{}/Run2016E-03Feb2017-v1/MINIAOD",
+        "/{}/Run2016F-03Feb2017-v1/MINIAOD",
+        "/{}/Run2016G-03Feb2017-v1/MINIAOD",
+        "/{}/Run2016H-03Feb2017_ver2-v1/MINIAOD",
+        "/{}/Run2016H-03Feb2017_ver3-v1/MINIAOD",
     ]
     return [x.format(datasetName) for x in sets]
 
@@ -166,9 +166,10 @@ datasets["kiesel"] += datasets["QCD_HT"] + datasets["QCD_HT_extra"]
 datasets["kiesel"] += datasets["WJetsToLNu_HT"] + datasets["WJetsToLNu_HT_extra"]
 datasets["kiesel"] += datasets["ZJetsToNuNu_HT"] + datasets["ZJetsToNuNu_HT_extra"]
 datasets["kiesel"] += datasets["TTJets_HT"]
-datasets["kiesel"] += dataDatasets("SinglePhoton")
-datasets["kiesel"] += dataDatasets("JetHT")
 datasets["kiesel"] += dataDatasets("SingleElectron")
+
+datasets["kiesel"] = dataDatasets("SinglePhoton")
+datasets["kiesel"] += dataDatasets("JetHT")
 
 datasets["jschulz"] = [
     # standard MC
@@ -223,7 +224,7 @@ if __name__ == '__main__':
         config.JobType.pluginName = 'Analysis'
         config.JobType.psetName = cmssw_src + 'TreeWriter/TreeWriter/python/runTreeWriter.py'
         config.JobType.pyCfgParams = ["dataset="+dataset,"user="+user]
-        config.JobType.inputFiles  = [cmssw_src+"TreeWriter/TreeWriter/"+x for x in ["Spring16_25nsFastSimV1_MC.db", "Summer16_23Sep2016V3_MC.db", "Summer16_23Sep2016AllV3_DATA.db"]]
+        #config.JobType.inputFiles  = [cmssw_src+"TreeWriter/TreeWriter/"+x for x in ["Spring16_25nsFastSimV1_MC.db", "Summer16_23Sep2016V3_MC.db", "Summer16_23Sep2016AllV3_DATA.db"]]
 
 
         config.section_("Data")
@@ -240,10 +241,11 @@ if __name__ == '__main__':
         config.Site.storageSite = 'T2_DE_RWTH'
 
         if not isSim:
-            config.Data.lumiMask = getLumiMask(cmssw_src)
+#            config.Data.lumiMask = getLumiMask(cmssw_src)
+            config.Data.lumiMask = "Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
 
         if user=="kiesel":
-            config.Data.outputDatasetTag = 'v20'
+            config.Data.outputDatasetTag = 'v21'
             config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
         elif user=="jschulz":
             config.Data.outputDatasetTag = 'v6'
