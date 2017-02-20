@@ -224,7 +224,7 @@ if __name__ == '__main__':
         config.JobType.pluginName = 'Analysis'
         config.JobType.psetName = cmssw_src + 'TreeWriter/TreeWriter/python/runTreeWriter.py'
         config.JobType.pyCfgParams = ["dataset="+dataset,"user="+user]
-        #config.JobType.inputFiles  = [cmssw_src+"TreeWriter/TreeWriter/"+x for x in ["Spring16_25nsFastSimV1_MC.db", "Summer16_23Sep2016V3_MC.db", "Summer16_23Sep2016AllV3_DATA.db"]]
+        config.JobType.inputFiles  = [cmssw_src+"TreeWriter/TreeWriter/"+x for x in ["Spring16_25nsFastSimV1_MC.db"]]
 
 
         config.section_("Data")

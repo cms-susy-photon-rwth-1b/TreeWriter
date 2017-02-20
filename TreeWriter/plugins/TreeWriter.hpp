@@ -154,6 +154,7 @@ private:
 
    const std::string pileupHistogramName_;
    const bool hardPUveto_;
+   const bool reMiniAOD_; // 03Feb2017 campaign
 
    PFJetIDSelectionFunctor jetIdSelector;
 

@@ -143,6 +143,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , phoWorstChargedIsolationToken_(consumes <edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("phoWorstChargedIsolation")))
    , pileupHistogramName_(iConfig.getUntrackedParameter<std::string>("pileupHistogramName"))
    , hardPUveto_(iConfig.getUntrackedParameter<bool>("hardPUveto"))
+   , reMiniAOD_(iConfig.getUntrackedParameter<bool>("reMiniAOD"))
    , jetIdSelector(iConfig.getParameter<edm::ParameterSet>("pfJetIDSelector"))
    , triggerNames_(iConfig.getParameter<std::vector<std::string>>("triggerNames"))
    , triggerPrescales_(iConfig.getParameter<std::vector<std::string>>("triggerPrescales"))
@@ -388,6 +389,15 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       const unsigned index = allFilterNames.triggerIndex(name);
       if (index >= allFilterNames.size()) std::cerr << "MET filter '" << name << "' not found!" << std::endl;
       if (!metFilterBits->accept(index)) return; // not passed
+   }
+   if (!reMiniAOD_) {
+       edm::Handle<bool> ifilterbadChCand;
+       iEvent.getByToken(BadChCandFilterToken_, ifilterbadChCand);
+       if (!*ifilterbadChCand) return;
+
+       edm::Handle<bool> ifilterbadPFMuon;
+       iEvent.getByToken(BadPFMuonFilterToken_, ifilterbadPFMuon);
+       if (!*ifilterbadPFMuon) return;
    }
    hCutFlow_->Fill("METfilters", mc_weight_*pu_weight_);
 

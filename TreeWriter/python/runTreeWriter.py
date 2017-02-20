@@ -135,8 +135,30 @@ process.egmGsfElectronIDs.physicsObjectSrc = "calibratedPatElectrons"
 ##########################
 # Jet Energy Corrections #
 ##########################
+# where .db files are placed (e.g. for JEC, JER)
+# Crab will always be in the $CMSSW_BASE directory, so to run the code locally,
+# a symbolic link is added
+#if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
+if "Fast" in dataset:
+    dbPath = 'sqlite:'
 
-# TODO: Use different jet corrections for FastSim
+    from CondCore.CondDB.CondDB_cfi import CondDB
+    CondDB.__delattr__('connect')
+
+    process.jec = cms.ESSource('PoolDBESSource',
+        CondDB,
+        connect = cms.string(dbPath+'Spring16_25nsFastSimV1_MC.db'),
+        toGet = cms.VPSet(
+            cms.PSet(
+                record = cms.string('JetCorrectionsRecord'),
+                tag    = cms.string('JetCorrectorParametersCollection_Spring16_25nsFastSimMC_V1_AK4PFchs'),
+                label  = cms.untracked.string('AK4PFchs')
+            )
+        )
+    )
+    # Add an ESPrefer to override JEC that might be available from the global tag
+    process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
+
 
 jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
 if isRealData: jecLevels.append('L2L3Residual')
@@ -159,6 +181,18 @@ runMetCorAndUncFromMiniAOD(
     process,
     isData=isRealData,
 )
+
+
+################################
+# MET Filter                   #
+################################
+process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
+process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
+process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+
+process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
+process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
+process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
 
 
 ################################
@@ -187,7 +221,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     muons = cms.InputTag("slimmedMuons"),
                                     genJets=cms.InputTag("slimmedGenJets"),
                                     electrons = cms.InputTag("calibratedPatElectrons"),
-                                    mets = cms.InputTag("slimmedMETsMuEGClean"),
+                                    mets = cms.InputTag("slimmedMETs", "", "TreeWriter"),
                                     rho = cms.InputTag("fixedGridRhoFastjetAll"),
                                     ebRecHits = cms.InputTag("reducedEgamma","reducedEBRecHits"),
                                     vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
@@ -216,12 +250,12 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                         "Flag_goodVertices",
                                         "Flag_eeBadScFilter",
                                         "Flag_globalTightHalo2016Filter",
-                                        "Flag_chargedHadronTrackResolutionFilter",
-                                        "Flag_muonBadTrackFilter",
+
                                     ),
                                     phoWorstChargedIsolation = cms.InputTag("photonIDValueMapProducer:phoWorstChargedIsolation"),
                                     pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU"),
                                     hardPUveto=cms.untracked.bool(False),
+                                    reMiniAOD=cms.untracked.bool(False),
                                     # triggers to be saved
                                     # Warning: To be independent of the version number, the trigger result is saved if the trigger name begins
                                     # with the strings given here. E.g. "HLT" would always be true if any of the triggers fired.
@@ -238,6 +272,11 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
 ################################
 
 process.TreeWriter.hardPUveto=dataset.startswith("/QCD_HT100to200")
+
+if "03Feb2017" in dataset:
+    process.TreeWriter.reMiniAOD = True
+    process.TreeWriter.mets = cms.InputTag("slimmedMETsMuEGClean")
+    process.TreeWriter.metFilterNames.extend(["Flag_chargedHadronTrackResolutionFilter", "Flag_muonBadTrackFilter"])
 
 if not isRealData:
     process.TreeWriter.metFilterNames.remove("Flag_eeBadScFilter")
@@ -376,6 +415,8 @@ for trig in process.TreeWriter.triggerPrescales:
 ####################
 
 process.p = cms.Path(
-    process.regressionApplication
+    process.BadPFMuonFilter
+    *process.BadChargedCandidateFilter
+    *process.regressionApplication
     *process.TreeWriter
 )
