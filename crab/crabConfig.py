@@ -241,8 +241,7 @@ if __name__ == '__main__':
         config.Site.storageSite = 'T2_DE_RWTH'
 
         if not isSim:
-#            config.Data.lumiMask = getLumiMask(cmssw_src)
-            config.Data.lumiMask = "Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"
+            config.Data.lumiMask = getLumiMask(cmssw_src)
 
         if user=="kiesel":
             config.Data.outputDatasetTag = 'v21'
