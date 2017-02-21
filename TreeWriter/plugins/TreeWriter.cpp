@@ -191,7 +191,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("pdf_weights", &vPdf_weights_);
 
    eventTree_->Branch("genHt", &genHt_, "genHt/F");
-   //eventTree_->Branch("nISR", &nISR_, "nISR/I");
+   eventTree_->Branch("nISR", &nISR_, "nISR/I");
    //eventTree_->Branch("puPtHat", &puPtHat_ , "puPtHat/F");
 
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
