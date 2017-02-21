@@ -185,6 +185,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("nGoodVertices" , &nGoodVertices_ , "nGoodVertices/I");
    eventTree_->Branch("nTracksPV", &nTracksPV_, "nTracksPV/I");
    eventTree_->Branch("rho", &rho_, "rho/F");
+   eventTree_->Branch("caloMetPt", &caloMetPt_, "caloMetPt/F");
 
    eventTree_->Branch("pu_weight", &pu_weight_, "pu_weight/F");
    eventTree_->Branch("mc_weight", &mc_weight_, "mc_weight/B");
@@ -660,6 +661,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
    const pat::MET &met = metColl->front();
    double metPt = met.pt();
+   caloMetPt_ = met.caloMETPt();
    met_.p.SetPtEtaPhi(metPt, met.eta(), met.phi());
 
    if( !isRealData ) {

@@ -166,6 +166,7 @@ private:
    Int_t   nGoodVertices_;
    Int_t   nTracksPV_;
    Float_t rho_;
+   Float_t caloMetPt_;
 
    Float_t pu_weight_;
    Char_t  mc_weight_; // +1 or -1 event weights (take care when reading with python, this is a character!)
