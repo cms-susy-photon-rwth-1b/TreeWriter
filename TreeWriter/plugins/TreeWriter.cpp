@@ -118,6 +118,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , muonCollectionToken_    (consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muons")))
    , electronCollectionToken_(consumes<edm::View<pat::Electron> >(iConfig.getParameter<edm::InputTag>("electrons")))
    , metCollectionToken_     (consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("mets")))
+   , caloMetCollectionToken_ (consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("caloMets")))
    , rhoToken_               (consumes<double> (iConfig.getParameter<edm::InputTag>("rho")))
    , ebRecHitsToken_         (consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("ebRecHits")))
    , prunedGenToken_         (consumes<edm::View<reco::GenParticle> >(iConfig.getParameter<edm::InputTag>("prunedGenParticles")))
@@ -661,12 +662,15 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    hCutFlow_->Fill("HT", mc_weight_*pu_weight_);
 
    // MET
+   edm::Handle<pat::METCollection> metCollCalo;
+   iEvent.getByToken(caloMetCollectionToken_, metCollCalo);
+   caloMetPt_ = metCollCalo->front().caloMETPt();
+
    edm::Handle<pat::METCollection> metColl;
    iEvent.getByToken(metCollectionToken_, metColl);
 
    const pat::MET &met = metColl->front();
    double metPt = met.pt();
-   caloMetPt_ = met.caloMETPt();
    met_.p.SetPtEtaPhi(metPt, met.eta(), met.phi());
 
    if( !isRealData ) {

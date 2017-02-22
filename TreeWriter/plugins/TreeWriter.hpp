@@ -124,6 +124,7 @@ private:
    edm::EDGetTokenT<pat::MuonCollection>       muonCollectionToken_;
    edm::EDGetTokenT<edm::View<pat::Electron>>  electronCollectionToken_;
    edm::EDGetTokenT<pat::METCollection>        metCollectionToken_;
+   edm::EDGetTokenT<pat::METCollection>        caloMetCollectionToken_;
    edm::EDGetTokenT<double>                    rhoToken_;
    edm::EDGetTokenT<EcalRecHitCollection>      ebRecHitsToken_;
    edm::EDGetTokenT<edm::View<reco::GenParticle>> prunedGenToken_;
