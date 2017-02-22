@@ -266,9 +266,9 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     # Warning: To be independent of the version number, the trigger result is saved if the trigger name begins
                                     # with the strings given here. E.g. "HLT" would always be true if any of the triggers fired.
                                     triggerNames=cms.vstring(),
+                                    triggerObjectNames=cms.vstring(),
                                     pfJetIDSelector=cms.PSet(version=cms.string('FIRSTDATA'), quality=cms.string('LOOSE')),
                                     triggerPrescales=cms.vstring(), # also useful to check whether a trigger was run
-                                    storeTriggerObjects=cms.untracked.bool(False),
                                     BadChargedCandidateFilter = cms.InputTag("BadChargedCandidateFilter"),
                                     BadPFMuonFilter = cms.InputTag("BadPFMuonFilter"),
 )
@@ -323,6 +323,7 @@ if user=="kiesel":
     process.TreeWriter.HT_cut=500.
     process.TreeWriter.photon_pT_cut=90.
     process.TreeWriter.minNumberPhotons_cut=0
+    process.TreeWriter.triggerObjectNames = ["hltEG90CaloIdLHEFilter"]
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT600_v",
         "HLT_Photon90_v",
@@ -335,6 +336,7 @@ if user=="kiesel":
     ]
     process.TreeWriter.triggerPrescales=process.TreeWriter.triggerNames
     if "SingleElectron" in dataset or "DY" in dataset:
+        process.TreeWriter.triggerObjectNames = ["hltEle27erWPLooseGsfTrackIsoFilter", "hltEle27erWPTightGsfTrackIsoFilter", "hltEG90CaloIdLHEFilter"]
         process.TreeWriter.triggerNames = ["HLT_Ele27_eta2p1_WPLoose_Gsf_v", "HLT_Ele27_eta2p1_WPTight_Gsf_v"]
         process.TreeWriter.HT_cut = 0.
         process.TreeWriter.photon_pT_cut = 25.
@@ -345,7 +347,7 @@ if user=="kiesel":
 
 elif user=="jschulz":
     process.TreeWriter.photon_pT_cut=100
-    process.TreeWriter.storeTriggerObjects=False
+    process.TreeWriter.triggerObjectNames = ["hltEG90CaloIdLHEFilter", "hltEG165HE10Filter"]
     if "Fast" in dataset:
         process.TreeWriter.minNumberPhotons_cut=0
     process.TreeWriter.triggerNames=[

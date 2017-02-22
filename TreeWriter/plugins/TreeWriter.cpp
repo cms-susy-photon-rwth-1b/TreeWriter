@@ -148,7 +148,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , jetIdSelector(iConfig.getParameter<edm::ParameterSet>("pfJetIDSelector"))
    , triggerNames_(iConfig.getParameter<std::vector<std::string>>("triggerNames"))
    , triggerPrescales_(iConfig.getParameter<std::vector<std::string>>("triggerPrescales"))
-   , storeTriggerObjects_(iConfig.getUntrackedParameter<bool>("storeTriggerObjects"))
+   , triggerObjectNames_(iConfig.getParameter<std::vector<std::string>>("triggerObjectNames"))
    , BadChCandFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("BadChargedCandidateFilter")))
    , BadPFMuonFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("BadPFMuonFilter")))
 {
@@ -177,9 +177,9 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("met_JERu", &met_JERu_);
    eventTree_->Branch("met_JERd", &met_JERd_);
    eventTree_->Branch("genParticles", &vGenParticles_);
-   if (storeTriggerObjects_) {
-     eventTree_->Branch("triggerElectronsLoose", &vTriggerElectronsLoose_);
-     eventTree_->Branch("triggerElectronsTight", &vTriggerElectronsTight_);
+   for (const auto& n : triggerObjectNames_) {
+     triggerObjectMap_[n] = std::vector<tree::Particle>();
+     eventTree_->Branch(n.c_str(), &triggerObjectMap_[n]);
    }
    eventTree_->Branch("intermediateGenParticles", &vIntermediateGenParticles_);
 
@@ -363,23 +363,17 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       triggerPrescale_[n] = index == -1 ? 0 : triggerPrescales->getPrescaleForIndex(triggerIndex_[n]);
    }
 
-   if (storeTriggerObjects_) {
-      edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
-      edm::InputTag triggerObjects_("selectedPatTrigger");
-      iEvent.getByLabel(triggerObjects_, triggerObjects);
+   edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
+   edm::InputTag triggerObjects_("selectedPatTrigger");
+   iEvent.getByLabel(triggerObjects_, triggerObjects);
 
-      vTriggerElectronsLoose_.clear();
-      vTriggerElectronsTight_.clear();
-      tree::Particle trObj;
-      for (pat::TriggerObjectStandAlone obj: *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
-         // obj.unpackPathNames(names);
-         if (std::count(obj.filterLabels().begin(), obj.filterLabels().end(), "hltEle27erWPLooseGsfTrackIsoFilter")) {
+   for (const auto& n : triggerObjectNames_) triggerObjectMap_.at(n).clear();
+   tree::Particle trObj;
+   for (const pat::TriggerObjectStandAlone obj: *triggerObjects) {
+      for (const auto& n : triggerObjectNames_) {
+         if (std::count(obj.filterLabels().begin(), obj.filterLabels().end(), n)) {
             trObj.p.SetPtEtaPhi(obj.pt(), obj.eta(), obj.phi());
-            vTriggerElectronsLoose_.push_back(trObj);
-         }
-         if (std::count(obj.filterLabels().begin(), obj.filterLabels().end(), "hltEle27erWPTightGsfTrackIsoFilter")) {
-            trObj.p.SetPtEtaPhi(obj.pt(), obj.eta(), obj.phi());
-            vTriggerElectronsTight_.push_back(trObj);
+            triggerObjectMap_.at(n).push_back(trObj);
          }
       }
    }

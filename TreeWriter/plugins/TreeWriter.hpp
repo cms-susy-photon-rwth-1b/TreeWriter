@@ -196,9 +196,7 @@ private:
    std::map<std::string, Bool_t> triggerDecision_;
    std::map<std::string, int>    triggerPrescale_;
    std::map<std::string, int>    triggerIndex_;
-
-   bool storeTriggerObjects_;
-   std::string const triggerObjectPath_;
+   std::vector<std::string>      triggerObjectNames_;
 
    // met filter tokens
    edm::EDGetTokenT<bool> BadChCandFilterToken_;
@@ -218,8 +216,7 @@ private:
    tree::MET                   met_JERu_;
    tree::MET                   met_JERd_;
    std::vector<tree::Particle> vGenPhotons_;
-   std::vector<tree::Particle> vTriggerElectronsLoose_;
-   std::vector<tree::Particle> vTriggerElectronsTight_;
+   std::map<std::string,std::vector<tree::Particle>> triggerObjectMap_;
 
    std::vector<tree::GenParticle> vGenParticles_;
    std::vector<tree::IntermediateGenParticle> vIntermediateGenParticles_;
