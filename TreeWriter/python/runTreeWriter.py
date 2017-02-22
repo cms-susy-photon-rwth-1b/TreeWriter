@@ -291,8 +291,8 @@ if "03Feb2017" in dataset:
         pfCandCollection = "", #not needed
         electronCollection = "slimmedElectronsBeforeGSFix",
         photonCollection = "slimmedPhotonsBeforeGSFix",
-        corElectronCollection = "slimmedElectrons",
-        corPhotonCollection = "slimmedPhotons",
+        corElectronCollection = "calibratedPatElectrons",
+        corPhotonCollection = "calibratedPatPhotons",
         allMETEGCorrected = True,
         muCorrection = False,
         eGCorrection = True,
