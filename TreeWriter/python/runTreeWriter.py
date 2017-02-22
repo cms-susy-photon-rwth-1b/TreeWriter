@@ -284,6 +284,27 @@ if "03Feb2017" in dataset:
     process.TreeWriter.mets = cms.InputTag("slimmedMETsMuEGClean")
     process.TreeWriter.metFilterNames.extend(["Flag_chargedHadronTrackResolutionFilter", "Flag_muonBadTrackFilter"])
 
+    # Now you are creating the e/g corrected MET on top of the bad muon corrected MET (on re-miniaod)
+    from PhysicsTools.PatUtils.tools.corMETFromMuonAndEG import corMETFromMuonAndEG
+    corMETFromMuonAndEG(
+        process,
+        pfCandCollection = "", #not needed
+        electronCollection = "slimmedElectronsBeforeGSFix",
+        photonCollection = "slimmedPhotonsBeforeGSFix",
+        corElectronCollection = "slimmedElectrons",
+        corPhotonCollection = "slimmedPhotons",
+        allMETEGCorrected = True,
+        muCorrection = False,
+        eGCorrection = True,
+        runOnMiniAOD = True,
+        postfix = "MuEGClean"
+    )
+    process.slimmedMETsMuEGClean = process.slimmedMETs.clone()
+    process.slimmedMETsMuEGClean.src = cms.InputTag("patPFMetT1MuEGClean")
+    process.slimmedMETsMuEGClean.rawVariation =  cms.InputTag("patPFMetRawMuEGClean")
+    process.slimmedMETsMuEGClean.t1Uncertainties = cms.InputTag("patPFMetT1%sMuEGClean")
+    del process.slimmedMETsMuEGClean.caloMET
+
 if not isRealData:
     process.TreeWriter.metFilterNames.remove("Flag_eeBadScFilter")
 if "Fast" in dataset:

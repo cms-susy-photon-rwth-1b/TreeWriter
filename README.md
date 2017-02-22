@@ -8,6 +8,7 @@ cmsrel CMSSW_8_0_26_patch1
 cd CMSSW_8_0_26_patch1/src/
 cmsenv
 git cms-merge-topic cms-met:METRecipe_8020
+git cms-merge-topic cms-met:METRecipe_80X_part2
 git cms-merge-topic ikrav:egm_id_80X_v3_photons
 git clone git@github.com:cms-susy-photon-rwth-1b/TreeWriter.git
 git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
