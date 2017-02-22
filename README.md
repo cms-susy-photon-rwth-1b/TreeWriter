@@ -10,8 +10,9 @@ cmsenv
 git cms-merge-topic cms-met:METRecipe_8020
 git cms-merge-topic ikrav:egm_id_80X_v3_photons
 git clone git@github.com:cms-susy-photon-rwth-1b/TreeWriter.git
-git cms-addpkg EgammaAnalysis/ElectronTools # we do not need this, except for placeholder for the smearings below:
-git clone git@github.com:ECALELFS/ScalesSmearings.git EgammaAnalysis/ElectronTools/data/ScalesSmearings
+git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
+cd EgammaAnalysis/ElectronTools/data
+git clone https://github.com/ECALELFS/ScalesSmearings.git
 wget -qP TreeWriter/TreeWriter https://github.com/cms-jet/JECDatabase/raw/master/SQLiteFiles/Spring16_25nsFastSimV1_MC.db
 scram b -j7
 cd TreeWriter

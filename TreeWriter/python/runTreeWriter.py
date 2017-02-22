@@ -73,11 +73,7 @@ else:
 # Regression: https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMRegression
 from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
 process = regressionWeights(process)
-process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
 
-# Energy smearing: https://twiki.cern.ch/twiki/bin/view/CMS/EGMSmearer
-process.load('EgammaAnalysis.ElectronTools.calibratedPhotonsRun2_cfi')
-process.load('EgammaAnalysis.ElectronTools.calibratedElectronsRun2_cfi')
 process.load('Configuration.StandardSequences.Services_cff')
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
     calibratedPatElectrons = cms.PSet(
@@ -89,6 +85,11 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
         engineName = cms.untracked.string('TRandom3'),
     )
 )
+
+process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
+process.load('EgammaAnalysis.ElectronTools.calibratedPatPhotonsRun2_cfi')
+process.load('EgammaAnalysis.ElectronTools.calibratedPatElectronsRun2_cfi')
+
 process.selectedElectrons = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag("slimmedElectrons"),
     cut = cms.string("pt > 5 && abs(eta)<2.5")
@@ -101,6 +102,10 @@ process.calibratedPatPhotons.isMC = not isRealData
 process.calibratedPatElectrons.isMC = not isRealData
 process.calibratedPatPhotons.photons = "selectedPhotons"
 process.calibratedPatElectrons.electrons = "selectedElectrons"
+
+process.EGMRegression = cms.Path(process.regressionApplication)
+process.EGMSmearerElectrons = cms.Path(process.calibratedPatElectrons)
+process.EGMSmearerPhotons = cms.Path(process.calibratedPatPhotons)
 
 
 # Identification
@@ -417,6 +422,5 @@ for trig in process.TreeWriter.triggerPrescales:
 process.p = cms.Path(
     process.BadPFMuonFilter
     *process.BadChargedCandidateFilter
-    *process.regressionApplication
     *process.TreeWriter
 )
