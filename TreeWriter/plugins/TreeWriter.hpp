@@ -27,6 +27,7 @@
 
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
+#include "DataFormats/Common/interface/EDCollection.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -180,6 +181,9 @@ private:
    ULong64_t evtNo_;
    UInt_t    runNo_;
    UInt_t    lumNo_;
+
+   Bool_t particleFlowEGammaGSFixed_dupECALClusters_;
+   Bool_t ecalMultiAndGSGlobalRecHitEB_hitsNotReplaced_;
 
    UShort_t signal_m1_; // usually mass of first particle in decay chain
    UShort_t signal_m2_; // usually neutarlino mass

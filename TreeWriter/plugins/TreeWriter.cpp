@@ -158,6 +158,8 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    consumes<edm::TriggerResults>(edm::InputTag("TriggerResults", ""));
    consumes<pat::PackedTriggerPrescales>(edm::InputTag("patTrigger"));
    consumes<std::vector<pat::TriggerObjectStandAlone>>(edm::InputTag("selectedPatTrigger"));
+   consumes<bool>(edm::InputTag("particleFlowEGammaGSFixed", "dupECALClusters"));
+   consumes<edm::EDCollection<DetId>>(edm::InputTag("ecalMultiAndGSGlobalRecHitEB", "hitsNotReplaced"));
 
    eventTree_ = fs_->make<TTree> ("eventTree", "event data");
 
@@ -198,6 +200,8 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
    eventTree_->Branch("runNo", &runNo_, "runNo/i");
    eventTree_->Branch("lumNo", &lumNo_, "lumNo/i");
+   eventTree_->Branch("gs_duplicate", &particleFlowEGammaGSFixed_dupECALClusters_, "gs_duplicate/O");
+   eventTree_->Branch("gs_notReplaced", &ecalMultiAndGSGlobalRecHitEB_hitsNotReplaced_, "gs_notReplaced/O");
 
    eventTree_->Branch("signal_m1", &signal_m1_, "signal_m1/s");
    eventTree_->Branch("signal_m2", &signal_m2_, "signal_m2/s");
@@ -796,6 +800,15 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    evtNo_ = iEvent.id().event();
    runNo_ = iEvent.run();
    lumNo_ = iEvent.luminosityBlock();
+
+   edm::Handle<edm::EDCollection<DetId>> unreplacedGSFixedHandle;
+   iEvent.getByLabel("ecalMultiAndGSGlobalRecHitEB", "hitsNotReplaced", unreplacedGSFixedHandle);
+   ecalMultiAndGSGlobalRecHitEB_hitsNotReplaced_ = !unreplacedGSFixedHandle.isValid() || !unreplacedGSFixedHandle->empty();
+
+   edm::Handle<bool> duplicateGSFixedHandle;
+   iEvent.getByLabel("particleFlowEGammaGSFixed", "dupECALClusters", duplicateGSFixedHandle);
+   particleFlowEGammaGSFixed_dupECALClusters_ = *duplicateGSFixedHandle;
+
    // write the event
    eventTree_->Fill();
 }
