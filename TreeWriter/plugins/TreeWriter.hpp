@@ -204,6 +204,7 @@ private:
 
    // physics Objects
    std::vector<tree::Photon>   vPhotons_;
+   std::vector<tree::Particle>   vPhotonsOld_;
    std::vector<tree::Jet>      vJets_;
    std::vector<tree::Particle> vGenJets_;
    std::vector<tree::Electron> vElectrons_;
