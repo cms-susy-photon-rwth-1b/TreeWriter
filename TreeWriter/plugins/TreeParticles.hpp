@@ -48,6 +48,7 @@ namespace tree
       Float_t r9;
       Float_t sigmaPt;
       Float_t seedCrystalE;
+      Bool_t hasGainSwitch;
 
       Float_t cIso;
       Float_t nIso;

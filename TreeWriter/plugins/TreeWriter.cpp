@@ -478,6 +478,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trPho.hasPixelSeed = pho->hasPixelSeed();
       trPho.passElectronVeto = pho->passElectronVeto();
       trPho.r9 = pho->r9();
+      trPho.hasGainSwitch = !pho->hasUserInt("hasGainSwitchFlag") || pho->userInt("hasGainSwitchFlag");
 
       vid::CutFlowResult cutFlow = (*loose_id_cutflow)[phoPtr];
       trPho.cIso = cutFlow.getValueCutUpon(4);
