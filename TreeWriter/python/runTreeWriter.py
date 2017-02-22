@@ -283,7 +283,7 @@ if not isRealData:
 if "Fast" in dataset:
     process.TreeWriter.metFilterNames.remove("Flag_globalTightHalo2016Filter")
     process.TreeWriter.lheEventProduct = "source"
-    if "T5Wg" in dataset or "T6Wg":
+    if "T5Wg" in dataset or "T6Wg" in dataset:
         process.TreeWriter.minNumberBinos_cut = 1
 
 if "PUMoriond17" in dataset:
