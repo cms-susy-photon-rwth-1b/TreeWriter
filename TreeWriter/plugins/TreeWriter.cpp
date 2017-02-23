@@ -161,6 +161,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    consumes<std::vector<pat::TriggerObjectStandAlone>>(edm::InputTag("selectedPatTrigger"));
    consumes<edm::View<pat::Photon>>(edm::InputTag("slimmedPhotonsBeforeGSFix"));
    consumes<edm::View<pat::Photon>>(edm::InputTag("slimmedPhotons", "", "PAT"));
+   consumes<edm::View<pat::Photon>>(edm::InputTag("slimmedPhotons", "", "RECO"));
    consumes<bool>(edm::InputTag("particleFlowEGammaGSFixed", "dupECALClusters"));
    consumes<edm::EDCollection<DetId>>(edm::InputTag("ecalMultiAndGSGlobalRecHitEB", "hitsNotReplaced"));
 
@@ -464,7 +465,8 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
    // uncorrected photon collection
    edm::Handle<edm::View<pat::Photon>> photonCollUncorrected;
-   iEvent.getByLabel(edm::InputTag("slimmedPhotons", "", "PAT"), photonCollUncorrected);
+   if (reMiniAOD_ || !isRealData) iEvent.getByLabel(edm::InputTag("slimmedPhotons", "", "PAT"), photonCollUncorrected);
+   else iEvent.getByLabel(edm::InputTag("slimmedPhotons", "", "RECO"), photonCollUncorrected);
 
    // photon collection
    edm::Handle<edm::View<pat::Photon>> photonColl;
@@ -492,7 +494,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       auto itPos = std::distance(photonColl->begin(), pho);
       trPho.pMultifit.SetXYZ(0,0,0);
       trPho.pUncorrected.SetXYZ(0,0,0);
-      if (itPos<photonCollOld->size()) {
+      if (reMiniAOD_ && itPos<photonCollOld->size()) {
         auto p = (*photonCollOld).at(itPos);
         trPho.pMultifit.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
       }
@@ -823,11 +825,11 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
    edm::Handle<edm::EDCollection<DetId>> unreplacedGSFixedHandle;
    iEvent.getByLabel("ecalMultiAndGSGlobalRecHitEB", "hitsNotReplaced", unreplacedGSFixedHandle);
-   ecalMultiAndGSGlobalRecHitEB_hitsNotReplaced_ = !unreplacedGSFixedHandle.isValid() || !unreplacedGSFixedHandle->empty();
+   ecalMultiAndGSGlobalRecHitEB_hitsNotReplaced_ = reMiniAOD_ && (!unreplacedGSFixedHandle.isValid() || !unreplacedGSFixedHandle->empty());
 
    edm::Handle<bool> duplicateGSFixedHandle;
    iEvent.getByLabel("particleFlowEGammaGSFixed", "dupECALClusters", duplicateGSFixedHandle);
-   particleFlowEGammaGSFixed_dupECALClusters_ = *duplicateGSFixedHandle;
+   particleFlowEGammaGSFixed_dupECALClusters_ = reMiniAOD_ && *duplicateGSFixedHandle;
 
    // write the event
    eventTree_->Fill();
