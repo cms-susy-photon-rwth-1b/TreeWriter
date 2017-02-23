@@ -755,10 +755,10 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    vIntermediateGenParticles_.clear();
    tree::GenParticle trP;
    tree::IntermediateGenParticle trIntermP;
+   signal_nBinos_ = 0;
    if (!isRealData) {
       // Get generator level info
       // Pruned particles are the one containing "important" stuff
-      signal_nBinos_ = 0;
       for (const reco::GenParticle &genP: *prunedGenParticles){
          auto absId = abs(genP.pdgId());
          // estimate number of binos
