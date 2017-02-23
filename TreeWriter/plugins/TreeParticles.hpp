@@ -57,7 +57,8 @@ namespace tree
 
       Int_t isTrue;
       Int_t isTrueAlternative;
-      TVector3 pOld;
+      TVector3 pMultifit;
+      TVector3 pUncorrected;
 
       // IDs
       Bool_t  isLoose15;
