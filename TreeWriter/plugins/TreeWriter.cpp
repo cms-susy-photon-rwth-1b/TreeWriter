@@ -166,7 +166,6 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_ = fs_->make<TTree> ("eventTree", "event data");
 
    eventTree_->Branch("photons", &vPhotons_);
-   eventTree_->Branch("oldPhotons", &vPhotonsOld_);
    eventTree_->Branch("jets", &vJets_);
    eventTree_->Branch("genJets", &vGenJets_);
    eventTree_->Branch("electrons", &vElectrons_);
@@ -458,6 +457,10 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle<EcalRecHitCollection> ebRecHits;
    iEvent.getByToken(ebRecHitsToken_, ebRecHits);
 
+   // old photon collection
+   edm::Handle<edm::View<pat::Photon>> photonCollOld;
+   iEvent.getByLabel("slimmedPhotonsBeforeGSFix", photonCollOld);
+
    // photon collection
    edm::Handle<edm::View<pat::Photon>> photonColl;
    iEvent.getByToken(photonCollectionToken_, photonColl);
@@ -480,6 +483,12 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trPho.passElectronVeto = pho->passElectronVeto();
       trPho.r9 = pho->r9();
       trPho.hasGainSwitch = !pho->hasUserInt("hasGainSwitchFlag") || pho->userInt("hasGainSwitchFlag");
+
+      auto itPos = std::distance(photonColl->begin(), pho);
+      if (itPos<photonCollOld->size()) {
+        auto oldPho = (*photonCollOld).at(itPos);
+        trPho.pOld.SetPtEtaPhi(oldPho.pt(), oldPho.superCluster()->eta(), oldPho.superCluster()->phi());
+      }
 
       vid::CutFlowResult cutFlow = (*loose_id_cutflow)[phoPtr];
       trPho.cIso = cutFlow.getValueCutUpon(4);
@@ -513,18 +522,6 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    sort(vPhotons_.begin(), vPhotons_.end(), tree::PtGreater);
    if (minNumberPhotons_cut_ && (vPhotons_.size()<minNumberPhotons_cut_|| vPhotons_.at(0).p.Pt()<dPhoton_pT_cut_)) return;
    hCutFlow_->Fill("photons", mc_weight_*pu_weight_);
-
-    // old photon collection
-   edm::Handle<edm::View<pat::Photon>> photonCollOld;
-   iEvent.getByLabel("slimmedPhotonsBeforeGSFix", photonCollOld);
-
-   vPhotonsOld_.clear();
-   tree::Particle oldPhoton;
-   for (const auto& p: *photonCollOld) {
-      if (p.pt()<dPhoton_pT_cut_) continue;
-      oldPhoton.p.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
-      vPhotonsOld_.push_back(oldPhoton);
-   }
 
    // Muons
    edm::Handle<pat::MuonCollection> muonColl;
