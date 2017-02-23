@@ -341,7 +341,6 @@ if user=="kiesel":
         process.TreeWriter.HT_cut = 0.
         process.TreeWriter.photon_pT_cut = 25.
         process.TreeWriter.minNumberPhotons_cut = 1
-        process.TreeWriter.storeTriggerObjects = True
     if "Fast" in dataset: # signal scan
         process.TreeWriter.HT_cut = 0.
 
