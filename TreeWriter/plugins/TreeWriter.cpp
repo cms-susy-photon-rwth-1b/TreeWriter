@@ -6,6 +6,7 @@
 
 #include "TreeWriter.hpp"
 
+using namespace std;
 
 // compute HT using RECO objects to "reproduce" the trigger requirements
 static double computeHT(const std::vector<tree::Jet>& jets) {
