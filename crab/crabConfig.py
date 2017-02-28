@@ -168,7 +168,7 @@ datasets["kiesel"] += datasets["WJetsToLNu_HT"] + datasets["WJetsToLNu_HT_extra"
 datasets["kiesel"] += datasets["ZJetsToNuNu_HT"] + datasets["ZJetsToNuNu_HT_extra"]
 datasets["kiesel"] += datasets["TTJets_HT"]
 datasets["kiesel"] += dataDatasets("SingleElectron")
-datasets["kiesel"] += dataDatasets("SinglePhoton")
+datasets["kiesel"] = dataDatasets("SinglePhoton")
 datasets["kiesel"] += dataDatasets("JetHT")
 
 datasets["jschulz"] = [
@@ -246,7 +246,7 @@ if __name__ == '__main__':
             config.Data.lumiMask = getLumiMask(cmssw_src)
 
         if user=="kiesel":
-            config.Data.outputDatasetTag = 'v22'
+            config.Data.outputDatasetTag = 'v23'
             config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
         elif user=="jschulz":
             config.Data.outputDatasetTag = 'v10'

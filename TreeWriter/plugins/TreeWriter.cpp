@@ -119,6 +119,8 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , muonCollectionToken_    (consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muons")))
    , electronCollectionToken_(consumes<edm::View<pat::Electron> >(iConfig.getParameter<edm::InputTag>("electrons")))
    , metCollectionToken_     (consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("mets")))
+   , metCorrectedCollectionToken_  (consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metCorrected")))
+   , metCalibratedCollectionToken_ (consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metCalibrated")))
    , caloMetCollectionToken_ (consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("caloMets")))
    , rhoToken_               (consumes<double> (iConfig.getParameter<edm::InputTag>("rho")))
    , ebRecHitsToken_         (consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("ebRecHits")))
@@ -174,6 +176,8 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("electrons", &vElectrons_);
    eventTree_->Branch("muons", &vMuons_);
    eventTree_->Branch("met", &met_);
+   eventTree_->Branch("metCorrected", &metCorrected_);
+//   eventTree_->Branch("metCalibrated", &metCalibrated_);
    eventTree_->Branch("met_raw", &met_raw_);
    eventTree_->Branch("met_gen", &met_gen_);
    eventTree_->Branch("met_JESu", &met_JESu_);
@@ -684,6 +688,14 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle<pat::METCollection> metCollCalo;
    iEvent.getByToken(caloMetCollectionToken_, metCollCalo);
    caloMetPt_ = metCollCalo->front().caloMETPt();
+
+   edm::Handle<pat::METCollection> metCorrectedColl;
+   iEvent.getByToken(metCorrectedCollectionToken_, metCorrectedColl);
+   metCorrected_.p.SetPtEtaPhi(metCorrectedColl->front().pt(), metCorrectedColl->front().eta(), metCorrectedColl->front().phi());
+
+   edm::Handle<pat::METCollection> metCalibratedColl;
+   iEvent.getByToken(metCalibratedCollectionToken_, metCalibratedColl);
+   metCalibrated_.p.SetPtEtaPhi(metCalibratedColl->front().pt(), metCalibratedColl->front().eta(), metCalibratedColl->front().phi());
 
    edm::Handle<pat::METCollection> metColl;
    iEvent.getByToken(metCollectionToken_, metColl);

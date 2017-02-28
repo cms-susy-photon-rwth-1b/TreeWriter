@@ -34,7 +34,15 @@ options.register ('user',
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/120000/02DD5E46-7ABE-E611-8F20-0025905B8582.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/BC527183-C0B7-E611-BC15-001E67348055.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/SinglePhoton/MINIAOD/03Feb2017_ver1-v1/100000/04CFB75E-12EE-E611-918B-02163E0125C4.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/SinglePhoton/MINIAOD/03Feb2017_ver1-v1/100000/04CFB75E-12EE-E611-918B-02163E0125C4.root'
+#options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016partBtoH-03Feb2017_MINIAOD.root'
+options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016C-03Feb2017-v1_MINIAOD.root'
+options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016D-03Feb2017-v1_MINIAOD.root'
+options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016E-03Feb2017-v1_MINIAOD.root'
+options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016F-03Feb2017-v1_MINIAOD.root'
+options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016G-03Feb2017-v1_MINIAOD.root'
+#options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016H-03Feb2017_ver2-v1_MINIAOD.root'
+#options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016H-03Feb2017_ver3-v1_MINIAOD.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
 # get and parse the command line arguments
@@ -227,6 +235,8 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     genJets=cms.InputTag("slimmedGenJets"),
                                     electrons = cms.InputTag("calibratedPatElectrons"),
                                     mets = cms.InputTag("slimmedMETs", "", "TreeWriter"),
+                                    metCorr = cms.InputTag(""),
+                                    metCorrCal = cms.InputTag(""),
                                     caloMets = cms.InputTag("slimmedMETs"),
                                     rho = cms.InputTag("fixedGridRhoFastjetAll"),
                                     ebRecHits = cms.InputTag("reducedEgamma","reducedEBRecHits"),
@@ -281,18 +291,20 @@ process.TreeWriter.hardPUveto=dataset.startswith("/QCD_HT100to200")
 
 if "03Feb2017" in dataset:
     process.TreeWriter.reMiniAOD = True
-    process.TreeWriter.mets = cms.InputTag("slimmedMETsMuEGClean")
+    process.TreeWriter.mets = cms.InputTag("slimmedMETsMuEGClean", "", "PAT")
+    process.TreeWriter.metCorrected = cms.InputTag("slimmedMETsMuEGClean", "", "TreeWriter")
+    process.TreeWriter.metCalibrated = cms.InputTag("slimmedMETsMuEGCleanCalibrated", "", "TreeWriter")
     process.TreeWriter.metFilterNames.extend(["Flag_chargedHadronTrackResolutionFilter", "Flag_muonBadTrackFilter"])
 
     # Now you are creating the e/g corrected MET on top of the bad muon corrected MET (on re-miniaod)
     from PhysicsTools.PatUtils.tools.corMETFromMuonAndEG import corMETFromMuonAndEG
     corMETFromMuonAndEG(
         process,
-        pfCandCollection = "", #not needed
+        pfCandCollection = "",
         electronCollection = "slimmedElectronsBeforeGSFix",
         photonCollection = "slimmedPhotonsBeforeGSFix",
-        corElectronCollection = "calibratedPatElectrons",
-        corPhotonCollection = "calibratedPatPhotons",
+        corElectronCollection = "slimmedElectrons",
+        corPhotonCollection = "slimmedPhotons",
         allMETEGCorrected = True,
         muCorrection = False,
         eGCorrection = True,
@@ -304,6 +316,25 @@ if "03Feb2017" in dataset:
     process.slimmedMETsMuEGClean.rawVariation =  cms.InputTag("patPFMetRawMuEGClean")
     process.slimmedMETsMuEGClean.t1Uncertainties = cms.InputTag("patPFMetT1%sMuEGClean")
     del process.slimmedMETsMuEGClean.caloMET
+
+    corMETFromMuonAndEG(
+        process,
+        pfCandCollection = "",
+        electronCollection = "slimmedElectronsBeforeGSFix",
+        photonCollection = "slimmedPhotonsBeforeGSFix",
+        corElectronCollection = "calibratedPatElectrons",
+        corPhotonCollection = "calibratedPatPhotons",
+        allMETEGCorrected = True,
+        muCorrection = False,
+        eGCorrection = True,
+        runOnMiniAOD = True,
+        postfix = "MuEGCleanCalibrated"
+    )
+    process.slimmedMETsMuEGCleanCalibrated = process.slimmedMETs.clone()
+    process.slimmedMETsMuEGCleanCalibrated.src = cms.InputTag("patPFMetT1MuEGClean")
+    process.slimmedMETsMuEGCleanCalibrated.rawVariation =  cms.InputTag("patPFMetRawMuEGClean")
+    process.slimmedMETsMuEGCleanCalibrated.t1Uncertainties = cms.InputTag("patPFMetT1%sMuEGClean")
+    del process.slimmedMETsMuEGCleanCalibrated.caloMET
 
 if not isRealData:
     process.TreeWriter.metFilterNames.remove("Flag_eeBadScFilter")
