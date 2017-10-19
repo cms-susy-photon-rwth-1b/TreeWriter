@@ -25,6 +25,12 @@
 #include "DataFormats/PatCandidates/interface/VIDCutFlowResult.h"
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 
+//needed?
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
+#include "DataFormats/EgammaCandidates/interface/Conversion.h"
+#include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
+
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/Common/interface/EDCollection.h"
@@ -140,13 +146,28 @@ private:
    edm::EDGetTokenT<edm::ValueMap<bool>> electronLooseIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> electronMediumIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> electronTightIdMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<float>> electronMvaIdMapToken_;
+    edm::EDGetTokenT<edm::ValueMap<bool>> eleMediumIdMapToken_;
+    edm::EDGetTokenT<edm::ValueMap<bool>> eleTightIdMapToken_;
+    // MVA values and categories (optional)
+    edm::EDGetTokenT<edm::ValueMap<float>> mvaValuesMapToken_;
+    edm::EDGetTokenT<edm::ValueMap<int>> mvaCategoriesMapToken_;
+   
+    //~//Conversion veto
+   edm::EDGetTokenT<reco::BeamSpot> beamSpotToken_;
+   edm::EDGetTokenT<reco::ConversionCollection> conversionsMiniAODToken_;
+   
+   
    // photon id
    edm::EDGetTokenT<edm::ValueMap<bool>> photonLooseIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> photonMediumIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> photonTightIdMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<float>> photonMvaIdMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult>> phoLooseIdFullInfoMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult>> photonLooseIdFullInfoMapToken_mva_;
+   //MVA 
+   edm::EDGetTokenT<edm::ValueMap<bool> >               photonMediumIdBoolMapToken_mva_;
+   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > photonMediumIdFullInfoMapToken_mva_;
+   // MVA values and categories (optional)
+   edm::EDGetTokenT<edm::ValueMap<float> > photonMvaValuesMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<int> > photonMvaCategoriesMapToken_;
 
    // met filters to apply
    const std::vector<std::string> metFilterNames_;

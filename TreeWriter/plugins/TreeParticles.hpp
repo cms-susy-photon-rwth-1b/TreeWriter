@@ -68,6 +68,9 @@ namespace tree
       Bool_t  isMedium;
       Bool_t  isTight;
       Float_t mva;
+      int isMediumMVA;
+      float mvaValue;
+      int mvaCategory;
    };
 
    struct Jet : public Particle
@@ -99,6 +102,10 @@ namespace tree
       // PF-based combined relative isolation with Δβ correction:
       // (∑pT(ch.had from PV) + max(0, ∑ET(neut.had) + ∑ET(phot) − 0.5*∑pT(ch.had from PU)))/pT(μ)
       float rIso;
+      bool passImpactParameter;
+      float d0;
+      float dZ;
+      float SIP3D;
    };
 
    struct Electron: public Particle
@@ -108,8 +115,16 @@ namespace tree
       bool isMedium;
       bool isTight;
       float rIso;
-      float mva;
+      int isMediumMVA;
+      int isTightMVA;
+      float mvaValue;
+      int mvaCategory;
       Float_t seedCrystalE;
+      bool isPassConvVeto;
+      bool passImpactParameter;
+      float d0;
+      float dZ;
+      float SIP3D;
    };
 
    struct MET : public Particle

@@ -29,9 +29,12 @@ options.register ('user',
 
 # defaults
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/264A540A-571A-E611-8C5E-0025904E3FCE.root'
-options.inputFiles = 'root:///user/kiesel/root-files/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_MINIAODSIM.root'
+#options.inputFiles = 'root:///user/kiesel/root-files/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_MINIAODSIM.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/100000/000786F7-3AD0-E611-A6AE-842B2B765E01.root'
+
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
+options.maxEvents = 5000
 # get and parse the command line arguments
 options.parseArguments()
 
@@ -165,7 +168,7 @@ process.TFileService = cms.Service("TFileService", fileName=cms.string(options.o
 process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     # selection configuration
                                     HT_cut=cms.untracked.double(0),
-                                    photon_pT_cut=cms.untracked.double(20), # for leading photon
+                                    photon_pT_cut=cms.untracked.double(5), # for leading photon
                                     jet_pT_cut=cms.untracked.double(30), # for all jets
                                     isolatedPhotons=cms.untracked.bool(True), # for all photons in the collection
                                     minNumberPhotons_cut=cms.untracked.uint32(1),
@@ -193,12 +196,28 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     electronLooseIdMap  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose"),
                                     electronMediumIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium"),
                                     electronTightIdMap  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight"),
-                                    electronMvaIdMap  = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90"),
+ 
+                                    # ID decisions (common to all formats)
+                                    eleMediumIdMap = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90"),
+                                    eleTightIdMap  = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp80"),
+                                    # ValueMaps with MVA results
+                                    mvaValuesMap     = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Values"),
+                                    mvaCategoriesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Categories"),
+                                    
+                                    
+                                    beamSpot = cms.InputTag('offlineBeamSpot'),
+                                    conversionsMiniAOD = cms.InputTag('reducedEgamma:reducedConversions'),
+                                    
                                     # photon IDs
                                     photonLooseIdMap   = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-loose"),
                                     photonMediumIdMap  = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-medium"),
                                     photonTightIdMap   = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-tight"),
-                                    photonMvaIdMap = cms.InputTag("egmPhotonIDs:mvaPhoID-Spring16-nonTrig-V1-wp90"),
+
+                                    photonMediumIdBoolMap_mva = cms.InputTag("egmPhotonIDs:mvaPhoID-Spring16-nonTrig-V1-wp90"),
+                                    photonMediumIdFullInfoMap_mva = cms.InputTag("egmPhotonIDs:mvaPhoID-Spring16-nonTrig-V1-wp90"),
+                                    photonMvaValuesMap     = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring16NonTrigV1Values"),
+                                    photonMvaCategoriesMap = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring16NonTrigV1Categories"),
+                                    
                                     # met filters to apply
                                     metFilterNames=cms.untracked.vstring(
                                         "Flag_HBHENoiseFilter",
@@ -402,6 +421,34 @@ elif user=="jschulz":
         "HLT_PFHT600_v",
         "HLT_PFHT650_v",
         "HLT_PFHT800_v",
+    ]
+elif user=="swuchterl":
+    process.TreeWriter.minNumberPhotons_cut=0
+    #process.TreeWriter.triggerNames=["HLT_Photon22_v"
+    #]
+    process.TreeWriter.triggerNames=["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
+    "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
+    "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v",
+    "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v",
+    "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
+    "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
+    "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
+    "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",
+    "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v",
+    "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v",
+    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",
+    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
+    "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v",
+    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",
+    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",
+    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",
+    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",
+    "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
+    "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v",
+    "HLT_Mu27_TkMu8_v",
+    "HLT_Mu30_TkMu11_v",
+    "HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v",
+    "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v"
     ]
 else:
     print "you shall not pass!"

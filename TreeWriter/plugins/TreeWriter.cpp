@@ -8,6 +8,39 @@
 
 using namespace std;
 
+
+//function for cutting on impact parameters
+// values and recipe from:
+//https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
+//and SUSY Aachen Dilepton Analysis
+//https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSLeptonSF#Electron_and_Muons_Selections
+    bool testImpactParameters(float d0_, float dZ_, float SIP3D_,bool isElectron, bool isEB){
+        float d0Min = -1.;
+        float d0MaxEE = 0.1;
+        float d0MaxEB = 0.05;
+        float dZMin = -1.;
+        float dZMaxEE = 0.2;
+        float dZMaxEB = 0.1;
+        float SIP3DMin = -1.;
+        //float SIP3DMax = 8.;
+        float SIP3DMax = 4.;
+        if(isElectron){
+            return ((isEB)&&(d0_ >= d0Min && d0_ < d0MaxEB && dZ_ >= dZMin && dZ_ < dZMaxEB && SIP3D_ < SIP3DMax && SIP3D_ >= SIP3DMin))
+                    || ( d0_ >= d0Min && d0_ < d0MaxEE && dZ_ >= dZMin && dZ_ < dZMaxEE  && SIP3D_ < SIP3DMax && SIP3D_ >= SIP3DMin);
+        }
+        else{
+            d0Min= -1.;
+            float d0Max= 0.05;
+            dZMin= -0.1;
+            float dZMax= 0.1;
+            SIP3DMin= -1.;
+            //SIP3DMax= 8.;   
+            SIP3DMax= 4.;   
+            return ( d0_ >= d0Min && d0_ < d0Max && dZ_ >= dZMin && dZ_ < dZMax && SIP3D_ < SIP3DMax && SIP3D_ >= SIP3DMin);
+        }
+    }
+
+
 // compute HT using RECO objects to "reproduce" the trigger requirements
 static double computeHT(const std::vector<tree::Jet>& jets) {
    double HT = 0;
@@ -133,13 +166,25 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , electronLooseIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronLooseIdMap"  )))
    , electronMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronMediumIdMap" )))
    , electronTightIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronTightIdMap"  )))
-   , electronMvaIdMapToken_   (consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("electronMvaIdMap"  )))
+    //MVA electron ID
+   , eleMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("eleMediumIdMap")))
+   , eleTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("eleTightIdMap")))
+   , mvaValuesMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("mvaValuesMap")))
+   , mvaCategoriesMapToken_(consumes<edm::ValueMap<int> >(iConfig.getParameter<edm::InputTag>("mvaCategoriesMap")))
+   
+   
    // photon id
    , photonLooseIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonLooseIdMap"  )))
    , photonMediumIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonMediumIdMap" )))
    , photonTightIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonTightIdMap"  )))
-   , photonMvaIdMapToken_    (consumes<edm::ValueMap<float>>(iConfig.getParameter<edm::InputTag>("photonMvaIdMap")))
-   , phoLooseIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("photonLooseIdMap" )))
+   , photonLooseIdFullInfoMapToken_mva_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("photonLooseIdMap" )))
+   //MVA ID
+   , photonMediumIdBoolMapToken_mva_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonMediumIdBoolMap_mva")))
+   , photonMediumIdFullInfoMapToken_mva_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("photonMediumIdFullInfoMap_mva")))
+   , photonMvaValuesMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("photonMvaValuesMap")))
+   , photonMvaCategoriesMapToken_(consumes<edm::ValueMap<int> >(iConfig.getParameter<edm::InputTag>("photonMvaCategoriesMap")))
+   
+   
    // met filters to apply
    , metFilterNames_(iConfig.getUntrackedParameter<std::vector<std::string>>("metFilterNames"))
    , phoWorstChargedIsolationToken_(consumes <edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("phoWorstChargedIsolation")))
@@ -164,6 +209,14 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    consumes<edm::View<pat::Photon>>(edm::InputTag("slimmedPhotons", "", "RECO"));
    consumes<bool>(edm::InputTag("particleFlowEGammaGSFixed", "dupECALClusters"));
    consumes<edm::EDCollection<DetId>>(edm::InputTag("ecalMultiAndGSGlobalRecHitEB", "hitsNotReplaced"));
+
+    //~//Conversion veto
+    beamSpotToken_    = consumes<reco::BeamSpot> (iConfig.getParameter <edm::InputTag>("beamSpot"));
+    //conversionsToken_ = mayConsume< reco::ConversionCollection >(iConfig.getParameter<edm::InputTag>("conversions"));
+    conversionsMiniAODToken_ = mayConsume< reco::ConversionCollection >(iConfig.getParameter<edm::InputTag>("conversionsMiniAOD"));
+
+
+
 
    eventTree_ = fs_->make<TTree> ("eventTree", "event data");
 
@@ -428,6 +481,10 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    if (!nGoodVertices_) return;
    hCutFlow_->Fill("nGoodVertices", mc_weight_*pu_weight_);
 
+
+    edm::Handle<reco::BeamSpot> theBeamSpot;
+    iEvent.getByToken(beamSpotToken_,theBeamSpot);
+
    // Get rho
    edm::Handle< double > rhoH;
    iEvent.getByToken(rhoToken_, rhoH);
@@ -443,14 +500,25 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle<edm::ValueMap<bool>> photon_loose_id_dec;
    edm::Handle<edm::ValueMap<bool>> photon_medium_id_dec;
    edm::Handle<edm::ValueMap<bool>> photon_tight_id_dec;
-   edm::Handle<edm::ValueMap<float>> photon_mva_value;
    edm::Handle<edm::ValueMap<vid::CutFlowResult>> photon_loose_id_cutflow;
    iEvent.getByToken(photonLooseIdMapToken_, photon_loose_id_dec);
    iEvent.getByToken(photonMediumIdMapToken_, photon_medium_id_dec);
    iEvent.getByToken(photonTightIdMapToken_, photon_tight_id_dec);
 
-   iEvent.getByToken(photonMvaIdMapToken_, photon_mva_value);
-   iEvent.getByToken(phoLooseIdFullInfoMapToken_, photon_loose_id_cutflow);
+   iEvent.getByToken(photonLooseIdFullInfoMapToken_mva_, photon_loose_id_cutflow);
+
+   //MVA by sebastian
+   edm::Handle<edm::ValueMap<bool> > photon_medium_id_decisions_MVA;
+   iEvent.getByToken(photonMediumIdBoolMapToken_mva_,photon_medium_id_decisions_MVA);
+   // The second map has the full info about the cut flow
+   edm::Handle<edm::ValueMap<vid::CutFlowResult> > photon_medium_id_cutflow_data;
+   iEvent.getByToken(photonMediumIdFullInfoMapToken_mva_,photon_medium_id_cutflow_data);
+   // Get MVA values and categories (optional)
+   edm::Handle<edm::ValueMap<float> > photon_mvaValues;
+   edm::Handle<edm::ValueMap<int> > photon_mvaCategories;
+   iEvent.getByToken(photonMvaValuesMapToken_,photon_mvaValues);
+   iEvent.getByToken(photonMvaCategoriesMapToken_,photon_mvaCategories);
+
 
    edm::Handle<EcalRecHitCollection> ebRecHits;
    iEvent.getByToken(ebRecHitsToken_, ebRecHits);
@@ -502,7 +570,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trPho.pIso = cutFlow.getValueCutUpon(6);
       trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
 
-      trPho.mva=(*photon_mva_value)[phoPtr];
+      trPho.isMediumMVA = (*photon_medium_id_decisions_MVA)[phoPtr];
+      trPho.mvaValue = (*photon_mvaValues)[phoPtr];
+      trPho.mvaCategory = (*photon_mvaCategories)[phoPtr];
 
       // MC match
       if (!isRealData) {
@@ -540,9 +610,24 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       auto const& pfIso = mu.pfIsolationR04();
       trMuon.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/mu.pt();
       trMuon.charge = mu.charge();
+      //impact parameters
+      double d0=999.;
+      double dZ=999.;
+      double SIP3D=999.;
+      math::XYZPoint vtx_point = firstGoodVertex.position();
+      d0 = abs( mu.track()->dxy( vtx_point ));
+      dZ = abs( mu.track()->dz( vtx_point )); 
+      SIP3D = abs(mu.dB(pat::Muon::PV3D)/mu.edB(pat::Muon::PV3D)); 
+      trMuon.passImpactParameter =testImpactParameters(d0,dZ,SIP3D,false,true);
+      trMuon.d0=d0;
+      trMuon.dZ=dZ;
+      trMuon.SIP3D=SIP3D;
+      
       vMuons_.push_back(trMuon);
    } // muon loop
    sort(vMuons_.begin(), vMuons_.end(), tree::PtGreater);
+
+
 
    // Electrons
    // Get the electron ID data from the event stream
@@ -550,12 +635,22 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle<edm::ValueMap<bool>> electron_loose_id_decisions;
    edm::Handle<edm::ValueMap<bool>> electron_medium_id_decisions;
    edm::Handle<edm::ValueMap<bool>> electron_tight_id_decisions;
-   edm::Handle<edm::ValueMap<float>> electron_mva_value;
+   edm::Handle<edm::ValueMap<bool>> medium_id_decisions_MVA;
+   edm::Handle<edm::ValueMap<bool>> tight_id_decisions_MVA; 
+   //Get MVA values and categories (optional)
+   edm::Handle<edm::ValueMap<float> > mvaValues;
+   edm::Handle<edm::ValueMap<int> > mvaCategories; 
    iEvent.getByToken(electronVetoIdMapToken_, electron_veto_id_decisions);
    iEvent.getByToken(electronLooseIdMapToken_, electron_loose_id_decisions);
    iEvent.getByToken(electronMediumIdMapToken_, electron_medium_id_decisions);
    iEvent.getByToken(electronTightIdMapToken_, electron_tight_id_decisions);
-   iEvent.getByToken(electronMvaIdMapToken_, electron_mva_value);
+   iEvent.getByToken(eleMediumIdMapToken_,medium_id_decisions_MVA);
+   iEvent.getByToken(eleTightIdMapToken_,tight_id_decisions_MVA);
+   iEvent.getByToken(mvaValuesMapToken_,mvaValues);
+   iEvent.getByToken(mvaCategoriesMapToken_,mvaCategories);
+
+    edm::Handle<reco::ConversionCollection> conversions;
+    iEvent.getByToken(conversionsMiniAODToken_, conversions);
 
    edm::Handle<edm::View<pat::Electron>> electronColl;
    iEvent.getByToken(electronCollectionToken_, electronColl);
@@ -574,7 +669,27 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trEl.charge = el->charge();
       auto const & pfIso = el->pfIsolationVariables();
       trEl.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();
-      trEl.mva = (*electron_mva_value) [elPtr];
+      trEl.isMediumMVA = (*medium_id_decisions_MVA)[elPtr];
+      trEl.isTightMVA = (*tight_id_decisions_MVA)[elPtr];
+      trEl.mvaValue=(*mvaValues)[elPtr];
+      trEl.mvaCategory=(*mvaCategories)[elPtr];
+      
+      bool passConvVeto = !ConversionTools::hasMatchedConversion(*el,conversions,theBeamSpot->position());
+      trEl.isPassConvVeto = passConvVeto;
+      
+      //impact parameter:
+      double d0=999.;
+      double dZ=999.;
+      double SIP3D=999.;
+      math::XYZPoint vtx_point = firstGoodVertex.position();
+      d0 = abs( el->gsfTrack()->dxy( vtx_point ));
+      dZ = abs( el->gsfTrack()->dz( vtx_point )); 
+      SIP3D = abs(el->dB(pat::Electron::PV3D)/el->edB(pat::Electron::PV3D)); 
+      trEl.passImpactParameter = testImpactParameters(d0,dZ,SIP3D,true,el->isEB());
+      trEl.d0=d0;
+      trEl.dZ=dZ;
+      trEl.SIP3D=SIP3D;
+      
       vElectrons_.push_back(trEl);
    }
    sort(vElectrons_.begin(), vElectrons_.end(), tree::PtGreater);
