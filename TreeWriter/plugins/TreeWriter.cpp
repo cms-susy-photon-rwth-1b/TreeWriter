@@ -99,6 +99,76 @@ float seedCrystalEnergyEB(const reco::SuperCluster& sc, const edm::Handle<EcalRe
    return energy;
 }
 
+double getPFIsolation(edm::Handle<pat::PackedCandidateCollection> const &pfcands,
+                        reco::Candidate const &ptcl,
+                        double r_iso_min=0.05, double r_iso_max=0.2, double kt_scale=10,
+                        bool charged_only=false) {
+    // copied from https://twiki.cern.ch/twiki/bin/view/CMS/MiniIsolationSUSY
+
+    if (ptcl.pt()<5.) return 99999.;
+
+    double deadcone_nh(0.), deadcone_ch(0.), deadcone_ph(0.), deadcone_pu(0.);
+    if(ptcl.isElectron()) {
+      if (fabs(ptcl.eta())>1.479) {deadcone_ch = 0.015; deadcone_pu = 0.015; deadcone_ph = 0.08;}
+    } else if(ptcl.isMuon()) {
+      deadcone_ch = 0.0001; deadcone_pu = 0.01; deadcone_ph = 0.01;deadcone_nh = 0.01;
+    } else {
+      //deadcone_ch = 0.0001; deadcone_pu = 0.01; deadcone_ph = 0.01;deadcone_nh = 0.01; // maybe use muon cones??
+    }
+
+    double iso_nh(0.); double iso_ch(0.);
+    double iso_ph(0.); double iso_pu(0.);
+    double ptThresh(0.5);
+    if(ptcl.isElectron()) ptThresh = 0;
+    double r_iso = max(r_iso_min,min(r_iso_max, kt_scale/ptcl.pt()));
+    for (const pat::PackedCandidate &pfc : *pfcands) {
+      if (abs(pfc.pdgId())<7) continue;
+
+      double dr = deltaR(pfc, ptcl);
+      if (dr > r_iso) continue;
+
+      //////////////////  NEUTRALS  /////////////////////////
+      if (pfc.charge()==0){
+        if (pfc.pt()>ptThresh) {
+          /////////// PHOTONS ////////////
+          if (abs(pfc.pdgId())==22) {
+            if(dr < deadcone_ph) continue;
+            iso_ph += pfc.pt();
+        /////////// NEUTRAL HADRONS ////////////
+          } else if (abs(pfc.pdgId())==130) {
+            if(dr < deadcone_nh) continue;
+            iso_nh += pfc.pt();
+          }
+        }
+        //////////////////  CHARGED from PV  /////////////////////////
+      } else if (pfc.fromPV()>1){
+        if (abs(pfc.pdgId())==211) {
+          if(dr < deadcone_ch) continue;
+          iso_ch += pfc.pt();
+        }
+        //////////////////  CHARGED from PU  /////////////////////////
+      } else {
+        if (pfc.pt()>ptThresh){
+          if(dr < deadcone_pu) continue;
+          iso_pu += pfc.pt();
+        }
+      }
+    }
+    double iso(0.);
+    if (charged_only){
+      iso = iso_ch;
+    } else {
+      iso = iso_ph + iso_nh;
+      iso -= 0.5*iso_pu;
+      if (iso>0) iso += iso_ch;
+      else iso = iso_ch;
+    }
+    iso = iso/ptcl.pt();
+
+    return iso;
+}
+
+
 template <typename T> int sign(T val) {
    return (T(0) < val) - (val < T(0));
 }
@@ -433,6 +503,12 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    iEvent.getByToken(rhoToken_, rhoH);
    rho_ = *rhoH;
 
+   // number of tracks
+   edm::Handle<std::vector<pat::PackedCandidate>> packedCandidates;
+   iEvent.getByToken(packedCandidateToken_, packedCandidates);
+   nTracksPV_ = std::count_if(packedCandidates->begin(),packedCandidates->end(), [] (const pat::PackedCandidate& cand) {
+      return cand.pt()>.9 && cand.charge() && cand.pvAssociationQuality() == pat::PackedCandidate::UsedInFitTight && cand.fromPV() == pat::PackedCandidate::PVUsedInFit;});
+
    // get gen particles before photons for the truth match
    edm::Handle<edm::View<reco::GenParticle>> prunedGenParticles;
    if (!isRealData) { iEvent.getByToken(prunedGenToken_,prunedGenParticles); }
@@ -539,6 +615,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trMuon.isTight = mu.isTightMuon(firstGoodVertex);
       auto const& pfIso = mu.pfIsolationR04();
       trMuon.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/mu.pt();
+      trMuon.miniIso = getPFIsolation(packedCandidates, mu);
       trMuon.charge = mu.charge();
       vMuons_.push_back(trMuon);
    } // muon loop
@@ -570,10 +647,10 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trEl.isMedium=(*electron_medium_id_decisions) [elPtr];
       trEl.isTight =(*electron_tight_id_decisions) [elPtr];
       trEl.p.SetPtEtaPhi(el->pt(), el->superCluster()->eta(), el->superCluster()->phi());
-      trEl.seedCrystalE = seedCrystalEnergyEB(*el->superCluster(), ebRecHits);
       trEl.charge = el->charge();
       auto const & pfIso = el->pfIsolationVariables();
       trEl.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();
+      trEl.miniIso = getPFIsolation(packedCandidates, *el);
       trEl.mva = (*electron_mva_value) [elPtr];
       vElectrons_.push_back(trEl);
    }
@@ -802,12 +879,6 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    }
    if (signal_nBinos_ < minNumberBinos_cut_) return;
    hCutFlow_->Fill("nBinos", mc_weight_*pu_weight_);
-
-   // number of tracks
-   edm::Handle<std::vector<pat::PackedCandidate>> packedCandidates;
-   iEvent.getByToken(packedCandidateToken_, packedCandidates);
-   nTracksPV_ = std::count_if(packedCandidates->begin(),packedCandidates->end(), [] (const pat::PackedCandidate& cand) {
-      return cand.pt()>.9 && cand.charge() && cand.pvAssociationQuality() == pat::PackedCandidate::UsedInFitTight && cand.fromPV() == pat::PackedCandidate::PVUsedInFit;});
 
    hCutFlow_->Fill("final", mc_weight_*pu_weight_);
    // store event identity
