@@ -140,14 +140,12 @@ private:
    edm::EDGetTokenT<edm::ValueMap<bool>> electronLooseIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> electronMediumIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> electronTightIdMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<float>> electronMvaIdMapToken_;
    // photon id
-   edm::EDGetTokenT<edm::ValueMap<bool>> photonLooseId15MapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool>> photonMediumId15MapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool>> photonTightId15MapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> photonLooseIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> photonMediumIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> photonTightIdMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<float>> photonMvaValuesMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<float>> photonMvaIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult>> phoLooseIdFullInfoMapToken_;
 
    // met filters to apply
@@ -157,7 +155,6 @@ private:
    edm::EDGetTokenT<edm::ValueMap<float>> phoWorstChargedIsolationToken_;
 
    const std::string pileupHistogramName_;
-   const bool hardPUveto_;
    const bool reMiniAOD_; // 03Feb2017 campaign
 
    PFJetIDSelectionFunctor jetIdSelector;

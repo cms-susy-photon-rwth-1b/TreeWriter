@@ -67,7 +67,7 @@ namespace tree
       Bool_t  isLoose;
       Bool_t  isMedium;
       Bool_t  isTight;
-      Float_t mvaValue;
+      Float_t mva;
    };
 
    struct Jet : public Particle
@@ -108,6 +108,7 @@ namespace tree
       bool isMedium;
       bool isTight;
       float rIso;
+      float mva;
       Float_t seedCrystalE;
    };
 

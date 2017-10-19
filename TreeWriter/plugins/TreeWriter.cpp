@@ -133,20 +133,17 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , electronLooseIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronLooseIdMap"  )))
    , electronMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronMediumIdMap" )))
    , electronTightIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronTightIdMap"  )))
+   , electronMvaIdMapToken_   (consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("electronMvaIdMap"  )))
    // photon id
-   , photonLooseId15MapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonLooseId15Map"  )))
-   , photonMediumId15MapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonMediumId15Map" )))
-   , photonTightId15MapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonTightId15Map"  )))
    , photonLooseIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonLooseIdMap"  )))
    , photonMediumIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonMediumIdMap" )))
    , photonTightIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonTightIdMap"  )))
-//   , photonMvaValuesMapToken_(consumes<edm::ValueMap<float>>(iConfig.getParameter<edm::InputTag>("photonMvaValuesMap")))
+   , photonMvaIdMapToken_    (consumes<edm::ValueMap<float>>(iConfig.getParameter<edm::InputTag>("photonMvaIdMap")))
    , phoLooseIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("photonLooseIdMap" )))
    // met filters to apply
    , metFilterNames_(iConfig.getUntrackedParameter<std::vector<std::string>>("metFilterNames"))
    , phoWorstChargedIsolationToken_(consumes <edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("phoWorstChargedIsolation")))
    , pileupHistogramName_(iConfig.getUntrackedParameter<std::string>("pileupHistogramName"))
-   , hardPUveto_(iConfig.getUntrackedParameter<bool>("hardPUveto"))
    , reMiniAOD_(iConfig.getUntrackedParameter<bool>("reMiniAOD"))
    , jetIdSelector(iConfig.getParameter<edm::ParameterSet>("pfJetIDSelector"))
    , triggerNames_(iConfig.getParameter<std::vector<std::string>>("triggerNames"))
@@ -443,23 +440,17 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle<edm::ValueMap<float>> phoWorstChargedIsolationMap;
    iEvent.getByToken(phoWorstChargedIsolationToken_, phoWorstChargedIsolationMap);
 
-   edm::Handle<edm::ValueMap<bool>> loose_id15_dec;
-   edm::Handle<edm::ValueMap<bool>> medium_id15_dec;
-   edm::Handle<edm::ValueMap<bool>> tight_id15_dec;
-   edm::Handle<edm::ValueMap<bool>> loose_id_dec;
-   edm::Handle<edm::ValueMap<bool>> medium_id_dec;
-   edm::Handle<edm::ValueMap<bool>> tight_id_dec;
-//   edm::Handle<edm::ValueMap<float>> mva_value;
-   edm::Handle<edm::ValueMap<vid::CutFlowResult>> loose_id_cutflow;
-   iEvent.getByToken(photonLooseId15MapToken_, loose_id15_dec);
-   iEvent.getByToken(photonMediumId15MapToken_, medium_id15_dec);
-   iEvent.getByToken(photonTightId15MapToken_, tight_id15_dec);
-   iEvent.getByToken(photonLooseIdMapToken_, loose_id_dec);
-   iEvent.getByToken(photonMediumIdMapToken_, medium_id_dec);
-   iEvent.getByToken(photonTightIdMapToken_, tight_id_dec);
+   edm::Handle<edm::ValueMap<bool>> photon_loose_id_dec;
+   edm::Handle<edm::ValueMap<bool>> photon_medium_id_dec;
+   edm::Handle<edm::ValueMap<bool>> photon_tight_id_dec;
+   edm::Handle<edm::ValueMap<float>> photon_mva_value;
+   edm::Handle<edm::ValueMap<vid::CutFlowResult>> photon_loose_id_cutflow;
+   iEvent.getByToken(photonLooseIdMapToken_, photon_loose_id_dec);
+   iEvent.getByToken(photonMediumIdMapToken_, photon_medium_id_dec);
+   iEvent.getByToken(photonTightIdMapToken_, photon_tight_id_dec);
 
-//   iEvent.getByToken(photonMvaValuesMapToken_,mva_value);
-   iEvent.getByToken(phoLooseIdFullInfoMapToken_, loose_id_cutflow);
+   iEvent.getByToken(photonMvaIdMapToken_, photon_mva_value);
+   iEvent.getByToken(phoLooseIdFullInfoMapToken_, photon_loose_id_cutflow);
 
    edm::Handle<EcalRecHitCollection> ebRecHits;
    iEvent.getByToken(ebRecHitsToken_, ebRecHits);
@@ -484,10 +475,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       if (pho->pt() < 15) continue;
 
       trPho.p.SetPtEtaPhi(pho->pt(), pho->superCluster()->eta(), pho->superCluster()->phi());
-
-      trPho.seedCrystalE = seedCrystalEnergyEB(*pho->superCluster(), ebRecHits);
       const edm::Ptr<pat::Photon> phoPtr( photonColl, pho - photonColl->begin() );
-      trPho.sigmaPt = pho->getCorrectedEnergyError(pho->getCandidateP4type())*sin(trPho.p.Theta());
       trPho.sigmaIetaIeta = pho->full5x5_sigmaIetaIeta();
       trPho.sigmaIphiIphi = pho->full5x5_showerShapeVariables().sigmaIphiIphi;
       trPho.hOverE = pho->hadTowOverEm();
@@ -508,13 +496,13 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         trPho.pUncorrected.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
       }
 
-      vid::CutFlowResult cutFlow = (*loose_id_cutflow)[phoPtr];
+      vid::CutFlowResult cutFlow = (*photon_loose_id_cutflow)[phoPtr];
       trPho.cIso = cutFlow.getValueCutUpon(4);
       trPho.nIso = cutFlow.getValueCutUpon(5);
       trPho.pIso = cutFlow.getValueCutUpon(6);
       trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
 
-//      trPho.mvaValue=(*mva_value)[phoPtr];
+      trPho.mva=(*photon_mva_value)[phoPtr];
 
       // MC match
       if (!isRealData) {
@@ -526,14 +514,11 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       }
 
       // check photon working points
-      trPho.isLoose15 = (*loose_id15_dec) [phoPtr];
-      trPho.isMedium15 = (*medium_id15_dec)[phoPtr];
-      trPho.isTight15 = (*tight_id15_dec) [phoPtr];
-      trPho.isLoose = (*loose_id_dec) [phoPtr];
-      trPho.isMedium = (*medium_id_dec)[phoPtr];
-      trPho.isTight = (*tight_id_dec) [phoPtr];
+      trPho.isLoose = (*photon_loose_id_dec) [phoPtr];
+      trPho.isMedium = (*photon_medium_id_dec)[phoPtr];
+      trPho.isTight = (*photon_tight_id_dec) [phoPtr];
       // write the photon to collection
-      if (isolatedPhotons_ && !trPho.isLoose15 && !trPho.isLoose) continue;
+      if (isolatedPhotons_ && !trPho.isLoose) continue;
       vPhotons_.push_back(trPho);
    } // photon loop
 
@@ -561,14 +546,16 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
    // Electrons
    // Get the electron ID data from the event stream
-   edm::Handle<edm::ValueMap<bool>> veto_id_decisions;
-   edm::Handle<edm::ValueMap<bool>> loose_id_decisions;
-   edm::Handle<edm::ValueMap<bool>> medium_id_decisions;
-   edm::Handle<edm::ValueMap<bool>> tight_id_decisions;
-   iEvent.getByToken(electronVetoIdMapToken_, veto_id_decisions);
-   iEvent.getByToken(electronLooseIdMapToken_, loose_id_decisions);
-   iEvent.getByToken(electronMediumIdMapToken_, medium_id_decisions);
-   iEvent.getByToken(electronTightIdMapToken_, tight_id_decisions);
+   edm::Handle<edm::ValueMap<bool>> electron_veto_id_decisions;
+   edm::Handle<edm::ValueMap<bool>> electron_loose_id_decisions;
+   edm::Handle<edm::ValueMap<bool>> electron_medium_id_decisions;
+   edm::Handle<edm::ValueMap<bool>> electron_tight_id_decisions;
+   edm::Handle<edm::ValueMap<float>> electron_mva_value;
+   iEvent.getByToken(electronVetoIdMapToken_, electron_veto_id_decisions);
+   iEvent.getByToken(electronLooseIdMapToken_, electron_loose_id_decisions);
+   iEvent.getByToken(electronMediumIdMapToken_, electron_medium_id_decisions);
+   iEvent.getByToken(electronTightIdMapToken_, electron_tight_id_decisions);
+   iEvent.getByToken(electronMvaIdMapToken_, electron_mva_value);
 
    edm::Handle<edm::View<pat::Electron>> electronColl;
    iEvent.getByToken(electronCollectionToken_, electronColl);
@@ -578,15 +565,16 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    for (edm::View<pat::Electron>::const_iterator el = electronColl->begin();el != electronColl->end(); el++) {
       if (el->pt()<5) continue;
       const edm::Ptr<pat::Electron> elPtr(electronColl, el - electronColl->begin());
-      if (!(*veto_id_decisions)[elPtr]) continue; // take only 'veto' electrons
-      trEl.isLoose =(*loose_id_decisions) [elPtr];
-      trEl.isMedium=(*medium_id_decisions) [elPtr];
-      trEl.isTight =(*tight_id_decisions) [elPtr];
+      if (!(*electron_veto_id_decisions)[elPtr]) continue; // take only 'veto' electrons
+      trEl.isLoose =(*electron_loose_id_decisions) [elPtr];
+      trEl.isMedium=(*electron_medium_id_decisions) [elPtr];
+      trEl.isTight =(*electron_tight_id_decisions) [elPtr];
       trEl.p.SetPtEtaPhi(el->pt(), el->superCluster()->eta(), el->superCluster()->phi());
       trEl.seedCrystalE = seedCrystalEnergyEB(*el->superCluster(), ebRecHits);
       trEl.charge = el->charge();
       auto const & pfIso = el->pfIsolationVariables();
       trEl.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();
+      trEl.mva = (*electron_mva_value) [elPtr];
       vElectrons_.push_back(trEl);
    }
    sort(vElectrons_.begin(), vElectrons_.end(), tree::PtGreater);
@@ -670,15 +658,6 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
      }
      sort(vGenJets_.begin(), vGenJets_.end(), tree::PtGreater);
    } // gen-jet loop
-
-   if (hardPUveto_) {
-      for (tree::Jet const &j: vJets_) {
-         if (j.isLoose) {
-            if (j.p.Pt()>300) return;
-            break; // only check first loose jet
-         }
-      }
-   }
 
    double const HT = computeHT(vJets_);
    if (HT<dHT_cut_) return;
