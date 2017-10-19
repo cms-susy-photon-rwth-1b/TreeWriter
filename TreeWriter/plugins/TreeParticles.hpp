@@ -47,7 +47,6 @@ namespace tree
       Bool_t passElectronVeto;
       Float_t r9;
       Float_t sigmaPt;
-      Float_t seedCrystalE;
       Bool_t hasGainSwitch;
 
       Float_t cIso;
@@ -61,9 +60,6 @@ namespace tree
       TVector3 pUncorrected;
 
       // IDs
-      Bool_t  isLoose15;
-      Bool_t  isMedium15;
-      Bool_t  isTight15;
       Bool_t  isLoose;
       Bool_t  isMedium;
       Bool_t  isTight;
@@ -92,24 +88,24 @@ namespace tree
       float uncorJecFactor; // uncorrected jet momentum over corrected jet momentum
    };
 
-   struct Muon: public Particle
+   struct Lepton: public Particle
    {
       Char_t charge; // +/- 1
-      bool isTight;
-      // PF-based combined relative isolation with Δβ correction:
-      // (∑pT(ch.had from PV) + max(0, ∑ET(neut.had) + ∑ET(phot) − 0.5*∑pT(ch.had from PU)))/pT(μ)
       float rIso;
+      float miniIso;
    };
 
-   struct Electron: public Particle
+   struct Muon: public Lepton
    {
-      Char_t charge; // +/- 1
+      bool isTight;
+   };
+
+   struct Electron: public Lepton
+   {
       bool isLoose;
       bool isMedium;
       bool isTight;
-      float rIso;
       float mva;
-      Float_t seedCrystalE;
    };
 
    struct MET : public Particle
