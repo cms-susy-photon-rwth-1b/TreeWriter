@@ -583,7 +583,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
    iEvent.getByToken(photonLooseIdFullInfoMapToken_mva_, photon_loose_id_cutflow);
 
-   //MVA by sebastian
+   //MVA ID
    edm::Handle<edm::ValueMap<bool> > photon_medium_id_decisions_MVA;
    iEvent.getByToken(photonMediumIdBoolMapToken_mva_,photon_medium_id_decisions_MVA);
    // The second map has the full info about the cut flow

@@ -63,7 +63,7 @@ namespace tree
       Bool_t  isLoose;
       Bool_t  isMedium;
       Bool_t  isTight;
-      Float_t mva;
+      //Float_t mva;
       int isMediumMVA;
       float mvaValue;
       int mvaCategory;
@@ -112,17 +112,12 @@ namespace tree
       bool isLoose;
       bool isMedium;
       bool isTight;
-      //float rIso;
       int isMediumMVA;
       int isTightMVA;
       float mvaValue;
       int mvaCategory;
       Float_t seedCrystalE;
       bool isPassConvVeto;
-      //bool passImpactParameter;
-      //float d0;
-      //float dZ;
-      //float SIP3D;
       //float mva;
    };
 
