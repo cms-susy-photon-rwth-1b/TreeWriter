@@ -96,9 +96,13 @@ namespace tree
    {
       Char_t charge; // +/- 1
       bool isTight;
+      bool isMedium;
       // PF-based combined relative isolation with Δβ correction:
       // (∑pT(ch.had from PV) + max(0, ∑ET(neut.had) + ∑ET(phot) − 0.5*∑pT(ch.had from PU)))/pT(μ)
       float rIso;
+      float d0;
+      float dZ;
+      float PFminiIso;
    };
 
    struct Electron: public Particle
@@ -109,6 +113,15 @@ namespace tree
       bool isTight;
       float rIso;
       Float_t seedCrystalE;
+      float r9;
+      float SigmaIEtaIEtaFull5x5;
+      float dPhiAtVtx;
+      float dEtaAtVtx;
+      float HoverE;
+      float EoverPInv;
+      int MissHits;
+      bool ConvVeto;
+      float PFminiIso;
    };
 
    struct MET : public Particle

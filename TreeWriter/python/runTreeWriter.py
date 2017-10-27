@@ -34,17 +34,18 @@ options.register ('user',
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/120000/02DD5E46-7ABE-E611-8F20-0025905B8582.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/BC527183-C0B7-E611-BC15-001E67348055.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/SinglePhoton/MINIAOD/03Feb2017_ver1-v1/100000/04CFB75E-12EE-E611-918B-02163E0125C4.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/SinglePhoton/MINIAOD/03Feb2017_ver2-v2/100000/000C0045-12EB-E611-9BEC-008CFA197C34.root'
 #options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016partBtoH-03Feb2017_MINIAOD.root'
-options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016C-03Feb2017-v1_MINIAOD.root'
-options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016D-03Feb2017-v1_MINIAOD.root'
-options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016E-03Feb2017-v1_MINIAOD.root'
-options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016F-03Feb2017-v1_MINIAOD.root'
-options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016G-03Feb2017-v1_MINIAOD.root'
+#~ options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016C-03Feb2017-v1_MINIAOD.root'
+#~ options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016D-03Feb2017-v1_MINIAOD.root'
+#~ options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016E-03Feb2017-v1_MINIAOD.root'
+#~ options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016F-03Feb2017-v1_MINIAOD.root'
+#~ options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016G-03Feb2017-v1_MINIAOD.root'
 #options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016H-03Feb2017_ver2-v1_MINIAOD.root'
 #options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016H-03Feb2017_ver3-v1_MINIAOD.root'
 options.outputFile = 'photonTree.root'
-options.maxEvents = -1
+#options.maxEvents = -1
+options.maxEvents = 1000
 # get and parse the command line arguments
 options.parseArguments()
 
@@ -281,6 +282,8 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     triggerPrescales=cms.vstring(), # also useful to check whether a trigger was run
                                     BadChargedCandidateFilter = cms.InputTag("BadChargedCandidateFilter"),
                                     BadPFMuonFilter = cms.InputTag("BadPFMuonFilter"),
+                                    metCorrected = cms.InputTag("slimmedMETs"),
+                                    metCalibrated = cms.InputTag("slimmedMETs")
 )
 
 ################################
@@ -375,7 +378,7 @@ if user=="kiesel":
     if "Fast" in dataset: # signal scan
         process.TreeWriter.HT_cut = 0.
 
-elif user=="jschulz":
+elif user=="jschulz" or user=="dmeuser":
     process.TreeWriter.photon_pT_cut=100
     process.TreeWriter.triggerObjectNames = ["hltEG90CaloIdLHEFilter", "hltEG165HE10Filter"]
     if "Fast" in dataset:
