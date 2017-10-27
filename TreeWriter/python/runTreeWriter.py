@@ -44,8 +44,8 @@ options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/SingleP
 #options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016H-03Feb2017_ver2-v1_MINIAOD.root'
 #options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016H-03Feb2017_ver3-v1_MINIAOD.root'
 options.outputFile = 'photonTree.root'
-#options.maxEvents = -1
-options.maxEvents = 1000
+options.maxEvents = -1
+#options.maxEvents = 1000
 # get and parse the command line arguments
 options.parseArguments()
 
