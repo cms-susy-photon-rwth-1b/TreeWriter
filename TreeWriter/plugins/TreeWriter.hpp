@@ -113,12 +113,14 @@ private:
    TH1F* createCutFlowHist(std::string modelName = "");
 
    // ----------member data ---------------------------
+   bool isSignalBoolean_;
    double dHT_cut_;
    double dPhoton_pT_cut_;
    double dJet_pT_cut_;
    bool isolatedPhotons_;
    unsigned minNumberPhotons_cut_;
    unsigned minNumberElectrons_cut_;
+   unsigned minNumberLeptons_cut_;
    unsigned minNumberBinos_cut_;
 
    bool newLumiBlock_;
@@ -195,6 +197,7 @@ private:
    std::vector<float> vPdf_weights_;
 
    Float_t genHt_;
+   Float_t ht_;
    Float_t puPtHat_;
 
    Int_t nISR_;

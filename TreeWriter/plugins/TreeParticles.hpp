@@ -105,10 +105,12 @@ namespace tree
    struct Muon: public Lepton
    {
       bool isTight;
+      bool isMedium;
    };
 
    struct Electron: public Lepton
    {
+      bool isVetoID;
       bool isLoose;
       bool isMedium;
       bool isTight;

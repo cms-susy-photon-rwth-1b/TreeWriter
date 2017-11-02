@@ -9,6 +9,45 @@
 using namespace std;
 
 
+//check Run 2016 era:
+//B:273150 - 275376
+//C:275656 - 276283
+//D:276315 - 276811
+//E:276831 - 277420
+//F:277932 - 278808
+//G:278820 - 280385
+//H:284036 - 284068
+bool isRunABCDEF(int No){
+    return ((No>273149)&&(No<278809));
+    }
+
+//Medium Muon ID functions for different Run eras
+//https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#MediumID2016_to_be_used_with_Run
+
+bool isMediumMuon(const reco::Muon & recoMu, int runNumber){
+    if (isRunABCDEF(runNumber)){
+      bool goodGlob = recoMu.isGlobalMuon() && 
+                      recoMu.globalTrack()->normalizedChi2() < 3 && 
+                      recoMu.combinedQuality().chi2LocalPosition < 12 && 
+                      recoMu.combinedQuality().trkKink < 20; 
+      bool isMedium = muon::isLooseMuon(recoMu) && 
+                      recoMu.innerTrack()->validFraction() > 0.49 && 
+                      muon::segmentCompatibility(recoMu) > (goodGlob ? 0.303 : 0.451); 
+      return isMedium;     
+    }
+    else{
+      bool goodGlob = recoMu.isGlobalMuon() && 
+                      recoMu.globalTrack()->normalizedChi2() < 3 && 
+                      recoMu.combinedQuality().chi2LocalPosition < 12 && 
+                      recoMu.combinedQuality().trkKink < 20; 
+      bool isMedium = muon::isLooseMuon(recoMu) && 
+                      recoMu.innerTrack()->validFraction() > 0.8 && 
+                      muon::segmentCompatibility(recoMu) > (goodGlob ? 0.303 : 0.451); 
+      return isMedium;         
+    }
+}
+
+
 //function for cutting on impact parameters
 // values and recipe from:
 //https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
@@ -207,12 +246,14 @@ template <typename T> int sign(T val) {
 }
 
 TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
-   : dHT_cut_(iConfig.getUntrackedParameter<double>("HT_cut"))
+   : isSignalBoolean_(iConfig.getUntrackedParameter<bool>("isSignalBoolean"))
+   , dHT_cut_(iConfig.getUntrackedParameter<double>("HT_cut"))
    , dPhoton_pT_cut_(iConfig.getUntrackedParameter<double>("photon_pT_cut"))
    , dJet_pT_cut_(iConfig.getUntrackedParameter<double>("jet_pT_cut"))
    , isolatedPhotons_(iConfig.getUntrackedParameter<bool>("isolatedPhotons"))
    , minNumberPhotons_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberPhotons_cut"))
    , minNumberElectrons_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberElectrons_cut"))
+   , minNumberLeptons_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberLeptons_cut"))
    , minNumberBinos_cut_(iConfig.getUntrackedParameter<unsigned>("minNumberBinos_cut"))
    , newLumiBlock_(true)
    , vtxToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices")))
@@ -320,9 +361,10 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
 
    eventTree_->Branch("pu_weight", &pu_weight_, "pu_weight/F");
    eventTree_->Branch("mc_weight", &mc_weight_, "mc_weight/B");
-   eventTree_->Branch("pdf_weights", &vPdf_weights_);
+   //eventTree_->Branch("pdf_weights", &vPdf_weights_); //increases file size significantly / use for systematic ucnertainty studies
 
    eventTree_->Branch("genHt", &genHt_, "genHt/F");
+   eventTree_->Branch("ht", &ht_, "ht/F");
    eventTree_->Branch("nISR", &nISR_, "nISR/I");
    //eventTree_->Branch("puPtHat", &puPtHat_ , "puPtHat/F");
 
@@ -481,7 +523,10 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
          triggerDecision_[it.first] = triggerBits->accept( it.second );
       }
    }
-   if (isRealData && !anyTriggerFired) return;
+   
+   if (!anyTriggerFired && !isSignalBoolean_){
+        return;
+    }
    hCutFlow_->Fill("trigger", mc_weight_*pu_weight_);
 
    // store prescales
@@ -699,6 +744,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trMuon.d0=d0;
       trMuon.dZ=dZ;
       trMuon.SIP3D=SIP3D;
+      trMuon.isMedium = isMediumMuon(mu,runNo_);
       
       vMuons_.push_back(trMuon);
    } // muon loop
@@ -737,7 +783,8 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    for (edm::View<pat::Electron>::const_iterator el = electronColl->begin();el != electronColl->end(); el++) {
       if (el->pt()<5) continue;
       const edm::Ptr<pat::Electron> elPtr(electronColl, el - electronColl->begin());
-      if (!(*electron_veto_id_decisions)[elPtr]) continue; // take only 'veto' electrons
+      //if (!(*electron_veto_id_decisions)[elPtr]) continue; // take only 'veto' electrons
+      trEl.isVetoID=(*electron_veto_id_decisions)[elPtr];
       trEl.isLoose =(*electron_loose_id_decisions) [elPtr];
       trEl.isMedium=(*electron_medium_id_decisions) [elPtr];
       trEl.isTight =(*electron_tight_id_decisions) [elPtr];
@@ -772,6 +819,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    }
    sort(vElectrons_.begin(), vElectrons_.end(), tree::PtGreater);
    if (vElectrons_.size()<minNumberElectrons_cut_) return;
+   if ((vElectrons_.size()+vMuons_.size())<minNumberLeptons_cut_) return;
 
    // Jets
    edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
@@ -855,6 +903,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    double const HT = computeHT(vJets_);
    if (HT<dHT_cut_) return;
    hCutFlow_->Fill("HT", mc_weight_*pu_weight_);
+   ht_=HT;
 
    // MET
    edm::Handle<pat::METCollection> metCollCalo;

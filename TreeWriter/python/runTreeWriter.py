@@ -30,17 +30,21 @@ options.register ('user',
 # defaults
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/264A540A-571A-E611-8C5E-0025904E3FCE.root'
 #options.inputFiles = 'root:///user/kiesel/root-files/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_MINIAODSIM.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/100000/000786F7-3AD0-E611-A6AE-842B2B765E01.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/100000/000786F7-3AD0-E611-A6AE-842B2B765E01.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MuonEG/MINIAOD/PromptReco-v2/000/273/291/00000/3A2AFF67-411A-E611-B4BB-02163E0139C8.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/120000/040E9990-AA08-E711-BAAA-0025905B8574.root'
 
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
-options.maxEvents = 5000
+#options.maxEvents = 2000
 # get and parse the command line arguments
 options.parseArguments()
 
 dataset=options.dataset or guessDatasetFromFileName(options.inputFiles[0])
 print "Assumed dataset:", dataset
 isRealData=not dataset.endswith("SIM")
+
+isSignal=False
 
 # the actual TreeWriter module
 process = cms.Process("TreeWriter")
@@ -98,9 +102,11 @@ for idmod in ph_id_modules:
 # where .db files are placed (e.g. for JEC, JER)
 # Crab will always be in the $CMSSW_BASE directory, so to run the code locally,
 # a symbolic link is added
-#if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
+if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
 if "Fast" in dataset:
     dbPath = 'sqlite:'
+    isSignal = True
+    print "python is Signal",isSignal
 
     from CondCore.CondDB.CondDB_cfi import CondDB
     CondDB.__delattr__('connect')
@@ -167,12 +173,14 @@ process.TFileService = cms.Service("TFileService", fileName=cms.string(options.o
 ################################
 process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     # selection configuration
+                                    isSignalBoolean=cms.untracked.bool(isSignal),
                                     HT_cut=cms.untracked.double(0),
                                     photon_pT_cut=cms.untracked.double(5), # for leading photon
                                     jet_pT_cut=cms.untracked.double(30), # for all jets
                                     isolatedPhotons=cms.untracked.bool(True), # for all photons in the collection
-                                    minNumberPhotons_cut=cms.untracked.uint32(1),
+                                    minNumberPhotons_cut=cms.untracked.uint32(0),
                                     minNumberElectrons_cut=cms.untracked.uint32(0),
+                                    minNumberLeptons_cut=cms.untracked.uint32(0),
                                     minNumberBinos_cut=cms.untracked.uint32(0),
                                     # physics objects
                                     photons = cms.InputTag("slimmedPhotons"),
@@ -424,6 +432,10 @@ elif user=="jschulz":
     ]
 elif user=="swuchterl":
     process.TreeWriter.minNumberPhotons_cut=0
+    process.TreeWriter.minNumberLeptons_cut=0
+    process.TreeWriter.HT_cut=0
+    process.TreeWriter.photon_pT_cut=5 # for leading photon
+    process.TreeWriter.jet_pT_cut=30
     #process.TreeWriter.triggerNames=["HLT_Photon22_v"
     #]
     process.TreeWriter.triggerNames=["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
@@ -448,7 +460,16 @@ elif user=="swuchterl":
     "HLT_Mu27_TkMu8_v",
     "HLT_Mu30_TkMu11_v",
     "HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v",
-    "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v"
+    "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v",
+    "HLT_PFHT200_v",
+    "HLT_PFHT250_v",
+    "HLT_PFHT300_v",
+    "HLT_PFHT350_v",
+    "HLT_PFHT400_v",
+    "HLT_PFHT475_v",
+    "HLT_PFHT600_v",
+    "HLT_PFHT650_v",
+    "HLT_PFHT800"
     ]
 else:
     print "you shall not pass!"
