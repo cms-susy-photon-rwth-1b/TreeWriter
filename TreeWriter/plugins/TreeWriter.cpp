@@ -99,6 +99,7 @@ float seedCrystalEnergyEB(const reco::SuperCluster& sc, const edm::Handle<EcalRe
    return energy;
 }
 
+//PFIsolation
 double getPFIsolation(edm::Handle<pat::PackedCandidateCollection> const &pfcands,
                         reco::Candidate const &ptcl,
                         double r_iso_min=0.05, double r_iso_max=0.2, double kt_scale=10,
@@ -166,6 +167,126 @@ double getPFIsolation(edm::Handle<pat::PackedCandidateCollection> const &pfcands
     iso = iso/ptcl.pt();
 
     return iso;
+}
+
+// Calculate TrackIsolation
+void GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity) {
+  if (tkInd>pfcands->size()) {
+	  trkiso = -999.;
+	  activity = -999.;
+	  return;
+  }
+  trkiso = 0.;
+  activity = 0.;
+  double r_iso = 0.3;
+  for (unsigned int iPF(0); iPF<pfcands->size(); iPF++) {
+    const pat::PackedCandidate &pfc = pfcands->at(iPF);
+    if (pfc.charge()==0) continue;
+    if (iPF==tkInd) continue; // don't count track in its own sum
+    float dz_other = pfc.dz();
+    if( fabs(dz_other) > 0.1 ) continue;
+    double dr = deltaR(pfc, pfcands->at(tkInd));
+    // activity annulus
+    if (dr >= r_iso && dr <= 0.4) activity += pfc.pt();
+    // mini iso cone
+    if (dr <= r_iso) trkiso += pfc.pt();
+  }
+  trkiso = trkiso/pfcands->at(tkInd).pt();
+  activity = activity/pfcands->at(tkInd).pt();
+}
+
+// Check TrackIsolation
+bool TrackIsolation(edm::Handle<pat::PackedCandidateCollection> const &pfcands,edm::Handle<pat::METCollection> const &metColl,
+                    edm::Handle<reco::VertexCollection> const &vertices, int const &pdgId_){
+    
+    //Get MET
+    reco::MET::LorentzVector metLorentz(0,0,0,0);
+    if (metColl.isValid()){
+        metLorentz = metColl->at(0).p4();
+    }
+    
+    //Good Vertices
+    bool hasGoodVtx = false;
+    if(vertices->size() > 0) hasGoodVtx = true;
+    
+    //Define MinPt cut and iso cut
+    float minPt_ = 5.0;
+    float isoCut_ = 0.2;
+    if (pdgId_ == 211){
+        minPt_ = 10.0;
+        isoCut_ = 0.1;
+    }
+    
+    //Define other cuts
+    float maxEta_ = 2.5; //?????? correct for all three particle types
+    float mTCut_ = 100.;
+    float dzcut_ = 0.1;
+    
+    //Define TrackIso veto
+    bool TrackIso = false;
+    
+    //loop over PFCandidates and calculate the trackIsolation
+    for(size_t i=0; i<pfcands->size();i++)
+    {
+		const pat::PackedCandidate pfCand = (*pfcands)[i];
+		
+		//calculated mT value
+		double dphiMET = fabs(pfCand.phi()-metLorentz.phi());
+		double mT = sqrt(2 *metLorentz.pt() * pfCand.pt() * (1 - cos(dphiMET)));
+		
+		//-------------------------------------------------------------------------------------
+		// skip events with no good vertices
+		//-------------------------------------------------------------------------------------
+		if(!hasGoodVtx) {
+            continue;
+		}
+		//-------------------------------------------------------------------------------------
+		// only consider charged tracks
+		//-------------------------------------------------------------------------------------
+		if (pfCand.charge() == 0) {
+            continue;
+		}
+		//-------------------------------------------------------------------------------------
+		// only store PFCandidate values if PFCandidate.pdgId() == pdgId_
+		//-------------------------------------------------------------------------------------
+		if( pdgId_ != 0 && abs( pfCand.pdgId() ) != pdgId_ ) {
+            continue;
+		}
+		//-------------------------------------------------------------------------------------
+		// only store PFCandidate values if pt > minPt
+		//-------------------------------------------------------------------------------------
+		if(pfCand.pt() <minPt_) {
+            continue;
+		}
+		if(fabs(pfCand.eta()) >maxEta_) {
+            continue;
+		}
+		//-------------------------------------------------------------------------------------
+		// cut on mT of track and MET
+		//-------------------------------------------------------------------------------------
+		if(mTCut_>0.01 && mT>mTCut_) {
+            continue;
+		}
+		//----------------------------------------------------------------------------
+		// now make cuts on isolation and dz
+		//----------------------------------------------------------------------------
+		float trkiso = 0.;
+		float activity = 0.;
+		GetTrkIso(pfcands, i, trkiso, activity);
+		float dz_it = pfCand.dz();
+
+		if( isoCut_>0 && trkiso > isoCut_ ) {
+            continue;
+		}
+		if( std::abs(dz_it) > dzcut_ ) {
+            continue;
+		}
+        
+        //Change TrackIso Veto
+        TrackIso = true;
+        }
+    
+    return TrackIso;
 }
 
 template <typename T> int sign(T val) {
@@ -284,6 +405,10 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("signal_m1", &signal_m1_, "signal_m1/s");
    eventTree_->Branch("signal_m2", &signal_m2_, "signal_m2/s");
    eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
+   
+   eventTree_->Branch("electronTrackIsoVeto", &electronTrackIsoVeto);
+   eventTree_->Branch("muonTrackIsoVeto", &muonTrackIsoVeto);
+   eventTree_->Branch("pionTrackIsoVeto", &pionTrackIsoVeto);
 
    // Fill trigger maps
    for (const auto& n : triggerNames_) {
@@ -675,6 +800,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trEl.MissHits = el->gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
       trEl.ConvVeto = el->passConversionVeto();
       trEl.PFminiIso = getPFIsolation(packedCandidates, *el);
+      math::XYZPoint vtx_point = firstGoodVertex.position();
+      trEl.d0 = el->bestTrack()->dxy( vtx_point );
+      trEl.dZ = el->bestTrack()->dz( vtx_point );
       
       // VID calculation of (1/E - 1/p)
       if (el->ecalEnergy() == 0)   trEl.EoverPInv = 1e30;
@@ -931,7 +1059,12 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle<bool> duplicateGSFixedHandle;
    iEvent.getByLabel("particleFlowEGammaGSFixed", "dupECALClusters", duplicateGSFixedHandle);
    particleFlowEGammaGSFixed_dupECALClusters_ = reMiniAOD_ && *duplicateGSFixedHandle;
-
+   
+   //TrackIsolation
+   electronTrackIsoVeto = TrackIsolation(packedCandidates, metColl, vertices, 11);
+   muonTrackIsoVeto = TrackIsolation(packedCandidates, metColl, vertices, 13);
+   pionTrackIsoVeto = TrackIsolation(packedCandidates, metColl, vertices, 211);
+   
    // write the event
    eventTree_->Fill();
 }

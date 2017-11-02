@@ -112,6 +112,8 @@ namespace tree
       bool isMedium;
       bool isTight;
       float rIso;
+      float d0;
+      float dZ;
       Float_t seedCrystalE;
       float r9;
       float SigmaIEtaIEtaFull5x5;

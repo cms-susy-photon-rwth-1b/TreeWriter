@@ -224,6 +224,11 @@ private:
 
    std::vector<tree::GenParticle> vGenParticles_;
    std::vector<tree::IntermediateGenParticle> vIntermediateGenParticles_;
+   
+   // TrackIsolation
+   Bool_t electronTrackIsoVeto;
+   Bool_t muonTrackIsoVeto;
+   Bool_t pionTrackIsoVeto;
 
    // File Service to store things to a root file
    edm::Service<TFileService> fs_;
