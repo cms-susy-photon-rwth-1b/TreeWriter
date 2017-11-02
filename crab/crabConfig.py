@@ -28,6 +28,7 @@ def getRequestName(dataset, isSim):
     if isSim:
         out = d2
         if "ext" in dataset: out += "_ext"
+        if "ext2" in dataset: out += "_ext2"
     else:
         out = "{}_{}".format(d2,d3)
     # CRABClient.ClientExceptions.ConfigurationException: Invalid CRAB configuration: Parameter General.requestName should not be longer than 100 characters.
@@ -204,6 +205,33 @@ datasets["jschulz"] = [
     '/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
 ] + datasets["GJets_HT"] + datasets["GJets_HT_extra"] + datasets["GJets_DR-HT"] + datasets["QCD_HT"] + datasets["QCD_HT_extra"] + datasets["ZJetsToNuNu_HT"] + datasets["ZJetsToNuNu_HT_extra"] + datasets["WJetsToLNu_HT"] + datasets["WJetsToLNu_HT_extra"] + dataDatasets("SinglePhoton") + dataDatasets("MET")
 
+
+datasets["swuchterl"]=[
+    #"/WWG_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+    #"/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/ZZTo2L2Nu_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/WZG_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+    #"/ZGTo2LG_PtG-130_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/TTGamma_Dilept_TuneCUETP8M2T4_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM",
+    ##"/TTGamma_Dilept_TuneCUETP8M2T4_13TeV-madgraph-fsrdown-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    ##"/TTGamma_Dilept_TuneCUETP8M2T4_13TeV-madgraph-fsrup-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    ##"/TTGamma_Dilept_TuneCUETP8M2T4_13TeV-madgraph-isrdown-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    ##"/TTGamma_Dilept_TuneCUETP8M2T4_13TeV-madgraph-isrup-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM",
+    #"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM",
+    #"/SMS-T5bbbbZg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM",
+    #"/SMS-TChiNG_BF50N50G_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM",
+    "/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM"
+]
+#+dataDatasets("DoubleEG")+dataDatasets("DoubleMuon")+dataDatasets("MuonEG")+dataDatasets("JetHT")
+
+
+
+
+
+
 # call with 'python crabConfig.py'
 if __name__ == '__main__':
     user = getpass.getuser()
@@ -251,6 +279,9 @@ if __name__ == '__main__':
         elif user=="jschulz":
             config.Data.outputDatasetTag = 'v10'
             config.Data.outLFNDirBase = "/store/user/jschulz/run2/"
+        elif user=="swuchterl":
+            config.Data.outputDatasetTag = 'v01'
+            config.Data.outLFNDirBase = "/store/user/sewuchte/nTuples/"
         else:
             print "you shall not pass!"
             print "(unkown user '%s')"%user
