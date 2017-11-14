@@ -158,17 +158,25 @@ datasets["kiesel"] = [
     "/TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     "/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     '/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+    "/SMS-T5Wg_mGo2150To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM",
     '/SMS-T6Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+    "/SMS-T6Wg_mSq1850To2150_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM",
     '/SMS-TChiWG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
     '/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+    '/SMS-TChiWG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+    '/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+    "/SMS-T5ttttZg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    "/SMS-T5bbbbZg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM",
+    "/SMS-T5qqqqHg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    "/GMSB_GravitinoLSP_N1decays_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
 ]
 datasets["kiesel"] += datasets["GJets_HT"] + datasets["GJets_DR-HT"] + datasets["GJets_HT_extra"]
 datasets["kiesel"] += datasets["QCD_HT"] + datasets["QCD_HT_extra"]
 datasets["kiesel"] += datasets["WJetsToLNu_HT"] + datasets["WJetsToLNu_HT_extra"]
 datasets["kiesel"] += datasets["ZJetsToNuNu_HT"] + datasets["ZJetsToNuNu_HT_extra"]
 datasets["kiesel"] += datasets["TTJets_HT"]
-datasets["kiesel"] += dataDatasets("SingleElectron")
-datasets["kiesel"] = dataDatasets("SinglePhoton")
+#datasets["kiesel"] += dataDatasets("SingleElectron")
+datasets["kiesel"] += dataDatasets("SinglePhoton")
 datasets["kiesel"] += dataDatasets("JetHT")
 
 datasets["jschulz"] = [
@@ -236,8 +244,6 @@ if __name__ == '__main__':
         config.Data.publication = False
         config.Data.outputDatasetTag = 'outputDatasetTag'
         config.Data.outLFNDirBase = "outLFNDirBase"
-        if dataset == "/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM":
-            config.Data.allowNonValidInputDataset = True
 
         config.section_("Site")
         config.Site.storageSite = 'T2_DE_RWTH'
@@ -246,7 +252,7 @@ if __name__ == '__main__':
             config.Data.lumiMask = getLumiMask(cmssw_src)
 
         if user=="kiesel":
-            config.Data.outputDatasetTag = 'v23'
+            config.Data.outputDatasetTag = 'v24'
             config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
         elif user=="jschulz":
             config.Data.outputDatasetTag = 'v10'

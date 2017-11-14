@@ -1032,6 +1032,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
          // save particles
          if (genP.status()==22 || genP.status()==23 || // some generator particles
+             (genP.pdgId()) > 1e6 || // all susy particles
                (genP.status() == 1 && genP.pt()>20 && (absId==22 || (11 <= absId && absId <= 16)))) { // status 1 photons and leptons (including neutrinos)
             trP.pdgId = genP.pdgId();
             trP.isPrompt = genP.statusFlags().isPrompt();

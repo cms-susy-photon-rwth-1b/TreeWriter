@@ -28,24 +28,17 @@ options.register ('user',
                   "Name the user. If not set by crab, this script will determine it.")
 
 # defaults
-#options.inputFiles = 'root:///user/jschulz/CMSSW_8_0_20/src/TreeWriter/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_MINIAODSIM.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/264A540A-571A-E611-8C5E-0025904E3FCE.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/TTJets_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/60000/00E7F059-0BD5-E611-9267-001E67397CB5.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/120000/02DD5E46-7ABE-E611-8F20-0025905B8582.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/BC527183-C0B7-E611-BC15-001E67348055.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/BC527183-C0B7-E611-BC15-001E67348055.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/SinglePhoton/MINIAOD/03Feb2017_ver2-v2/100000/000C0045-12EB-E611-9BEC-008CFA197C34.root'
-#options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016partBtoH-03Feb2017_MINIAOD.root'
-#~ options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016C-03Feb2017-v1_MINIAOD.root'
-#~ options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016D-03Feb2017-v1_MINIAOD.root'
-#~ options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016E-03Feb2017-v1_MINIAOD.root'
-#~ options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016F-03Feb2017-v1_MINIAOD.root'
-#~ options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016G-03Feb2017-v1_MINIAOD.root'
-#options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016H-03Feb2017_ver2-v1_MINIAOD.root'
 #options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016H-03Feb2017_ver3-v1_MINIAOD.root'
+#options.inputFiles = 'root:///home/home4/institut_1b/kiesel/phd/combination/selectedEvents_v22_miniaod_runD/pickevents.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/GMSB_GravitinoLSP_N1decays_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/130000/EEFCFDEC-DC0E-E711-8CC8-0CC47A57CC26.root'
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
-#options.maxEvents = 1000
 # get and parse the command line arguments
 options.parseArguments()
 
@@ -152,7 +145,7 @@ process.egmGsfElectronIDs.physicsObjectSrc = "calibratedPatElectrons"
 # where .db files are placed (e.g. for JEC, JER)
 # Crab will always be in the $CMSSW_BASE directory, so to run the code locally,
 # a symbolic link is added
-#~ if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
+if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src")
 if "Fast" in dataset:
     dbPath = 'sqlite:'
 
@@ -270,7 +263,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
 
                                     ),
                                     phoWorstChargedIsolation = cms.InputTag("photonIDValueMapProducer:phoWorstChargedIsolation"),
-                                    pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU"),
+                                    pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_Moriond17MC_PoissonOOTPU"),
                                     hardPUveto=cms.untracked.bool(False),
                                     reMiniAOD=cms.untracked.bool(False),
                                     # triggers to be saved
@@ -347,8 +340,8 @@ if "Fast" in dataset:
     if "T5Wg" in dataset or "T6Wg" in dataset:
         process.TreeWriter.minNumberBinos_cut = 1
 
-if "PUMoriond17" in dataset:
-    process.TreeWriter.pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_Moriond17MC_PoissonOOTPU")
+if "PUSpring16" in dataset:
+    process.TreeWriter.pileupHistogramName ="pileupWeight_mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU"
 
 # determine user if not set by crab
 user=options.user or getpass.getuser()
