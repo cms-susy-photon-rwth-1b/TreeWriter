@@ -9,6 +9,95 @@
 using namespace std;
 
 
+
+bool ElectronTightMVA(const float eta, const float pt, const float mvaValue){
+  const float aWPeta1 = 0.77;
+  const float bWPeta1 = 0.52;
+  const float aWPeta2 = 0.56;
+  const float bWPeta2 = 0.11;
+  const float aWPeta3 = 0.48;
+  const float bWPeta3 = -0.01; 
+  
+  
+  
+  
+   float cut;
+   float slope;
+   //float slope=0;
+   if (pt<15.){
+      if (fabs(eta)<0.8){
+         cut = aWPeta1; 
+      }else{
+         if (fabs(eta)<1.479){
+            cut = aWPeta2; 
+         }else{
+            if(fabs(eta)<2.5){
+               cut = aWPeta3; 
+            }else{
+               cut = 9999.; 
+            }
+         }
+      }
+   }else{
+      if ((pt>15.) && (pt<25.)){
+         if (fabs(eta)<0.8){
+            slope = (bWPeta1-aWPeta1)/10.; 
+            cut = fmin( aWPeta1, fmax(bWPeta1 , aWPeta1 + slope*(pt-15.) ) );
+         }else{
+            if (fabs(eta)<1.479){
+               slope = (bWPeta2-aWPeta2)/10.; 
+               cut = fmin( aWPeta2, fmax(bWPeta2 , aWPeta2 + slope*(pt-15.) ) ); 
+            }else{
+               if(fabs(eta)<2.5){
+                  slope = (bWPeta3-aWPeta3)/10.; 
+                  cut = fmin( aWPeta3, fmax(bWPeta3 , aWPeta3 + slope*(pt-15) ) );
+               }else{
+                  cut = 9999.; 
+               }
+            }
+         }         
+      }else{
+         if (pt > 25.){
+            if (fabs(eta)<0.8){
+               cut = bWPeta1; 
+            }else{
+               if (fabs(eta)<1.479){
+                  cut = bWPeta2; 
+               }else{
+                  if(fabs(eta)<2.5){
+                     cut = bWPeta3; 
+                  }else{
+                     cut = 9999.; 
+                  }
+               }
+            }    
+         }else{
+            cut=9999.;
+         }
+      }
+   }
+   if (mvaValue > cut){
+      return true;
+   }else{
+      return false;
+   }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //check Run 2016 era:
 //B:273150 - 275376
 //C:275656 - 276283
@@ -671,38 +760,38 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trPho.hasPixelSeed = pho->hasPixelSeed();
       trPho.passElectronVeto = pho->passElectronVeto();
       trPho.r9 = pho->r9();
-      trPho.hasGainSwitch = !pho->hasUserInt("hasGainSwitchFlag") || pho->userInt("hasGainSwitchFlag");
+      //trPho.hasGainSwitch = !pho->hasUserInt("hasGainSwitchFlag") || pho->userInt("hasGainSwitchFlag");
 
-      auto itPos = std::distance(photonColl->begin(), pho);
-      trPho.pMultifit.SetXYZ(0,0,0);
-      trPho.pUncorrected.SetXYZ(0,0,0);
-      if (reMiniAOD_ && itPos<photonCollOld->size()) {
-        auto p = (*photonCollOld).at(itPos);
-        trPho.pMultifit.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
-      }
-      if (itPos<photonCollUncorrected->size()) {
-        auto p = (*photonCollUncorrected).at(itPos);
-        trPho.pUncorrected.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
-      }
+      //auto itPos = std::distance(photonColl->begin(), pho);
+      //trPho.pMultifit.SetXYZ(0,0,0);
+      //trPho.pUncorrected.SetXYZ(0,0,0);
+      //if (reMiniAOD_ && itPos<photonCollOld->size()) {
+        //auto p = (*photonCollOld).at(itPos);
+        //trPho.pMultifit.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
+      //}
+      //if (itPos<photonCollUncorrected->size()) {
+        //auto p = (*photonCollUncorrected).at(itPos);
+        //trPho.pUncorrected.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
+      //}
 
       vid::CutFlowResult cutFlow = (*photon_loose_id_cutflow)[phoPtr];
-      trPho.cIso = cutFlow.getValueCutUpon(4);
-      trPho.nIso = cutFlow.getValueCutUpon(5);
-      trPho.pIso = cutFlow.getValueCutUpon(6);
-      trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
+      //trPho.cIso = cutFlow.getValueCutUpon(4);
+      //trPho.nIso = cutFlow.getValueCutUpon(5);
+      //trPho.pIso = cutFlow.getValueCutUpon(6);
+      //trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
 
       trPho.isMediumMVA = (*photon_medium_id_decisions_MVA)[phoPtr];
       trPho.mvaValue = (*photon_mvaValues)[phoPtr];
-      trPho.mvaCategory = (*photon_mvaCategories)[phoPtr];
+      //trPho.mvaCategory = (*photon_mvaCategories)[phoPtr];
 
       // MC match
-      if (!isRealData) {
-         trPho.isTrue = matchToTruth(*pho, prunedGenParticles);
-         trPho.isTrueAlternative = matchToTruthAlternative(*pho, prunedGenParticles);
-      } else {
-         trPho.isTrue = UNMATCHED;
-         trPho.isTrueAlternative = UNMATCHED;
-      }
+      //if (!isRealData) {
+         //trPho.isTrue = matchToTruth(*pho, prunedGenParticles);
+         //trPho.isTrueAlternative = matchToTruthAlternative(*pho, prunedGenParticles);
+      //} else {
+         //trPho.isTrue = UNMATCHED;
+         //trPho.isTrueAlternative = UNMATCHED;
+      //}
 
       // check photon working points
       trPho.isLoose = (*photon_loose_id_dec) [phoPtr];
@@ -741,10 +830,11 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       dZ = abs( mu.track()->dz( vtx_point )); 
       SIP3D = abs(mu.dB(pat::Muon::PV3D)/mu.edB(pat::Muon::PV3D)); 
       trMuon.passImpactParameter =testImpactParameters(d0,dZ,SIP3D,false,true);
-      trMuon.d0=d0;
-      trMuon.dZ=dZ;
-      trMuon.SIP3D=SIP3D;
-      trMuon.isMedium = isMediumMuon(mu,runNo_);
+      //trMuon.d0=d0;
+      //trMuon.dZ=dZ;
+      //trMuon.SIP3D=SIP3D;
+      //trMuon.isMediumRun = isMediumMuon(mu,runNo_);
+      trMuon.isMedium = mu.isMediumMuon();
       
       vMuons_.push_back(trMuon);
    } // muon loop
@@ -783,7 +873,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    for (edm::View<pat::Electron>::const_iterator el = electronColl->begin();el != electronColl->end(); el++) {
       if (el->pt()<5) continue;
       const edm::Ptr<pat::Electron> elPtr(electronColl, el - electronColl->begin());
-      //if (!(*electron_veto_id_decisions)[elPtr]) continue; // take only 'veto' electrons
+      if (!(*electron_veto_id_decisions)[elPtr]) continue; // take only 'veto' electrons
       trEl.isVetoID=(*electron_veto_id_decisions)[elPtr];
       trEl.isLoose =(*electron_loose_id_decisions) [elPtr];
       trEl.isMedium=(*electron_medium_id_decisions) [elPtr];
@@ -794,8 +884,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trEl.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();
       trEl.isMediumMVA = (*medium_id_decisions_MVA)[elPtr];
       trEl.isTightMVA = (*tight_id_decisions_MVA)[elPtr];
+      trEl.isTightMVASlope = ElectronTightMVA(el->superCluster()->eta(),el->pt(),(*mvaValues)[elPtr]);
       trEl.mvaValue=(*mvaValues)[elPtr];
-      trEl.mvaCategory=(*mvaCategories)[elPtr];
+      //trEl.mvaCategory=(*mvaCategories)[elPtr];
       
       bool passConvVeto = !ConversionTools::hasMatchedConversion(*el,conversions,theBeamSpot->position());
       trEl.isPassConvVeto = passConvVeto;
@@ -809,9 +900,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       dZ = abs( el->gsfTrack()->dz( vtx_point )); 
       SIP3D = abs(el->dB(pat::Electron::PV3D)/el->edB(pat::Electron::PV3D)); 
       trEl.passImpactParameter = testImpactParameters(d0,dZ,SIP3D,true,el->isEB());
-      trEl.d0=d0;
-      trEl.dZ=dZ;
-      trEl.SIP3D=SIP3D;
+      //trEl.d0=d0;
+      //trEl.dZ=dZ;
+      //trEl.SIP3D=SIP3D;
       trEl.miniIso = getPFIsolation(packedCandidates, *el);
       //trEl.mva = (*electron_mva_value) [elPtr];
 
@@ -846,18 +937,18 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       jecUnc.setJetPt(jet.pt());
       trJet.uncert = jecUnc.getUncertainty(true);
       JME::JetParameters parameters = {{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, rho_}};
-      trJet.ptRes = resolution_pt.getResolution(parameters);
-      trJet.phiRes = resolution_phi.getResolution(parameters);
-      trJet.sfRes = resolution_sf.getScaleFactor(parameters);
-      trJet.sfResUp = resolution_sf.getScaleFactor(parameters, Variation::UP);
-      trJet.sfResDn = resolution_sf.getScaleFactor(parameters, Variation::DOWN);
-      trJet.uncorJecFactor = jet.jecFactor(0);
+      //trJet.ptRes = resolution_pt.getResolution(parameters);
+      //trJet.phiRes = resolution_phi.getResolution(parameters);
+      //trJet.sfRes = resolution_sf.getScaleFactor(parameters);
+      //trJet.sfResUp = resolution_sf.getScaleFactor(parameters, Variation::UP);
+      //trJet.sfResDn = resolution_sf.getScaleFactor(parameters, Variation::DOWN);
+      //trJet.uncorJecFactor = jet.jecFactor(0);
       trJet.chf = jet.chargedHadronEnergyFraction();
-      trJet.nhf = jet.neutralHadronEnergyFraction();
-      trJet.cef = jet.chargedEmEnergyFraction();
-      trJet.nef = jet.neutralEmEnergyFraction();
-      trJet.nch = jet.chargedMultiplicity();
-      trJet.nconstituents = jet.numberOfDaughters();
+      //trJet.nhf = jet.neutralHadronEnergyFraction();
+      //trJet.cef = jet.chargedEmEnergyFraction();
+      //trJet.nef = jet.neutralEmEnergyFraction();
+      //trJet.nch = jet.chargedMultiplicity();
+      //trJet.nconstituents = jet.numberOfDaughters();
       // object matching
       trJet.hasPhotonMatch = false;
       for (tree::Photon const &ph: vPhotons_) {

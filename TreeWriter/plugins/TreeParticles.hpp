@@ -47,26 +47,27 @@ namespace tree
       Bool_t passElectronVeto;
       Float_t r9;
       Float_t sigmaPt;
-      Bool_t hasGainSwitch;
+      //Bool_t hasGainSwitch;
 
-      Float_t cIso;
-      Float_t nIso;
-      Float_t pIso;
-      Float_t cIsoWorst;
+      //Float_t cIso;
+      //Float_t nIso;
+      //Float_t pIso;
+      //Float_t cIsoWorst;
 
-      Int_t isTrue;
-      Int_t isTrueAlternative;
-      TVector3 pMultifit;
-      TVector3 pUncorrected;
+      //Int_t isTrue;
+      //Int_t isTrueAlternative;
+      //TVector3 pMultifit;
+      //TVector3 pUncorrected;
 
       // IDs
       Bool_t  isLoose;
       Bool_t  isMedium;
       Bool_t  isTight;
       //Float_t mva;
-      int isMediumMVA;
+      //int isMediumMVA;
+      bool isMediumMVA;
       float mvaValue;
-      int mvaCategory;
+      //int mvaCategory;
    };
 
    struct Jet : public Particle
@@ -78,17 +79,17 @@ namespace tree
       float bDiscriminator;
       float uncert;
       float chf;
-      float nhf;
-      float cef;
-      float nef;
-      int nch;
-      int nconstituents;
-      float ptRes;
-      float phiRes;
-      float sfRes;
-      float sfResUp;
-      float sfResDn;
-      float uncorJecFactor; // uncorrected jet momentum over corrected jet momentum
+      //float nhf;
+      //float cef;
+      //float nef;
+      //int nch;
+      //int nconstituents;
+      //float ptRes;
+      //float phiRes;
+      //float sfRes;
+      //float sfResUp;
+      //float sfResDn;
+      //float uncorJecFactor; // uncorrected jet momentum over corrected jet momentum
    };
 
    struct Lepton: public Particle
@@ -96,9 +97,9 @@ namespace tree
       Char_t charge; // +/- 1
       float rIso;
       bool passImpactParameter;
-      float d0;
-      float dZ;
-      float SIP3D;
+      //float d0;
+      //float dZ;
+      //float SIP3D;
       float miniIso;
    };
 
@@ -106,6 +107,7 @@ namespace tree
    {
       bool isTight;
       bool isMedium;
+      //bool isMediumRun;
    };
 
    struct Electron: public Lepton
@@ -114,13 +116,17 @@ namespace tree
       bool isLoose;
       bool isMedium;
       bool isTight;
-      int isMediumMVA;
-      int isTightMVA;
-      float mvaValue;
-      int mvaCategory;
+      //int isMediumMVA;
+      //int isTightMVA;
+      //int isTightMVASlope;
+      bool isMediumMVA;
+      bool isTightMVA;
+      bool isTightMVASlope;
+      //float mvaValue;
+      bool mvaValue;
+      //int mvaCategory;
       Float_t seedCrystalE;
       bool isPassConvVeto;
-      //float mva;
    };
 
    struct MET : public Particle
