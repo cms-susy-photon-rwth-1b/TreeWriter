@@ -357,6 +357,8 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    consumes<edm::View<pat::Photon>>(edm::InputTag("slimmedPhotons", "", "RECO"));
    consumes<bool>(edm::InputTag("particleFlowEGammaGSFixed", "dupECALClusters"));
    consumes<edm::EDCollection<DetId>>(edm::InputTag("ecalMultiAndGSGlobalRecHitEB", "hitsNotReplaced"));
+   consumes<edm::View<pat::Electron>>(edm::InputTag("slimmedElectrons", "", "PAT"));
+   consumes<edm::View<pat::Electron>>(edm::InputTag("slimmedElectrons", "", "RECO"));
 
    eventTree_ = fs_->make<TTree> ("eventTree", "event data");
 
@@ -748,8 +750,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    vMuons_.clear();
    tree::Muon trMuon;
    for (const pat::Muon &mu : *muonColl) {
-      if (!mu.isLooseMuon()) continue;
-      if (mu.pt()<5) continue;
+      //~ if (!mu.isLooseMuon()) continue;
+      if (! (mu.isPFMuon() || mu.isGlobalMuon() || mu.isTrackerMuon())) continue;
+      if (mu.pt()<3) continue;
       trMuon.p.SetPtEtaPhi(mu.pt(), mu.eta(), mu.phi());
       trMuon.isTight = mu.isTightMuon(firstGoodVertex);
       trMuon.isMedium = mu.isMediumMuon();
@@ -774,16 +777,22 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    iEvent.getByToken(electronLooseIdMapToken_, loose_id_decisions);
    iEvent.getByToken(electronMediumIdMapToken_, medium_id_decisions);
    iEvent.getByToken(electronTightIdMapToken_, tight_id_decisions);
-
+   
+   //Uncorrected electron collection
+   edm::Handle<edm::View<pat::Electron>> electronCollUncorrected;
+   if (reMiniAOD_ || !isRealData) iEvent.getByLabel(edm::InputTag("slimmedElectrons", "", "PAT"), electronCollUncorrected);
+   else iEvent.getByLabel(edm::InputTag("slimmedElectrons", "", "RECO"), electronCollUncorrected);
+   
+   //Electron collection
    edm::Handle<edm::View<pat::Electron>> electronColl;
    iEvent.getByToken(electronCollectionToken_, electronColl);
 
    vElectrons_.clear();
    tree::Electron trEl;
    for (edm::View<pat::Electron>::const_iterator el = electronColl->begin();el != electronColl->end(); el++) {
-      if (el->pt()<5) continue;
+      //~ if (el->pt()<5) continue;
       const edm::Ptr<pat::Electron> elPtr(electronColl, el - electronColl->begin());
-      if (!(*veto_id_decisions)[elPtr]) continue; // take only 'veto' electrons
+      //~ if (!(*veto_id_decisions)[elPtr]) continue; // take only 'veto' electrons
       trEl.isLoose =(*loose_id_decisions) [elPtr];
       trEl.isMedium=(*medium_id_decisions) [elPtr];
       trEl.isTight =(*tight_id_decisions) [elPtr];
@@ -808,6 +817,14 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       if (el->ecalEnergy() == 0)   trEl.EoverPInv = 1e30;
       else if (!std::isfinite(el->ecalEnergy()))  trEl.EoverPInv = 1e30;
       else trEl.EoverPInv = (1.0 - el->eSuperClusterOverP())/el->ecalEnergy();
+      
+      //uncorrected electrons
+      auto itPos = std::distance(electronColl->begin(), el);
+      trEl.pUncorrected.SetXYZ(0,0,0);
+      if (itPos<electronCollUncorrected->size()) {
+        auto ele = (*electronCollUncorrected).at(itPos);
+        trEl.pUncorrected.SetPtEtaPhi(ele.pt(), ele.superCluster()->eta(), ele.superCluster()->phi());
+      }
 		
       vElectrons_.push_back(trEl);
    }
@@ -1029,6 +1046,24 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
                vIntermediateGenParticles_.push_back(trIntermP);
             }
          }
+         
+         //~ if (absId==1000022||absId==1000023) { // store neutralinos to check ggm scan
+            //~ int iNdaugh = genP.numberOfDaughters();
+            //~ if (iNdaugh>1) { // skip "decays" V->V
+               //~ trIntermP.pdgId = genP.pdgId();
+               //~ trIntermP.isPrompt = genP.statusFlags().isPrompt();
+               //~ trIntermP.p.SetPtEtaPhi(genP.pt(), genP.eta(), genP.phi());
+               //~ trIntermP.daughters.clear();
+               //~ for (int i=0; i<iNdaugh; i++) { // store the decay products
+                  //~ reco::Candidate const& daugh = *genP.daughter(i);
+                  //~ trP.pdgId = daugh.pdgId();
+                  //~ trP.isPrompt = false;
+                  //~ trP.p.SetPtEtaPhi(daugh.pt(), daugh.eta(), daugh.phi());
+                  //~ trIntermP.daughters.push_back(trP);
+               //~ }
+               //~ vIntermediateGenParticles_.push_back(trIntermP);
+            //~ }
+         //~ }
 
          // save particles
          if (genP.status()==22 || genP.status()==23 || // some generator particles
