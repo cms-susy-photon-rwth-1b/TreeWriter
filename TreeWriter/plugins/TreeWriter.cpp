@@ -198,17 +198,17 @@ void GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsign
 // Check TrackIsolation
 bool TrackIsolation(edm::Handle<pat::PackedCandidateCollection> const &pfcands,edm::Handle<pat::METCollection> const &metColl,
                     edm::Handle<reco::VertexCollection> const &vertices, int const &pdgId_){
-    
+
     //Get MET
     reco::MET::LorentzVector metLorentz(0,0,0,0);
     if (metColl.isValid()){
         metLorentz = metColl->at(0).p4();
     }
-    
+
     //Good Vertices
     bool hasGoodVtx = false;
     if(vertices->size() > 0) hasGoodVtx = true;
-    
+
     //Define MinPt cut and iso cut
     float minPt_ = 5.0;
     float isoCut_ = 0.2;
@@ -216,24 +216,24 @@ bool TrackIsolation(edm::Handle<pat::PackedCandidateCollection> const &pfcands,e
         minPt_ = 10.0;
         isoCut_ = 0.1;
     }
-    
+
     //Define other cuts
     float maxEta_ = 2.5; //?????? correct for all three particle types
     float mTCut_ = 100.;
     float dzcut_ = 0.1;
-    
+
     //Define TrackIso veto
     bool TrackIso = false;
-    
+
     //loop over PFCandidates and calculate the trackIsolation
     for(size_t i=0; i<pfcands->size();i++)
     {
 		const pat::PackedCandidate pfCand = (*pfcands)[i];
-		
+
 		//calculated mT value
 		double dphiMET = fabs(pfCand.phi()-metLorentz.phi());
 		double mT = sqrt(2 *metLorentz.pt() * pfCand.pt() * (1 - cos(dphiMET)));
-		
+
 		//-------------------------------------------------------------------------------------
 		// skip events with no good vertices
 		//-------------------------------------------------------------------------------------
@@ -281,11 +281,11 @@ bool TrackIsolation(edm::Handle<pat::PackedCandidateCollection> const &pfcands,e
 		if( std::abs(dz_it) > dzcut_ ) {
             continue;
 		}
-        
+
         //Change TrackIso Veto
         TrackIso = true;
         }
-    
+
     return TrackIso;
 }
 
@@ -405,7 +405,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("signal_m1", &signal_m1_, "signal_m1/s");
    eventTree_->Branch("signal_m2", &signal_m2_, "signal_m2/s");
    eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
-   
+
    eventTree_->Branch("electronTrackIsoVeto", &electronTrackIsoVeto);
    eventTree_->Branch("muonTrackIsoVeto", &muonTrackIsoVeto);
    eventTree_->Branch("pionTrackIsoVeto", &pionTrackIsoVeto);
@@ -629,7 +629,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle< double > rhoH;
    iEvent.getByToken(rhoToken_, rhoH);
    rho_ = *rhoH;
-   
+
    // number of tracks
    edm::Handle<std::vector<pat::PackedCandidate>> packedCandidates;
    iEvent.getByToken(packedCandidateToken_, packedCandidates);
@@ -803,12 +803,12 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       math::XYZPoint vtx_point = firstGoodVertex.position();
       trEl.d0 = el->bestTrack()->dxy( vtx_point );
       trEl.dZ = el->bestTrack()->dz( vtx_point );
-      
+
       // VID calculation of (1/E - 1/p)
       if (el->ecalEnergy() == 0)   trEl.EoverPInv = 1e30;
       else if (!std::isfinite(el->ecalEnergy()))  trEl.EoverPInv = 1e30;
       else trEl.EoverPInv = (1.0 - el->eSuperClusterOverP())/el->ecalEnergy();
-		
+
       vElectrons_.push_back(trEl);
    }
    sort(vElectrons_.begin(), vElectrons_.end(), tree::PtGreater);
@@ -1060,12 +1060,12 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle<bool> duplicateGSFixedHandle;
    iEvent.getByLabel("particleFlowEGammaGSFixed", "dupECALClusters", duplicateGSFixedHandle);
    particleFlowEGammaGSFixed_dupECALClusters_ = reMiniAOD_ && *duplicateGSFixedHandle;
-   
+
    //TrackIsolation
    electronTrackIsoVeto = TrackIsolation(packedCandidates, metColl, vertices, 11);
    muonTrackIsoVeto = TrackIsolation(packedCandidates, metColl, vertices, 13);
    pionTrackIsoVeto = TrackIsolation(packedCandidates, metColl, vertices, 211);
-   
+
    // write the event
    eventTree_->Fill();
 }

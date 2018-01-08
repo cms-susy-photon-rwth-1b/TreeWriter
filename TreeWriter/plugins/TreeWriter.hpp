@@ -224,7 +224,7 @@ private:
 
    std::vector<tree::GenParticle> vGenParticles_;
    std::vector<tree::IntermediateGenParticle> vIntermediateGenParticles_;
-   
+
    // TrackIsolation
    Bool_t electronTrackIsoVeto;
    Bool_t muonTrackIsoVeto;
