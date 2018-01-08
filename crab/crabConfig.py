@@ -173,7 +173,7 @@ datasets["kiesel"] += datasets["QCD_HT"] + datasets["QCD_HT_extra"]
 datasets["kiesel"] += datasets["WJetsToLNu_HT"] + datasets["WJetsToLNu_HT_extra"]
 datasets["kiesel"] += datasets["ZJetsToNuNu_HT"] + datasets["ZJetsToNuNu_HT_extra"]
 datasets["kiesel"] += datasets["TTJets_HT"]
-#datasets["kiesel"] += dataDatasets("SingleElectron")
+datasets["kiesel"] += dataDatasets("SingleElectron")
 datasets["kiesel"] += dataDatasets("SinglePhoton")
 datasets["kiesel"] += dataDatasets("JetHT")
 
