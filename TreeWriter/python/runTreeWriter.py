@@ -350,7 +350,7 @@ if user=="kiesel":
     process.TreeWriter.HT_cut=500.
     process.TreeWriter.photon_pT_cut=90.
     process.TreeWriter.minNumberPhotons_cut=0
-    process.TreeWriter.triggerObjectNames = ["hltEG90CaloIdLHEFilter"]
+    process.TreeWriter.triggerObjectNames = ["hltEG90CaloIdLHEFilter", "hltEG18Iso60CaloId15b35eHE12R9Id50b80eTrackIsoUnseededLastFilter", "hltEG18R9Id85b90eHE12R9Id50b80eR9UnseededLastFilter"]
     process.TreeWriter.triggerNames=[
         "HLT_Photon90_CaloIdL_PFHT600_v",
         "HLT_Photon90_v",
@@ -358,8 +358,9 @@ if user=="kiesel":
         "HLT_PFHT800_v",
         "HLT_Ele27_eta2p1_WPLoose_Gsf_v",
         "HLT_Ele27_eta2p1_WPTight_Gsf_v",
-        "HLT_PFJet450_v",
-        "HLT_AK8PFJet450_v",
+        "HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v",
+        "HLT_Mu17_Photon30_CaloIdL_L1ISO_v",
+        "HLT_Mu38NoFilterNoVtx_Photon38_CaloIdL",
     ]
     process.TreeWriter.triggerPrescales=process.TreeWriter.triggerNames
     if "SingleElectron" in dataset or "DY" in dataset:
