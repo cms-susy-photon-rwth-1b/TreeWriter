@@ -756,6 +756,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trMuon.p.SetPtEtaPhi(mu.pt(), mu.eta(), mu.phi());
       trMuon.isTight = mu.isTightMuon(firstGoodVertex);
       trMuon.isMedium = mu.isMediumMuon();
+      trMuon.isLoose = mu.isLooseMuon();
       auto const& pfIso = mu.pfIsolationR04();
       trMuon.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/mu.pt();
       trMuon.charge = mu.charge();
@@ -878,14 +879,14 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       }
       trJet.hasElectronMatch = false;
       for (tree::Electron const &el: vElectrons_) {
-         if (el.isLoose && trJet.p.DeltaR(el.p)<0.4) {
+         if (el.isLoose && el.p.Pt()>=5 && trJet.p.DeltaR(el.p)<0.4) {
             trJet.hasElectronMatch = true;
             break;
          }
       }
       trJet.hasMuonMatch = false;
       for (tree::Muon const &mu: vMuons_){
-         if (trJet.p.DeltaR(mu.p)<0.4){
+         if (mu.isLoose && mu.p.Pt()>=5 && trJet.p.DeltaR(mu.p)<0.4){
             trJet.hasMuonMatch = true;
             break;
          }

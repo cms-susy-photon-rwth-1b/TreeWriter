@@ -97,6 +97,7 @@ namespace tree
       Char_t charge; // +/- 1
       bool isTight;
       bool isMedium;
+      bool isLoose;
       // PF-based combined relative isolation with Δβ correction:
       // (∑pT(ch.had from PV) + max(0, ∑ET(neut.had) + ∑ET(phot) − 0.5*∑pT(ch.had from PU)))/pT(μ)
       float rIso;
