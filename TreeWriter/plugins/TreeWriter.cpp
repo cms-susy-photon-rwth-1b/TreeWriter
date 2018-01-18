@@ -1145,7 +1145,6 @@ void TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::Ev
    signal_m2_ = 0;
    if (gen_header.isValid()) {
       modelName_ = gen_header->configDescription();
-      std::cout<<modelName_<<std::endl;
       std::smatch sm;
       if (regex_match(modelName_, sm, std::regex(".*_(\\d+)_(\\d+)"))) {
          signal_m1_ = std::stoi(sm[1]);
