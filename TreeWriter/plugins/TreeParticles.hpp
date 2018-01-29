@@ -30,7 +30,16 @@ namespace tree
       Int_t pdgId=0;
       bool isPrompt;
       bool fromHardProcess;
+      
+      //bool isHardProcess;
+      int statusID=0;
+      Int_t GrandMotherId=0;
+      //bool isPromptFinalState=0;
+      int isPromptFinalState=0;
+      //int isPromptFinalState2=0;
+      
       UChar_t promptStatus;
+      Int_t motherId=0;
    };
 
    struct IntermediateGenParticle: public GenParticle
@@ -47,17 +56,17 @@ namespace tree
       Bool_t passElectronVeto;
       Float_t r9;
       Float_t sigmaPt;
-      //Bool_t hasGainSwitch;
-
-      //Float_t cIso;
-      //Float_t nIso;
-      //Float_t pIso;
-      //Float_t cIsoWorst;
-
-      //Int_t isTrue;
-      //Int_t isTrueAlternative;
-      //TVector3 pMultifit;
-      //TVector3 pUncorrected;
+      Bool_t hasGainSwitch;
+//
+      Float_t cIso;
+      Float_t nIso;
+      Float_t pIso;
+      Float_t cIsoWorst;
+//
+      Int_t isTrue;
+      Int_t isTrueAlternative;
+      TVector3 pMultifit;
+      TVector3 pUncorrected;
 
       // IDs
       Bool_t  isLoose;
@@ -67,7 +76,7 @@ namespace tree
       //int isMediumMVA;
       bool isMediumMVA;
       float mvaValue;
-      //int mvaCategory;
+      int mvaCategory;
    };
 
    struct Jet : public Particle
@@ -79,17 +88,17 @@ namespace tree
       float bDiscriminator;
       float uncert;
       float chf;
-      //float nhf;
-      //float cef;
-      //float nef;
-      //int nch;
-      //int nconstituents;
-      //float ptRes;
-      //float phiRes;
-      //float sfRes;
-      //float sfResUp;
-      //float sfResDn;
-      //float uncorJecFactor; // uncorrected jet momentum over corrected jet momentum
+      float nhf;
+      float cef;
+      float nef;
+      int nch;
+      int nconstituents;
+      float ptRes;
+      float phiRes;
+      float sfRes;
+      float sfResUp;
+      float sfResDn;
+      float uncorJecFactor; // uncorrected jet momentum over corrected jet momentum
    };
 
    struct Lepton: public Particle
@@ -97,9 +106,9 @@ namespace tree
       Char_t charge; // +/- 1
       float rIso;
       bool passImpactParameter;
-      //float d0;
-      //float dZ;
-      //float SIP3D;
+      float d0;
+      float dZ;
+      float SIP3D;
       float miniIso;
    };
 
@@ -107,7 +116,8 @@ namespace tree
    {
       bool isTight;
       bool isMedium;
-      //bool isMediumRun;
+      bool isMediumRun;
+      int nTrkLayers;
    };
 
    struct Electron: public Lepton
@@ -122,11 +132,14 @@ namespace tree
       bool isMediumMVA;
       bool isTightMVA;
       bool isTightMVASlope;
-      //float mvaValue;
-      bool mvaValue;
-      //int mvaCategory;
+      float mvaValue;
+      //bool mvaValue;
+      int mvaCategory;
       Float_t seedCrystalE;
       bool isPassConvVeto;
+      TVector3 pUncorrected;
+
+      
    };
 
    struct MET : public Particle

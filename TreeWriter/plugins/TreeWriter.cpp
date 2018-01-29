@@ -407,6 +407,9 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    consumes<edm::View<pat::Photon>>(edm::InputTag("slimmedPhotonsBeforeGSFix"));
    consumes<edm::View<pat::Photon>>(edm::InputTag("slimmedPhotons", "", "PAT"));
    consumes<edm::View<pat::Photon>>(edm::InputTag("slimmedPhotons", "", "RECO"));
+   consumes<edm::View<pat::Electron>>(edm::InputTag("slimmedElectronsBeforeGSFix"));
+   consumes<edm::View<pat::Electron>>(edm::InputTag("slimmedElectrons", "", "PAT"));
+   consumes<edm::View<pat::Electron>>(edm::InputTag("slimmedElectrons", "", "RECO"));
    consumes<bool>(edm::InputTag("particleFlowEGammaGSFixed", "dupECALClusters"));
    consumes<edm::EDCollection<DetId>>(edm::InputTag("ecalMultiAndGSGlobalRecHitEB", "hitsNotReplaced"));
 
@@ -760,38 +763,38 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trPho.hasPixelSeed = pho->hasPixelSeed();
       trPho.passElectronVeto = pho->passElectronVeto();
       trPho.r9 = pho->r9();
-      //trPho.hasGainSwitch = !pho->hasUserInt("hasGainSwitchFlag") || pho->userInt("hasGainSwitchFlag");
+      trPho.hasGainSwitch = !pho->hasUserInt("hasGainSwitchFlag") || pho->userInt("hasGainSwitchFlag");
 
-      //auto itPos = std::distance(photonColl->begin(), pho);
-      //trPho.pMultifit.SetXYZ(0,0,0);
-      //trPho.pUncorrected.SetXYZ(0,0,0);
-      //if (reMiniAOD_ && itPos<photonCollOld->size()) {
-        //auto p = (*photonCollOld).at(itPos);
-        //trPho.pMultifit.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
-      //}
-      //if (itPos<photonCollUncorrected->size()) {
-        //auto p = (*photonCollUncorrected).at(itPos);
-        //trPho.pUncorrected.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
-      //}
+      auto itPos = std::distance(photonColl->begin(), pho);
+      trPho.pMultifit.SetXYZ(0,0,0);
+      trPho.pUncorrected.SetXYZ(0,0,0);
+      if (reMiniAOD_ && itPos<photonCollOld->size()) {
+        auto p = (*photonCollOld).at(itPos);
+        trPho.pMultifit.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
+      }
+      if (itPos<photonCollUncorrected->size()) {
+        auto p = (*photonCollUncorrected).at(itPos);
+        trPho.pUncorrected.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
+      }
 
       vid::CutFlowResult cutFlow = (*photon_loose_id_cutflow)[phoPtr];
-      //trPho.cIso = cutFlow.getValueCutUpon(4);
-      //trPho.nIso = cutFlow.getValueCutUpon(5);
-      //trPho.pIso = cutFlow.getValueCutUpon(6);
-      //trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
+      trPho.cIso = cutFlow.getValueCutUpon(4);
+      trPho.nIso = cutFlow.getValueCutUpon(5);
+      trPho.pIso = cutFlow.getValueCutUpon(6);
+      trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
 
       trPho.isMediumMVA = (*photon_medium_id_decisions_MVA)[phoPtr];
       trPho.mvaValue = (*photon_mvaValues)[phoPtr];
-      //trPho.mvaCategory = (*photon_mvaCategories)[phoPtr];
+      trPho.mvaCategory = (*photon_mvaCategories)[phoPtr];
 
       // MC match
-      //if (!isRealData) {
-         //trPho.isTrue = matchToTruth(*pho, prunedGenParticles);
-         //trPho.isTrueAlternative = matchToTruthAlternative(*pho, prunedGenParticles);
-      //} else {
-         //trPho.isTrue = UNMATCHED;
-         //trPho.isTrueAlternative = UNMATCHED;
-      //}
+      if (!isRealData) {
+         trPho.isTrue = matchToTruth(*pho, prunedGenParticles);
+         trPho.isTrueAlternative = matchToTruthAlternative(*pho, prunedGenParticles);
+      } else {
+         trPho.isTrue = UNMATCHED;
+         trPho.isTrueAlternative = UNMATCHED;
+      }
 
       // check photon working points
       trPho.isLoose = (*photon_loose_id_dec) [phoPtr];
@@ -830,10 +833,11 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       dZ = abs( mu.track()->dz( vtx_point )); 
       SIP3D = abs(mu.dB(pat::Muon::PV3D)/mu.edB(pat::Muon::PV3D)); 
       trMuon.passImpactParameter =testImpactParameters(d0,dZ,SIP3D,false,true);
-      //trMuon.d0=d0;
-      //trMuon.dZ=dZ;
-      //trMuon.SIP3D=SIP3D;
-      //trMuon.isMediumRun = isMediumMuon(mu,runNo_);
+      trMuon.nTrkLayers = mu.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+      trMuon.d0=d0;
+      trMuon.dZ=dZ;
+      trMuon.SIP3D=SIP3D;
+      trMuon.isMediumRun = isMediumMuon(mu,runNo_);
       trMuon.isMedium = mu.isMediumMuon();
       
       vMuons_.push_back(trMuon);
@@ -868,6 +872,12 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle<edm::View<pat::Electron>> electronColl;
    iEvent.getByToken(electronCollectionToken_, electronColl);
 
+
+   // uncorrected electron collection
+   edm::Handle<edm::View<pat::Electron>> electronCollUncorrected;
+   if (reMiniAOD_ || !isRealData) iEvent.getByLabel(edm::InputTag("slimmedElectrons", "", "PAT"), electronCollUncorrected);
+   else iEvent.getByLabel(edm::InputTag("slimmedElectrons", "", "RECO"), electronCollUncorrected);
+
    vElectrons_.clear();
    tree::Electron trEl;
    for (edm::View<pat::Electron>::const_iterator el = electronColl->begin();el != electronColl->end(); el++) {
@@ -879,6 +889,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trEl.isMedium=(*electron_medium_id_decisions) [elPtr];
       trEl.isTight =(*electron_tight_id_decisions) [elPtr];
       trEl.p.SetPtEtaPhi(el->pt(), el->superCluster()->eta(), el->superCluster()->phi());
+      //cout<<el->pt()<<endl;
       trEl.charge = el->charge();
       auto const & pfIso = el->pfIsolationVariables();
       trEl.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();
@@ -886,10 +897,19 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trEl.isTightMVA = (*tight_id_decisions_MVA)[elPtr];
       trEl.isTightMVASlope = ElectronTightMVA(el->superCluster()->eta(),el->pt(),(*mvaValues)[elPtr]);
       trEl.mvaValue=(*mvaValues)[elPtr];
-      //trEl.mvaCategory=(*mvaCategories)[elPtr];
+      trEl.mvaCategory=(*mvaCategories)[elPtr];
       
       bool passConvVeto = !ConversionTools::hasMatchedConversion(*el,conversions,theBeamSpot->position());
       trEl.isPassConvVeto = passConvVeto;
+      
+      auto itPos = std::distance(electronColl->begin(), el);
+      trEl.pUncorrected.SetXYZ(0,0,0);
+      if (itPos<electronCollUncorrected->size()) {
+        auto e = (*electronCollUncorrected).at(itPos);
+        trEl.pUncorrected.SetPtEtaPhi(e.pt(), e.superCluster()->eta(), e.superCluster()->phi());
+      }
+      
+      
       
       //impact parameter:
       double d0=999.;
@@ -900,12 +920,14 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       dZ = abs( el->gsfTrack()->dz( vtx_point )); 
       SIP3D = abs(el->dB(pat::Electron::PV3D)/el->edB(pat::Electron::PV3D)); 
       trEl.passImpactParameter = testImpactParameters(d0,dZ,SIP3D,true,el->isEB());
-      //trEl.d0=d0;
-      //trEl.dZ=dZ;
-      //trEl.SIP3D=SIP3D;
+      trEl.d0=d0;
+      trEl.dZ=dZ;
+      trEl.SIP3D=SIP3D;
       trEl.miniIso = getPFIsolation(packedCandidates, *el);
       //trEl.mva = (*electron_mva_value) [elPtr];
-
+      
+      //cout<<"mvaValue: "<<(*mvaValues)[elPtr]<<" pt: "<<el->pt()<<endl;
+      
       vElectrons_.push_back(trEl);
    }
    sort(vElectrons_.begin(), vElectrons_.end(), tree::PtGreater);
@@ -1075,6 +1097,12 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
                genHt_ += sqrt(pow(allParticles[i][0], 2) + pow(allParticles[i][1], 2));
             }
          } // end paricle loop
+         //for (unsigned int i = 0; i < statusCodes.size(); i++) {
+            //auto absId = abs(lheParticleInfo.IDUP[i]);
+            //if (statusCodes[i] != 19999  && absId ==22 ) {
+               //cout<<"LHE photon found   "<<statusCodes[i]<<endl;
+            //}
+         //} // end paricle loop
       } else { // if no lheEventProduct is found
         genHt_ = 0;
         for (const auto& genP : *prunedGenParticles) {
@@ -1097,6 +1125,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    if (!isRealData) {
       // Get generator level info
       // Pruned particles are the one containing "important" stuff
+      
+
+      
       for (const reco::GenParticle &genP: *prunedGenParticles){
          auto absId = abs(genP.pdgId());
          // estimate number of binos
@@ -1121,16 +1152,33 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
          }
 
          // save particles
+         //if (genP.status()==22 || genP.status()==23 || // some generator particles
+               //(genP.status() == 1 && genP.pt()>10 && (absId==22 || (11 <= absId && absId <= 16)))) { // status 1 photons and leptons (including neutrinos)
          if (genP.status()==22 || genP.status()==23 || // some generator particles
-               (genP.status() == 1 && genP.pt()>20 && (absId==22 || (11 <= absId && absId <= 16)))) { // status 1 photons and leptons (including neutrinos)
-            trP.pdgId = genP.pdgId();
-            trP.isPrompt = genP.statusFlags().isPrompt();
-            trP.fromHardProcess = genP.statusFlags().fromHardProcess();
-            trP.p.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
-            trP.promptStatus = getPromptStatus(genP, prunedGenParticles);
-            vGenParticles_.push_back(trP);
+               (genP.status() == 1 && genP.pt()>10 && (absId==22 || (11 <= absId && absId <= 16)))
+               || (absId==22 && genP.pt()>10)) { // status 1 photons and leptons (including neutrinos)
+           //if (genP.pt()>10 && (absId==22 || ((11 <= absId && absId <= 16) && genP.status()==1))) { // status 1 leptons and all photons 
+           //if (absId==22) { // status 1 leptons and all photons 
+               trP.pdgId = genP.pdgId();
+               trP.isPrompt = genP.statusFlags().isPrompt();
+               trP.fromHardProcess = genP.statusFlags().fromHardProcess();
+               //trP.isHardProcess = genP.statusFlags().isHardProcess();
+               trP.isPromptFinalState = genP.isPromptFinalState();
+               //trP.isPromptFinalState2 = genP.statusFlags().isPromptFinalState();
+               trP.p.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
+               trP.promptStatus = getPromptStatus(genP, prunedGenParticles);
+               trP.motherId = genP.mother()->pdgId();
+            
+            
+               if (genP.mother()->mother()){
+                  trP.GrandMotherId = genP.mother()->mother()->pdgId();
+               }
+               trP.statusID = genP.status();
+            
+               vGenParticles_.push_back(trP);
          }
       }
+      //cout<<fromHard<<endl;
       sort(vGenParticles_.begin(), vGenParticles_.end(), tree::PtGreater);
    }
    if (signal_nBinos_ < minNumberBinos_cut_) return;
