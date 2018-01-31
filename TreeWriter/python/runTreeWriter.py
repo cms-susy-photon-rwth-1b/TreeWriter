@@ -27,12 +27,6 @@ options.register ('user',
                   VarParsing.varType.string,
                   "Name the user. If not set by crab, this script will determine it.")
                   
-#options.register("electronRegression",
-    #"GT",
-    #VarParsing.multiplicity.singleton,
-    #VarParsing.varType.string,
-    #"'GT' or an absolute path to a sqlite file for electron energy regression"
-#)
 options.register("electronSmearing",
     "Moriond17_23Jan",
     VarParsing.multiplicity.singleton,
@@ -43,20 +37,13 @@ options.register("electronSmearing",
                   
 
 # defaults
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/264A540A-571A-E611-8C5E-0025904E3FCE.root'
-#options.inputFiles = 'root:///user/kiesel/root-files/ZNuNuGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_MINIAODSIM.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/100000/000786F7-3AD0-E611-A6AE-842B2B765E01.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MuonEG/MINIAOD/PromptReco-v2/000/273/291/00000/3A2AFF67-411A-E611-B4BB-02163E0139C8.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MuonEG/MINIAOD/03Feb2017_ver2-v2/100000/008C5624-A1EC-E611-8238-0090FAA56F60.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MuonEG/MINIAOD/03Feb2017_ver2-v2/100000/008C5624-A1EC-E611-8238-0090FAA56F60.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/120000/040E9990-AA08-E711-BAAA-0025905B8574.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/JetHT/MINIAOD/03Feb2017_ver2-v2/110000/003A92CA-6FED-E611-82CD-0025905B8590.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch///store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/100000/00099D43-77ED-E611-8889-5065F381E1A1.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/120000/02DD5E46-7ABE-E611-8F20-0025905B8582.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016E/SinglePhoton/MINIAOD/03Feb2017-v1/80000/74BA03B0-62EB-E611-9F30-0025905A6082.root' 
+options.inputFiles = 'root://cms-xrd-global.cern.ch///store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/100000/00099D43-77ED-E611-8889-5065F381E1A1.root'
 
 
 options.outputFile = 'photonTree.root'
-#options.maxEvents = 10000
 options.maxEvents = -1
 # get and parse the command line arguments
 options.parseArguments()
@@ -71,7 +58,6 @@ useHTTrigger=True
 
 electronCollection = cms.InputTag("slimmedElectrons", "", "PAT")
 photonCollection   = cms.InputTag("slimmedPhotons", "", "PAT")
-
 
 
 # the actual TreeWriter module
@@ -125,9 +111,6 @@ electronCollection = cms.InputTag("slimmedElectrons", "", process.name_())
 photonCollection = cms.InputTag("slimmedPhotons", "", process.name_())
 
 
-
-
-
 process.selectedElectrons = cms.EDFilter("PATElectronSelector",
   src = electronCollection,
   cut = cms.string("pt>5 && abs(eta)<2.5")
@@ -141,26 +124,20 @@ process.selectedPhotons = cms.EDFilter("PATPhotonSelector",
 photonCollection = cms.InputTag("selectedPhotons", "", process.name_())
 
 
-
-
 # setup the smearing
 process.load("EgammaAnalysis.ElectronTools.calibratedPatElectronsRun2_cfi")
 from EgammaAnalysis.ElectronTools.calibratedPatElectronsRun2_cfi import files
-#process.calibratedPatElectrons.isMC           = cms.bool(not isRealData)
-process.calibratedPatElectrons.isMC           = True
+process.calibratedPatElectrons.isMC           = cms.bool(not isRealData)
 process.calibratedPatElectrons.correctionFile = cms.string(files[options.electronSmearing])
 process.calibratedPatElectrons.electrons      = electronCollection
 seq += process.calibratedPatElectrons
 
 process.load("EgammaAnalysis.ElectronTools.calibratedPatPhotonsRun2_cfi")
 from EgammaAnalysis.ElectronTools.calibratedPatPhotonsRun2_cfi import files
-#process.calibratedPatPhotons.isMC           = cms.bool(not isRealData)
-process.calibratedPatPhotons.isMC           = False
+process.calibratedPatPhotons.isMC           = cms.bool(not isRealData)
 process.calibratedPatPhotons.correctionFile = cms.string(files[options.electronSmearing])
 process.calibratedPatPhotons.photons      = photonCollection
 seq += process.calibratedPatPhotons
-
-
 
 
 process.load("Configuration.StandardSequences.Services_cff")
@@ -179,10 +156,6 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 electronCollection = cms.InputTag("calibratedPatElectrons", "", process.name_())
 photonCollection = cms.InputTag("calibratedPatPhotons", "", process.name_())
 
-#from PhysicsTools.SelectorUtils.tools.vid_id_tools import DataFormat, \
-        #switchOnVIDElectronIdProducer, setupAllVIDIdsInModule, setupVIDElectronSelection
-#from PhysicsTools.SelectorUtils.tools.vid_id_tools import DataFormat, \
-        #switchOnVIDElectronIdProducer, setupAllVIDIdsInModule, setupVIDElectronSelection, switchOnVIDPhotonIdProducer, setupVIDPhotonSelection
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 
 eleVIDModules = [
@@ -228,7 +201,6 @@ if not os.path.exists("src"): os.symlink(os.environ["CMSSW_BASE"]+"/src/", "src"
 if "Fast" in dataset:
     dbPath = 'sqlite:'
     isSignal = True
-    #print "python is Signal",isSignal
 
     from CondCore.CondDB.CondDB_cfi import CondDB
     CondDB.__delattr__('connect')
@@ -653,12 +625,6 @@ for trig in process.TreeWriter.triggerPrescales:
 #     RUN          #
 ####################
 
-#process.p = cms.Path(
-    #process.BadPFMuonFilter
-    #*process.BadChargedCandidateFilter
-    #*process.TreeWriter
-#)
-
+#process.p = cms.Path(process.BadPFMuonFilter*process.BadChargedCandidateFilter*process.TreeWriter#)
 process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter + seq + process.TreeWriter)
-#process.p = cms.Path(process.BadPFMuonFilter * process.BadChargedCandidateFilter * seq * process.TreeWriter)
 #process.p = cms.Path(process.regressionApplication * process.calibratedPatElectrons * process.BadPFMuonFilter * process.BadChargedCandidateFilter  * process.TreeWriter)

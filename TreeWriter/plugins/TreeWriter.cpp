@@ -889,7 +889,6 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trEl.isMedium=(*electron_medium_id_decisions) [elPtr];
       trEl.isTight =(*electron_tight_id_decisions) [elPtr];
       trEl.p.SetPtEtaPhi(el->pt(), el->superCluster()->eta(), el->superCluster()->phi());
-      //cout<<el->pt()<<endl;
       trEl.charge = el->charge();
       auto const & pfIso = el->pfIsolationVariables();
       trEl.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();
