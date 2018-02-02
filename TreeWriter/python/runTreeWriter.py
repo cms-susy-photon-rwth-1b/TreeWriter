@@ -29,9 +29,9 @@ options.register ('user',
 
 # defaults
 #~ options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/TTJets_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/60000/00E7F059-0BD5-E611-9267-001E67397CB5.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/120000/02DD5E46-7ABE-E611-8F20-0025905B8582.root'
+#~ options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/120000/02DD5E46-7ABE-E611-8F20-0025905B8582.root'
 #~ options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/BC527183-C0B7-E611-BC15-001E67348055.root'
-#~ options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-T5Wg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/80000/F227DD10-813E-E611-A722-6C3BE5B5C460.root'
 #~ options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016E/SinglePhoton/MINIAOD/03Feb2017-v1/80000/74BA03B0-62EB-E611-9F30-0025905A6082.root'
 #options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016partBtoH-03Feb2017_MINIAOD.root'
 #~ options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016C-03Feb2017-v1_MINIAOD.root'
@@ -349,7 +349,7 @@ if "Fast" in dataset:
     if "T5Wg" in dataset or "T6Wg" in dataset:
         process.TreeWriter.minNumberBinos_cut = 1
 
-if "PUMoriond17" in dataset:
+if "PUMoriond17" in dataset or "GGM_GravitinoLSP_M1" in dataset:
     process.TreeWriter.pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_Moriond17MC_PoissonOOTPU")
 
 # determine user if not set by crab

@@ -797,7 +797,6 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trEl.isLoose =(*loose_id_decisions) [elPtr];
       trEl.isMedium=(*medium_id_decisions) [elPtr];
       trEl.isTight =(*tight_id_decisions) [elPtr];
-      std::cout<<el->pt()<<std::endl;
       trEl.p.SetPtEtaPhi(el->pt(), el->superCluster()->eta(), el->superCluster()->phi());
       trEl.seedCrystalE = seedCrystalEnergyEB(*el->superCluster(), ebRecHits);
       trEl.charge = el->charge();
