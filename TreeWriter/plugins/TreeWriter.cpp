@@ -397,6 +397,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("genHt", &genHt_, "genHt/F");
    eventTree_->Branch("nISR", &nISR_, "nISR/I");
    //eventTree_->Branch("puPtHat", &puPtHat_ , "puPtHat/F");
+   eventTree_->Branch("EWKinoPairPt", &EWKinoPairPt_, "EWKinoPairPt/F");
 
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
    eventTree_->Branch("runNo", &runNo_, "runNo/i");
@@ -407,6 +408,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("signal_m1", &signal_m1_, "signal_m1/s");
    eventTree_->Branch("signal_m2", &signal_m2_, "signal_m2/s");
    eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
+   eventTree_->Branch("signal_nNeutralinoDecays", &signal_nNeutralinoDecays_, "signal_nNeutralinoDecays/s");
    
    eventTree_->Branch("electronTrackIsoVeto", &electronTrackIsoVeto);
    eventTree_->Branch("muonTrackIsoVeto", &muonTrackIsoVeto);
@@ -1022,6 +1024,10 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    tree::GenParticle trP;
    tree::IntermediateGenParticle trIntermP;
    signal_nBinos_ = 0;
+   signal_nNeutralinoDecays_ = 0;
+   TVector3 p_EWK_temp;
+   TVector3 p_EWK_tot;
+   p_EWK_tot.SetPtEtaPhi(0.,0.,0.);
    if (!isRealData) {
       // Get generator level info
       // Pruned particles are the one containing "important" stuff
@@ -1029,6 +1035,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
          auto absId = abs(genP.pdgId());
          // estimate number of binos
          if (absId == 1000023 && abs(genP.mother(0)->pdgId()) != 1000023) signal_nBinos_++;
+         
+         // number of neutralino_1 decays
+         if (absId == 1000022 && genP.status()==22) signal_nNeutralinoDecays_++;
 
          if (absId==23||absId==24) { // store intermediate bosons
             int iNdaugh = genP.numberOfDaughters();
@@ -1048,24 +1057,6 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             }
          }
          
-         //~ if (absId==1000022||absId==1000023) { // store neutralinos to check ggm scan
-            //~ int iNdaugh = genP.numberOfDaughters();
-            //~ if (iNdaugh>1) { // skip "decays" V->V
-               //~ trIntermP.pdgId = genP.pdgId();
-               //~ trIntermP.isPrompt = genP.statusFlags().isPrompt();
-               //~ trIntermP.p.SetPtEtaPhi(genP.pt(), genP.eta(), genP.phi());
-               //~ trIntermP.daughters.clear();
-               //~ for (int i=0; i<iNdaugh; i++) { // store the decay products
-                  //~ reco::Candidate const& daugh = *genP.daughter(i);
-                  //~ trP.pdgId = daugh.pdgId();
-                  //~ trP.isPrompt = false;
-                  //~ trP.p.SetPtEtaPhi(daugh.pt(), daugh.eta(), daugh.phi());
-                  //~ trIntermP.daughters.push_back(trP);
-               //~ }
-               //~ vIntermediateGenParticles_.push_back(trIntermP);
-            //~ }
-         //~ }
-
          // save particles
          if (genP.status()==22 || genP.status()==23 || // some generator particles
                (genP.status() == 1 && genP.pt()>20 && (absId==22 || (11 <= absId && absId <= 16)))) { // status 1 photons and leptons (including neutrinos)
@@ -1076,8 +1067,16 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             trP.promptStatus = getPromptStatus(genP, prunedGenParticles);
             vGenParticles_.push_back(trP);
          }
+         
+         //Calculate EWKinoPairPt
+         if (genP.status()==22 && absId>=1000001 && (abs(genP.mother(0)->pdgId())>1000039 || abs(genP.mother(0)->pdgId())<1000001)) {
+            p_EWK_temp.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
+            p_EWK_tot=p_EWK_tot+p_EWK_temp;
+         }
+            
       }
       sort(vGenParticles_.begin(), vGenParticles_.end(), tree::PtGreater);
+      EWKinoPairPt_ = p_EWK_tot.Pt();
    }
    if (signal_nBinos_ < minNumberBinos_cut_) return;
    hCutFlow_->Fill("nBinos", mc_weight_*pu_weight_);
