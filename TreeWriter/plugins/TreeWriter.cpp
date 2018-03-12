@@ -1029,6 +1029,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    TVector3 p_EWK_tot;
    p_EWK_tot.SetPtEtaPhi(0.,0.,0.);
    if (!isRealData) {
+      //~ std::cout<<"------------------------------"<<std::endl;
       // Get generator level info
       // Pruned particles are the one containing "important" stuff
       for (const reco::GenParticle &genP: *prunedGenParticles){
@@ -1039,19 +1040,21 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
          // number of neutralino_1 decays
          if (absId == 1000022 && genP.status()==22) signal_nNeutralinoDecays_++;
 
-         if (absId==23||absId==24) { // store intermediate bosons
+         if (absId==1000022||absId==1000023||absId==1000025) { // store intermediate neutralinos
             int iNdaugh = genP.numberOfDaughters();
             if (iNdaugh>1) { // skip "decays" V->V
                trIntermP.pdgId = genP.pdgId();
                trIntermP.isPrompt = genP.statusFlags().isPrompt();
                trIntermP.p.SetPtEtaPhi(genP.pt(), genP.eta(), genP.phi());
                trIntermP.daughters.clear();
+               //~ std::cout<<absId<<std::endl;
                for (int i=0; i<iNdaugh; i++) { // store the decay products
                   reco::Candidate const& daugh = *genP.daughter(i);
                   trP.pdgId = daugh.pdgId();
                   trP.isPrompt = false;
                   trP.p.SetPtEtaPhi(daugh.pt(), daugh.eta(), daugh.phi());
                   trIntermP.daughters.push_back(trP);
+                  //~ std::cout<<daugh.pdgId()<<std::endl;
                }
                vIntermediateGenParticles_.push_back(trIntermP);
             }
