@@ -77,6 +77,10 @@
 #include "TreeParticles.hpp"
 
 
+#include "AnalysisDataFormats/TopObjects/interface/TtGenEvent.h"
+
+
+
 typedef std::vector<PileupSummaryInfo> PileupSummaryInfoCollection;
 typedef edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit>> EcalRecHitCollection;
 
@@ -202,6 +206,11 @@ private:
 
    Int_t nISR_;
 
+   Float_t EWKinoPairPt_;
+   Float_t leptonPairPt_;
+   Float_t topPt1_;
+   Float_t topPt2_;
+
    ULong64_t evtNo_;
    UInt_t    runNo_;
    UInt_t    lumNo_;
@@ -212,6 +221,8 @@ private:
    UShort_t signal_m1_; // usually mass of first particle in decay chain
    UShort_t signal_m2_; // usually neutarlino mass
    UShort_t signal_nBinos_; // 2 for T5gg, 1 for T5Wg, 0 for T5WW
+
+   UShort_t signal_nNeutralinoDecays_;
 
    // Trigger decisions
    std::vector<std::string>      triggerNames_;

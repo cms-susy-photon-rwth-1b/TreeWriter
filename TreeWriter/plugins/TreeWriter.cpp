@@ -460,6 +460,11 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("nISR", &nISR_, "nISR/I");
    //eventTree_->Branch("puPtHat", &puPtHat_ , "puPtHat/F");
 
+   eventTree_->Branch("EWKinoPairPt", &EWKinoPairPt_, "EWKinoPairPt/F");
+   eventTree_->Branch("leptonPairPt", &leptonPairPt_, "leptonPairPt/F");
+   eventTree_->Branch("topPt1", &topPt1_, "topPt1/F");
+   eventTree_->Branch("topPt2", &topPt2_, "topPt2/F");
+
    eventTree_->Branch("evtNo", &evtNo_, "evtNo/l");
    eventTree_->Branch("runNo", &runNo_, "runNo/i");
    eventTree_->Branch("lumNo", &lumNo_, "lumNo/i");
@@ -469,6 +474,8 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    eventTree_->Branch("signal_m1", &signal_m1_, "signal_m1/s");
    eventTree_->Branch("signal_m2", &signal_m2_, "signal_m2/s");
    eventTree_->Branch("signal_nBinos", &signal_nBinos_, "signal_nBinos/s");
+
+   eventTree_->Branch("signal_nNeutralinoDecays", &signal_nNeutralinoDecays_, "signal_nNeutralinoDecays/s");
 
    // Fill trigger maps
    for (const auto& n : triggerNames_) {
@@ -1121,18 +1128,51 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    tree::GenParticle trP;
    tree::IntermediateGenParticle trIntermP;
    signal_nBinos_ = 0;
+   
+   signal_nNeutralinoDecays_ = 0;
+   
+   TVector3 p_EWK_temp;
+   TVector3 p_EWK_tot;
+   p_EWK_tot.SetPtEtaPhi(0.,0.,0.);
+   
+   TVector3 p_leptonPair_temp;
+   TVector3 p_leptonPair_temp2;
+   TVector3 p_leptonPair_tot;
+   p_leptonPair_tot.SetPtEtaPhi(0.,0.,0.);
+   p_leptonPair_temp.SetPtEtaPhi(0.,0.,0.);
+   p_leptonPair_temp2.SetPtEtaPhi(0.,0.,0.);
+   
+   TVector3 p_top1_temp;
+   TVector3 p_top2_temp;
+   p_top1_temp.SetPtEtaPhi(0.,0.,0.);
+   p_top2_temp.SetPtEtaPhi(0.,0.,0.);
+
    if (!isRealData) {
       // Get generator level info
       // Pruned particles are the one containing "important" stuff
       
 
+      //int gg=0;
+      int alreadyFoundLeptonsForZ=0;
+      //int countLeptons=0;
+      int countTops=0;
+      int countZ=0;
+      
+      for (const reco::GenParticle &genP: *prunedGenParticles){
+         auto absId = abs(genP.pdgId());
+         if(absId==23){
+            countZ=countZ+1;
+         }
+      }
       
       for (const reco::GenParticle &genP: *prunedGenParticles){
          auto absId = abs(genP.pdgId());
          // estimate number of binos
          if (absId == 1000023 && abs(genP.mother(0)->pdgId()) != 1000023) signal_nBinos_++;
 
-         if (absId==23||absId==24) { // store intermediate bosons
+         if (absId == 1000022 && genP.status()==22) signal_nNeutralinoDecays_++;
+
+         if ((absId==23||absId==24)||(absId==1000022||absId==1000023||absId==1000025)) { // store intermediate bosons
             int iNdaugh = genP.numberOfDaughters();
             if (iNdaugh>1) { // skip "decays" V->V
                trIntermP.pdgId = genP.pdgId();
@@ -1176,9 +1216,109 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             
                vGenParticles_.push_back(trP);
          }
+         
+         //Calculate EWKinoPairPt
+         if (genP.status()==22 && absId>=1000001 && (abs(genP.mother(0)->pdgId())>1000039 || abs(genP.mother(0)->pdgId())<1000001)) {
+            p_EWK_temp.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
+            p_EWK_tot=p_EWK_tot+p_EWK_temp;
+         }
+    
+         if((countZ!=0) && (alreadyFoundLeptonsForZ==0)){
+            if(absId==23){
+               int iNdaugh = genP.numberOfDaughters();
+               if (iNdaugh>1) {
+                  int daughBosons = 0;
+                  for (int i=0; i<iNdaugh; i++) {
+                     reco::Candidate const& daugh = *genP.daughter(i);
+                     if(abs(daugh.pdgId())==23){
+                        daughBosons=daughBosons+1;
+                     }
+                  }
+                  if(daughBosons==0){
+                     p_leptonPair_temp.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
+                     p_leptonPair_tot=p_leptonPair_temp;
+                     alreadyFoundLeptonsForZ=alreadyFoundLeptonsForZ+1;                     
+                  }
+               }
+            }
+         }else{
+            //if((absId>0 && absId<7)||(absId==9)||(absId==21)){
+            //if(((genP.pdgId()>0 && genP.pdgId()<7)||(absId==9)||(absId==21))&&(alreadyFoundLeptonsForZ==0)){
+            if(((absId>0 && absId<7)||(absId==9)||(absId==21))&&(alreadyFoundLeptonsForZ==0)){
+            //if(absId==21){
+               int iNdaugh = genP.numberOfDaughters();
+               if (iNdaugh>1) {
+                  int daughBosons = 0;
+                  int daughLeptons = 0;
+                  for (int i=0; i<iNdaugh; i++) {
+                     reco::Candidate const& daugh = *genP.daughter(i);
+                     if(abs(daugh.pdgId())==absId){
+                        daughBosons=daughBosons+1;
+                     }
+                     if((abs(daugh.pdgId())<17)&&(abs(daugh.pdgId())>10)){
+                        daughLeptons=daughLeptons+1;
+                        p_leptonPair_temp.SetPtEtaPhi(daugh.pt(),daugh.eta(),daugh.phi());
+                        p_leptonPair_temp2=p_leptonPair_temp2+p_leptonPair_temp;
+                     }
+                  }
+                  if(daughBosons!=555){
+                     if(daughLeptons==2 && genP.statusFlags().fromHardProcess()){
+                        p_leptonPair_tot=p_leptonPair_temp2;
+                        alreadyFoundLeptonsForZ=alreadyFoundLeptonsForZ+1;
+                     }         
+                  }
+               }
+            }
+            if((absId==22) && (alreadyFoundLeptonsForZ==0)){
+               int iNdaugh = genP.numberOfDaughters();
+               if (iNdaugh>1) {
+                  int daughBosons = 0;
+                  for (int i=0; i<iNdaugh; i++) {
+                     reco::Candidate const& daugh = *genP.daughter(i);
+                     if(abs(daugh.pdgId())==23){
+                        daughBosons=daughBosons+1;
+                     }
+                  }
+                  if(daughBosons==0 && genP.statusFlags().fromHardProcess()){
+                     p_leptonPair_temp.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
+                     p_leptonPair_tot=p_leptonPair_temp;
+                     alreadyFoundLeptonsForZ=alreadyFoundLeptonsForZ+1;            
+                  }
+               }
+            }
+         }
+
+         if (absId==6) { // top
+            int iNdaugh = genP.numberOfDaughters();
+            if (iNdaugh>1) { // skip "decays" V->V
+               int daughTops =0;
+               for (int i=0; i<iNdaugh; i++) {
+                  reco::Candidate const& daugh = *genP.daughter(i);
+                  if(abs(daugh.pdgId())==6){
+                     daughTops=daughTops+1;
+                  }
+               }
+               
+               if((countTops==0)&&(daughTops==0)){
+                  p_top1_temp.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
+                  topPt1_ = p_top1_temp.Pt();
+                  countTops=countTops+1;
+               }else{
+                  if((countTops==1)&&(daughTops==0)){
+                     p_top2_temp.SetPtEtaPhi(genP.pt(),genP.eta(),genP.phi());
+                     topPt2_ = p_top2_temp.Pt();
+                     countTops=countTops+1;
+                  }
+               }
+            }
+         }    
+         
       }
-      //cout<<fromHard<<endl;
       sort(vGenParticles_.begin(), vGenParticles_.end(), tree::PtGreater);
+      EWKinoPairPt_ = p_EWK_tot.Pt();
+      leptonPairPt_ = p_leptonPair_tot.Pt();
+
+      
    }
    if (signal_nBinos_ < minNumberBinos_cut_) return;
    hCutFlow_->Fill("nBinos", mc_weight_*pu_weight_);
@@ -1247,6 +1387,12 @@ void TreeWriter::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::Ev
          signal_m2_ = std::stoi(sm[2]);
       } else if (regex_match(modelName_, sm, std::regex(".*_(\\d+)"))) {
          signal_m1_ = std::stoi(sm[1]);
+      } else if (regex_match(modelName_, sm, std::regex(".*_M1(\\d+)_M3(\\d+)"))) {
+          signal_m1_ = std::stoi(sm[1]);
+          signal_m2_ = std::stoi(sm[2]);
+      } else if (regex_match(modelName_, sm, std::regex(".*_M1(\\d+)_M2(\\d+)"))) {
+          signal_m1_ = std::stoi(sm[1]);
+          signal_m2_ = std::stoi(sm[2]);
       }
    }
 

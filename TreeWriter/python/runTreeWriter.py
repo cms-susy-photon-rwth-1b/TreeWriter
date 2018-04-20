@@ -40,11 +40,18 @@ options.register("electronSmearing",
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/100000/000786F7-3AD0-E611-A6AE-842B2B765E01.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MuonEG/MINIAOD/03Feb2017_ver2-v2/100000/008C5624-A1EC-E611-8238-0090FAA56F60.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/120000/040E9990-AA08-E711-BAAA-0025905B8574.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch///store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/100000/00099D43-77ED-E611-8889-5065F381E1A1.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch///store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/100000/00099D43-77ED-E611-8889-5065F381E1A1.root'
+#options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/GGM_GravitinoLSP_M1-200to1500_M2-200to1500_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/000C44EA-F8EC-E711-8145-0242AC130002.root'
+#options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/GGM_GravitinoLSP_M1-50to1500_M3-1000to2500_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/06B8CB51-31EB-E711-B445-0025905A6136.root'
+#options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/SMS-T5bbbbZg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/10000/00BA5D3D-2592-E711-82AE-0242AC110011.root'
+#options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/0030B9D6-72C1-E611-AE49-02163E00E602.root'
+#options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/TTGamma_Dilept_TuneCUETP8M2T4_13TeV-amcatnlo-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/80000/02915ED5-FBE5-E611-8C52-001E67586A2F.root'
 
 
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
+#options.maxEvents = 10000
+#options.maxEvents = 10
 # get and parse the command line arguments
 options.parseArguments()
 
@@ -54,6 +61,7 @@ isRealData=not dataset.endswith("SIM")
 
 isSignal=False
 useHTTrigger=True
+
 
 
 electronCollection = cms.InputTag("slimmedElectrons", "", "PAT")
@@ -88,6 +96,8 @@ else:
         process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_miniAODv2_v1"
     else:
         print "Could not guess correct global tag for", dataset
+
+
 
 
 seq = cms.Sequence()
@@ -232,6 +242,15 @@ updateJetCollection(
 )
 
 ##########################
+# Top Pt reweighting     #
+##########################
+#https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting
+#process.load("TopQuarkAnalysis.TopEventProducers.sequences.ttGenEvent_cff")
+#
+#process.decaySubset.fillMode = cms.string("kME")
+#process.TreeWriter.ttGenEvent = cms.InputTag('genEvt')
+
+##########################
 # MET                    #
 ##########################
 # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription
@@ -293,6 +312,9 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     pileUpSummary = cms.InputTag('slimmedAddPileupInfo'),
                                     lheEventProduct = cms.InputTag('externalLHEProducer'),
                                     packedCandidates=cms.InputTag("packedPFCandidates"),
+                                    
+                                    #ttGenEvent = cms.InputTag("genEvt"),
+                                    
                                     # electron IDs
                                     electronVetoIdMap   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-veto"),
                                     electronLooseIdMap  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose"),
@@ -345,6 +367,10 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     metCorrected = cms.InputTag("slimmedMETs"),
                                     metCalibrated = cms.InputTag("slimmedMETs")
 )
+
+#process.TreeWriter.ttGenEvent = cms.InputTag('genEvt')
+#process.TreeWriter.ttGenEvent = cms.InputTag('prunedGenParticles')
+
 
 ################################
 # Modify the TreeWriter module #
@@ -410,6 +436,10 @@ if "Fast" in dataset:
         process.TreeWriter.minNumberBinos_cut = 1
 
 if "PUMoriond17" in dataset:
+    process.TreeWriter.pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_Moriond17MC_PoissonOOTPU")
+if "PUSummer16" in dataset:
+    process.TreeWriter.pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_Moriond17MC_PoissonOOTPU")
+if "GGM_GravitinoLSP_M1" in dataset:
     process.TreeWriter.pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_Moriond17MC_PoissonOOTPU")
 
 # determine user if not set by crab
@@ -625,6 +655,7 @@ for trig in process.TreeWriter.triggerPrescales:
 #     RUN          #
 ####################
 
-#process.p = cms.Path(process.BadPFMuonFilter*process.BadChargedCandidateFilter*process.TreeWriter#)
+############process.p = cms.Path(process.BadPFMuonFilter*process.BadChargedCandidateFilter*process.TreeWriter#)
 process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter + seq + process.TreeWriter)
-#process.p = cms.Path(process.regressionApplication * process.calibratedPatElectrons * process.BadPFMuonFilter * process.BadChargedCandidateFilter  * process.TreeWriter)
+#process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter + seq +  process.makeGenEvt + process.TreeWriter)
+############process.p = cms.Path(process.regressionApplication * process.calibratedPatElectrons * process.BadPFMuonFilter * process.BadChargedCandidateFilter  * process.TreeWriter)

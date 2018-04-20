@@ -36,7 +36,6 @@ namespace tree
       Int_t GrandMotherId=0;
       //bool isPromptFinalState=0;
       int isPromptFinalState=0;
-      //int isPromptFinalState2=0;
       
       UChar_t promptStatus;
       Int_t motherId=0;
@@ -72,8 +71,6 @@ namespace tree
       Bool_t  isLoose;
       Bool_t  isMedium;
       Bool_t  isTight;
-      //Float_t mva;
-      //int isMediumMVA;
       bool isMediumMVA;
       float mvaValue;
       int mvaCategory;
@@ -126,14 +123,10 @@ namespace tree
       bool isLoose;
       bool isMedium;
       bool isTight;
-      //int isMediumMVA;
-      //int isTightMVA;
-      //int isTightMVASlope;
       bool isMediumMVA;
       bool isTightMVA;
       bool isTightMVASlope;
       float mvaValue;
-      //bool mvaValue;
       int mvaCategory;
       Float_t seedCrystalE;
       bool isPassConvVeto;
