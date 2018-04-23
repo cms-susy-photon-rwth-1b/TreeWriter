@@ -212,6 +212,7 @@ datasets["jschulz"] = [
     '/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
 ] + datasets["GJets_HT"] + datasets["GJets_HT_extra"] + datasets["GJets_DR-HT"] + datasets["QCD_HT"] + datasets["QCD_HT_extra"] + datasets["ZJetsToNuNu_HT"] + datasets["ZJetsToNuNu_HT_extra"] + datasets["WJetsToLNu_HT"] + datasets["WJetsToLNu_HT_extra"] + dataDatasets("SinglePhoton") + dataDatasets("MET")
 
+
 # call with 'python crabConfig.py'
 if __name__ == '__main__':
     user = getpass.getuser()
@@ -240,7 +241,7 @@ if __name__ == '__main__':
         config.section_("Data")
         config.Data.inputDataset = dataset
         config.Data.splitting = 'FileBased' if isSim else 'LumiBased'
-        config.Data.unitsPerJob = 5 if isSim else 100
+        config.Data.unitsPerJob = 4 if isSim else 100
         config.Data.publication = False
         config.Data.outputDatasetTag = 'outputDatasetTag'
         config.Data.outLFNDirBase = "outLFNDirBase"
@@ -252,7 +253,7 @@ if __name__ == '__main__':
             config.Data.lumiMask = getLumiMask(cmssw_src)
 
         if user=="kiesel":
-            config.Data.outputDatasetTag = 'v25'
+            config.Data.outputDatasetTag = 'v26'
             config.Data.outLFNDirBase = "/store/user/kiesel/13TeV/nTuples/"
         elif user=="jschulz":
             config.Data.outputDatasetTag = 'v10'
