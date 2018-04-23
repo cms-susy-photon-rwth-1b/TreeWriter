@@ -1027,7 +1027,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
          // estimate number of binos
          if (absId == 1000023 && abs(genP.mother(0)->pdgId()) != 1000023) signal_nBinos_++;
 
-         if (absId==23||absId==24) { // store intermediate bosons
+         if (absId==23||absId==24||absId==1000022||absId==1000023||absId==1000025) { // store intermediate bosons
             int iNdaugh = genP.numberOfDaughters();
             if (iNdaugh>1) { // skip "decays" V->V
                trIntermP.pdgId = genP.pdgId();
