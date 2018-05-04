@@ -30,7 +30,15 @@ namespace tree
       Int_t pdgId=0;
       bool isPrompt;
       bool fromHardProcess;
+      
+      //bool isHardProcess;
+      int statusID=0;
+      Int_t GrandMotherId=0;
+      //bool isPromptFinalState=0;
+      int isPromptFinalState=0;
+      
       UChar_t promptStatus;
+      Int_t motherId=0;
    };
 
    struct IntermediateGenParticle: public GenParticle
@@ -47,27 +55,25 @@ namespace tree
       Bool_t passElectronVeto;
       Float_t r9;
       Float_t sigmaPt;
-      Float_t seedCrystalE;
       Bool_t hasGainSwitch;
-
+//
       Float_t cIso;
       Float_t nIso;
       Float_t pIso;
       Float_t cIsoWorst;
-
+//
       Int_t isTrue;
       Int_t isTrueAlternative;
       TVector3 pMultifit;
       TVector3 pUncorrected;
 
       // IDs
-      Bool_t  isLoose15;
-      Bool_t  isMedium15;
-      Bool_t  isTight15;
       Bool_t  isLoose;
       Bool_t  isMedium;
       Bool_t  isTight;
-      Float_t mvaValue;
+      bool isMediumMVA;
+      float mvaValue;
+      int mvaCategory;
    };
 
    struct Jet : public Particle
@@ -79,6 +85,7 @@ namespace tree
       float bDiscriminator;
       float uncert;
       float chf;
+      
       float nhf;
       float cef;
       float nef;
@@ -92,40 +99,42 @@ namespace tree
       float uncorJecFactor; // uncorrected jet momentum over corrected jet momentum
    };
 
-   struct Muon: public Particle
+   struct Lepton: public Particle
    {
       Char_t charge; // +/- 1
-      bool isTight;
-      bool isMedium;
-      bool isLoose;
-      // PF-based combined relative isolation with Δβ correction:
-      // (∑pT(ch.had from PV) + max(0, ∑ET(neut.had) + ∑ET(phot) − 0.5*∑pT(ch.had from PU)))/pT(μ)
       float rIso;
+      bool passImpactParameter;
       float d0;
       float dZ;
-      float PFminiIso;
+      float SIP3D;
+      float miniIso;
    };
 
-   struct Electron: public Particle
+   struct Muon: public Lepton
    {
-      Char_t charge; // +/- 1
+      bool isTight;
+      bool isMedium;
+      bool isMediumRun;
+      int nTrkLayers;
+      TVector3 pUncorrected; //new
+   };
+
+   struct Electron: public Lepton
+   {
+      bool isVetoID;
       bool isLoose;
       bool isMedium;
       bool isTight;
-      float rIso;
-      float d0;
-      float dZ;
+      bool isMediumMVA;
+      bool isTightMVA;
+      bool isTightMVASlope;
+      float mvaValue;
+      int mvaCategory;
       Float_t seedCrystalE;
-      float r9;
-      float SigmaIEtaIEtaFull5x5;
-      float dPhiAtVtx;
-      float dEtaAtVtx;
-      float HoverE;
-      float EoverPInv;
-      int MissHits;
-      bool ConvVeto;
-      float PFminiIso;
+      bool isPassConvVeto;
       TVector3 pUncorrected;
+
+      
    };
 
    struct MET : public Particle

@@ -4,17 +4,23 @@
 Get CMSSW environment 80X
 
 ```
-cmsrel CMSSW_8_0_26_patch1
-cd CMSSW_8_0_26_patch1/src/
+export SCRAM_ARCH="slc6_amd64_gcc530"
+export CMSSW_VERSION="CMSSW_8_0_26_patch2"
+
+cmsrel $CMSSW_VERSION
+cd $CMSSW_VERSION/src/
 cmsenv
 git cms-merge-topic cms-met:METRecipe_8020
 git cms-merge-topic cms-met:METRecipe_80X_part2
 git cms-merge-topic ikrav:egm_id_80X_v3_photons
-git clone git@github.com:cms-susy-photon-rwth-1b/TreeWriter.git
-git cms-merge-topic rafaellopesdesa:EgammaAnalysis80_EGMSmearer_Moriond17_23Jan
-git clone https://github.com/ECALELFS/ScalesSmearings.git EgammaAnalysis/ElectronTools/data/ScalesSmearings
+git clone git@github.com:cms-susy-photon-rwth-1b/TreeWriter.git -b cleaned_for_sebastian
+git cms-merge-topic cms-egamma:EGM_gain_v1
+cd EgammaAnalysis/ElectronTools/data
+git clone https://github.com/ECALELFS/ScalesSmearings.git -b Moriond17_gainSwitch_unc
+cd $CMSSW_BASE/src
 wget -qP TreeWriter/TreeWriter https://github.com/cms-jet/JECDatabase/raw/master/SQLiteFiles/Spring16_25nsFastSimV1_MC.db
-scram b -j7
+ln -s TreeWriter/TreeWriter/Spring16_25nsFastSimV1_MC.db Spring16_25nsFastSimV1_MC.db
+scram b -j10
 cd TreeWriter
 ```
 Create Pileup Histograms

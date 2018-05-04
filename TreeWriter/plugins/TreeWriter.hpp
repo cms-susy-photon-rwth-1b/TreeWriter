@@ -25,6 +25,12 @@
 #include "DataFormats/PatCandidates/interface/VIDCutFlowResult.h"
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 
+//needed?
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
+#include "DataFormats/EgammaCandidates/interface/Conversion.h"
+#include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
+
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/Common/interface/EDCollection.h"
@@ -71,6 +77,12 @@
 #include "TreeParticles.hpp"
 
 
+#include "AnalysisDataFormats/TopObjects/interface/TtGenEvent.h"
+
+//#include "RoccoR.cc"
+//#include "RoccoR.h"
+#include "../interface/RoccoR.cc"
+
 typedef std::vector<PileupSummaryInfo> PileupSummaryInfoCollection;
 typedef edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit>> EcalRecHitCollection;
 
@@ -85,7 +97,7 @@ public:
    ~TreeWriter() {};
 
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-
+      //RoccoR  rc;
 private:
    virtual void beginJob() override {};
    virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
@@ -107,14 +119,20 @@ private:
    TH1F* createCutFlowHist(std::string modelName = "");
 
    // ----------member data ---------------------------
+   bool isSignalBoolean_;
    double dHT_cut_;
    double dPhoton_pT_cut_;
    double dJet_pT_cut_;
    bool isolatedPhotons_;
    unsigned minNumberPhotons_cut_;
    unsigned minNumberElectrons_cut_;
+   unsigned minNumberLeptons_cut_;
    unsigned minNumberBinos_cut_;
 
+
+
+
+   
    bool newLumiBlock_;
 
    edm::EDGetTokenT<reco::VertexCollection>    vtxToken_;
@@ -140,15 +158,28 @@ private:
    edm::EDGetTokenT<edm::ValueMap<bool>> electronLooseIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> electronMediumIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> electronTightIdMapToken_;
+    edm::EDGetTokenT<edm::ValueMap<bool>> eleMediumIdMapToken_;
+    edm::EDGetTokenT<edm::ValueMap<bool>> eleTightIdMapToken_;
+    // MVA values and categories (optional)
+    edm::EDGetTokenT<edm::ValueMap<float>> mvaValuesMapToken_;
+    edm::EDGetTokenT<edm::ValueMap<int>> mvaCategoriesMapToken_;
+   
+    //~//Conversion veto
+   edm::EDGetTokenT<reco::BeamSpot> beamSpotToken_;
+   edm::EDGetTokenT<reco::ConversionCollection> conversionsMiniAODToken_;
+   
+   
    // photon id
-   edm::EDGetTokenT<edm::ValueMap<bool>> photonLooseId15MapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool>> photonMediumId15MapToken_;
-   edm::EDGetTokenT<edm::ValueMap<bool>> photonTightId15MapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> photonLooseIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> photonMediumIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> photonTightIdMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<float>> photonMvaValuesMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult>> phoLooseIdFullInfoMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult>> photonLooseIdFullInfoMapToken_mva_;
+   //MVA 
+   edm::EDGetTokenT<edm::ValueMap<bool> >               photonMediumIdBoolMapToken_mva_;
+   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > photonMediumIdFullInfoMapToken_mva_;
+   // MVA values and categories (optional)
+   edm::EDGetTokenT<edm::ValueMap<float> > photonMvaValuesMapToken_;
+   edm::EDGetTokenT<edm::ValueMap<int> > photonMvaCategoriesMapToken_;
 
    // met filters to apply
    const std::vector<std::string> metFilterNames_;
@@ -157,7 +188,6 @@ private:
    edm::EDGetTokenT<edm::ValueMap<float>> phoWorstChargedIsolationToken_;
 
    const std::string pileupHistogramName_;
-   const bool hardPUveto_;
    const bool reMiniAOD_; // 03Feb2017 campaign
 
    PFJetIDSelectionFunctor jetIdSelector;
@@ -177,9 +207,15 @@ private:
    std::vector<float> vPdf_weights_;
 
    Float_t genHt_;
+   Float_t ht_;
    Float_t puPtHat_;
 
    Int_t nISR_;
+
+   Float_t EWKinoPairPt_;
+   Float_t leptonPairPt_;
+   Float_t topPt1_;
+   Float_t topPt2_;
 
    ULong64_t evtNo_;
    UInt_t    runNo_;
@@ -191,6 +227,8 @@ private:
    UShort_t signal_m1_; // usually mass of first particle in decay chain
    UShort_t signal_m2_; // usually neutarlino mass
    UShort_t signal_nBinos_; // 2 for T5gg, 1 for T5Wg, 0 for T5WW
+
+   UShort_t signal_nNeutralinoDecays_;
 
    // Trigger decisions
    std::vector<std::string>      triggerNames_;
@@ -225,11 +263,6 @@ private:
    std::vector<tree::GenParticle> vGenParticles_;
    std::vector<tree::IntermediateGenParticle> vIntermediateGenParticles_;
 
-   // TrackIsolation
-   Bool_t electronTrackIsoVeto;
-   Bool_t muonTrackIsoVeto;
-   Bool_t pionTrackIsoVeto;
-
    // File Service to store things to a root file
    edm::Service<TFileService> fs_;
 
@@ -239,6 +272,14 @@ private:
 
    // Pileup histogram(s)
    TH1F hPU_;
+   
+   //RoccoR  rc("rcdata.2016.v3");
+   //RoccoR  rc("TreeWriter/TreeWriter/plugins/rcdata");
+   //RoccoR  rc("TreeWriter/TreeWriter/plugins/rcdata");
+   RoccoR  rc;
+   TRandom rgen_;
+   //RoccoR  *rc;
+   
 };
 
 #endif /* TREEWRITER_HPP__ */
