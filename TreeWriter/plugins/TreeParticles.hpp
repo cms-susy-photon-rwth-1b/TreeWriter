@@ -126,6 +126,8 @@ namespace tree
       bool ConvVeto;
       float PFminiIso;
       TVector3 pUncorrected;
+      float phiObj;     //Since in nominal p the supercluster phi is used
+      float etaObj;     //Since in nominal p the supercluster eta is used
    };
 
    struct MET : public Particle

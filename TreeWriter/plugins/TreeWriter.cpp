@@ -815,6 +815,11 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       math::XYZPoint vtx_point = firstGoodVertex.position();
       trEl.d0 = el->bestTrack()->dxy( vtx_point );
       trEl.dZ = el->bestTrack()->dz( vtx_point );
+      trEl.phiObj = el->phi();
+      trEl.etaObj = el->eta();
+      
+      std::cout<<el->superCluster()->phi()<<"        "<<el->phi()<<std::endl;
+      std::cout<<el->superCluster()->eta()<<"        "<<el->eta()<<std::endl;
       
       // VID calculation of (1/E - 1/p)
       if (el->ecalEnergy() == 0)   trEl.EoverPInv = 1e30;
@@ -1040,7 +1045,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
          // number of neutralino_1 decays
          if (absId == 1000022 && genP.status()==22) signal_nNeutralinoDecays_++;
 
-         if (absId==1000022||absId==1000023||absId==1000025) { // store intermediate neutralinos
+         if (absId==1000022||absId==1000023||absId==1000025||absId==1000024) { // store intermediate neutralinos and charginos
             int iNdaugh = genP.numberOfDaughters();
             if (iNdaugh>1) { // skip "decays" V->V
                trIntermP.pdgId = genP.pdgId();
