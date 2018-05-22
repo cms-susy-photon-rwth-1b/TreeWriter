@@ -89,10 +89,14 @@ docs/_build/
 # PyBuilder
 target/
 
+#Gedit Backups
+*.*~
+
 # === ROOT Files === #
 *.root
 # === CRAB Files === #
 crab/crab_*/
 crab/.*_crab_*/
+crab/.before*
 TreeWriter/python/__init__.py
 TreeWriter/*db

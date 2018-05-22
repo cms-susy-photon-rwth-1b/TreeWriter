@@ -38,7 +38,9 @@ options.register("electronSmearing",
 
 # defaults
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/100000/000786F7-3AD0-E611-A6AE-842B2B765E01.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MuonEG/MINIAOD/03Feb2017_ver2-v2/100000/008C5624-A1EC-E611-8238-0090FAA56F60.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MuonEG/MINIAOD/03Feb2017_ver2-v2/100000/008C5624-A1EC-E611-8238-0090FAA56F60.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/DoubleEG/MINIAOD/03Feb2017_ver2-v2/50000/001EB4EF-D3EA-E611-B94E-0CC47A4C8F26.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/DoubleMuon/MINIAOD/03Feb2017_ver2-v2/100000/D628C213-0CEB-E611-B5E2-3417EBE7051F.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/120000/040E9990-AA08-E711-BAAA-0025905B8574.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch///store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/100000/00099D43-77ED-E611-8889-5065F381E1A1.root'
 #options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/GGM_GravitinoLSP_M1-200to1500_M2-200to1500_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/000C44EA-F8EC-E711-8145-0242AC130002.root'
@@ -50,7 +52,7 @@ options.register("electronSmearing",
 
 options.outputFile = 'photonTree.root'
 options.maxEvents = -1
-#options.maxEvents = 10000
+#options.maxEvents = 1000
 #options.maxEvents = 10
 # get and parse the command line arguments
 options.parseArguments()
@@ -259,6 +261,12 @@ runMetCorAndUncFromMiniAOD(
     process,
     isData=isRealData,
 )
+
+
+#process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
+    #ignoreTotal = cms.untracked.int32(1)
+#)
+
 
 
 ################################
@@ -566,7 +574,42 @@ elif user=="swuchterl":
     process.TreeWriter.HT_cut=0
     process.TreeWriter.photon_pT_cut=5 # for leading photon
     process.TreeWriter.jet_pT_cut=30
-    
+    process.TreeWriter.triggerObjectNames = [
+       #DoubleEle
+        "hltEle17Ele12CaloIdLTrackIdLIsoVLDZFilter",#1
+        "hltEle23Ele12CaloIdLTrackIdLIsoVLDZFilter",#2
+        "hltDiEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter",#3
+        "hltDiEle33CaloIdLGsfTrkIdVLMWPMS2UnseededFilter",#4
+        #DoubleMu
+        "hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4",#5
+        "hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4",#6
+        "hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4DzFiltered0p2",#7
+        "hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4DzFiltered0p2",#8
+        "hltDiMuonTrk17Trk8RelTrkIsoFiltered0p4DzFiltered0p2",#9
+        "hltDiMuonGlb27Trk8DzFiltered0p2",#10
+        "hltDiMuonGlb30Trk11DzFiltered0p2",#11
+        #MuEle
+        "hltMu17TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#12.1
+        "hltMu17TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered17",#12.2
+        "hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#13.1
+        "hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23",#13.2
+        "hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLDZFilter",#14
+        "hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#15.1
+        "hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23",#15.2
+        "hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLDZFilter",#16
+        "hltMu8TrkIsoVVLEle17CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#17.1
+        "hltMu8TrkIsoVVLEle17CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8",#17.2
+        "hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#18.1
+        "hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8",#18.2
+        "hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter",#19
+        "hltMu12TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#20.1
+        "hltMu12TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered12",#20.2
+        "hltMu12TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter",#21
+        "hltEle30CaloIdLGsfTrkIdVLDPhiUnseededFilter",#22.1
+        "hltL3fL1sMu22orMu25orMu20EG15orMu5EG20L1f0L2f10QL3Filtered30Q",#22.2
+        "hltEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter",#23.1
+        "hltL3fL1sMu22orMu25orMu20EG15orMu5EG20L1f0L2f10QL3Filtered33Q"#23.2
+    ]
     triggerNames=[
         "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
         "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",

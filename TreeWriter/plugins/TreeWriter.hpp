@@ -79,7 +79,9 @@
 
 #include "AnalysisDataFormats/TopObjects/interface/TtGenEvent.h"
 
-
+//#include "RoccoR.cc"
+//#include "RoccoR.h"
+#include "../interface/RoccoR.cc"
 
 typedef std::vector<PileupSummaryInfo> PileupSummaryInfoCollection;
 typedef edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit>> EcalRecHitCollection;
@@ -95,7 +97,7 @@ public:
    ~TreeWriter() {};
 
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-
+      //RoccoR  rc;
 private:
    virtual void beginJob() override {};
    virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
@@ -127,6 +129,10 @@ private:
    unsigned minNumberLeptons_cut_;
    unsigned minNumberBinos_cut_;
 
+
+
+
+   
    bool newLumiBlock_;
 
    edm::EDGetTokenT<reco::VertexCollection>    vtxToken_;
@@ -266,6 +272,14 @@ private:
 
    // Pileup histogram(s)
    TH1F hPU_;
+   
+   //RoccoR  rc("rcdata.2016.v3");
+   //RoccoR  rc("TreeWriter/TreeWriter/plugins/rcdata");
+   //RoccoR  rc("TreeWriter/TreeWriter/plugins/rcdata");
+   RoccoR  rc;
+   TRandom rgen_;
+   //RoccoR  *rc;
+   
 };
 
 #endif /* TREEWRITER_HPP__ */

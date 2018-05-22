@@ -85,6 +85,7 @@ namespace tree
       float bDiscriminator;
       float uncert;
       float chf;
+      
       float nhf;
       float cef;
       float nef;
@@ -115,6 +116,7 @@ namespace tree
       bool isMedium;
       bool isMediumRun;
       int nTrkLayers;
+      TVector3 pUncorrected; //new
    };
 
    struct Electron: public Lepton

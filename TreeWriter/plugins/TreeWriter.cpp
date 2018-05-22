@@ -453,7 +453,7 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
 
    eventTree_->Branch("pu_weight", &pu_weight_, "pu_weight/F");
    eventTree_->Branch("mc_weight", &mc_weight_, "mc_weight/B");
-   //eventTree_->Branch("pdf_weights", &vPdf_weights_); //increases file size significantly / use for systematic ucnertainty studies
+   eventTree_->Branch("pdf_weights", &vPdf_weights_); //increases file size significantly / use for systematic ucnertainty studies
 
    eventTree_->Branch("genHt", &genHt_, "genHt/F");
    eventTree_->Branch("ht", &ht_, "ht/F");
@@ -506,6 +506,26 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
       }
    }
    puFile.Close();
+   
+   //rc("rcdata.2016.v3"); //directory path as input for now; initialize only once, contains all variations
+   //rc("rcdata.2016.v3");
+   //RoccoR  rc("rcdata.2016.v3");
+   //RoccoR  rc("../interface/rcdata.2016.v3");
+   //RoccoR  rc("rcdata.2016.v3");
+   //RoccoR *rc = new RoccoR("rcdata.2016.v3");
+   //RoccoR  rc("TreeWriter/TreeWriter/plugins/rcdata");
+   //RoccoR  rc("TreeWriter/plugins/rcdata");
+   //RoccoR  *rc= new RoccoR("TreeWriter/TreeWriter/plugins/rcdata");
+   //RoccoR  *rc= new RoccoR("/.automount/home/home__home4/institut_1b/swuchterl/cmssw/TreeWriter_riga/CMSSW_8_0_26_patch2/src/TreeWriter/TreeWriter/plugins/rcdata");
+   
+   rc = RoccoR("src/TreeWriter/TreeWriter/data/rcdata");
+   //rc = RoccoR("rcdata");
+   
+   //rc = RoccoR("TreeWriter/TreeWriter/plugins/rcdata");
+   
+   //TRandom3* rgen_;
+   rgen_ = TRandom3(0);
+   
 }
 
 TH1F* TreeWriter::createCutFlowHist(std::string modelName)
@@ -534,6 +554,12 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    isRealData = iEvent.isRealData();
 
    hCutFlow_->Fill("initial_unweighted", 1);
+
+   //RoccoR  rc("../interface/rcdata.2016.v3");
+   //RoccoR  rc("rcdata");
+   //RoccoR  rc("TreeWriter/TreeWriter/plugins/rcdata");
+   //TRandom3* rgen_;
+   //rgen_ = new TRandom3(0);
 
    // PileUp weights
    puPtHat_ = 0;
@@ -824,12 +850,50 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    tree::Muon trMuon;
    for (const pat::Muon &mu : *muonColl) {
       if (!mu.isLooseMuon()) continue;
-      if (mu.pt()<5) continue;
+      //if (mu.pt()<5) continue;
+      if (mu.pt()<15.) continue;
       trMuon.p.SetPtEtaPhi(mu.pt(), mu.eta(), mu.phi());
+      trMuon.pUncorrected.SetPtEtaPhi(mu.pt(),mu.eta(),mu.phi());
+      //cout<<trMuon.p.Pt()<<endl;
+      
+      double momentumScaleFactor=1.;
+      
+      auto gen_particle = mu.genParticle();
+      //double u1 = rgen_->Rndm();
+      //double u2 = rgen_->Rndm();
+      double u1 = rgen_.Rndm();
+      double u2 = rgen_.Rndm();
+
+      //nl = mu.track()->hitPattern().trackerLayersWithMeasurement();
+      int nl = mu.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+
+      if(isRealData){
+         //cout<<"1st"<<endl;
+         momentumScaleFactor = rc.kScaleDT(mu.charge(), mu.pt(), mu.eta(), mu.phi(),0,0);
+      }else{
+         if(gen_particle!=0){
+            //cout<<"2nd"<<endl;
+            momentumScaleFactor = rc.kScaleFromGenMC(mu.charge(), mu.pt(), mu.eta(), mu.phi(), nl, gen_particle->pt(), u1, 0, 0);
+         }else{
+            //cout<<"3rd"<<endl;
+            momentumScaleFactor = rc.kScaleAndSmearMC(mu.charge(), mu.pt(), mu.eta(), mu.phi(), nl, u1, u2, 0, 0);
+         }
+      
+      }
+      
+      
+      //cout<<momentumScaleFactor<<endl;
+      trMuon.p.SetPtEtaPhi(mu.pt()*momentumScaleFactor, mu.eta(), mu.phi());
+      //cout<<trMuon.p.Pt()<<endl;
+      
+      
       trMuon.isTight = mu.isTightMuon(firstGoodVertex);
       auto const& pfIso = mu.pfIsolationR04();
       trMuon.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/mu.pt();
       trMuon.miniIso = getPFIsolation(packedCandidates, mu);
+      //cout<<"old "<<trMuon.miniIso<<endl;
+      trMuon.miniIso = trMuon.miniIso*trMuon.pUncorrected.Pt()/trMuon.p.Pt();
+      //cout<<"new "<<trMuon.miniIso<<endl;
       trMuon.charge = mu.charge();
       //impact parameters
       double d0=999.;
@@ -840,7 +904,8 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       dZ = abs( mu.track()->dz( vtx_point )); 
       SIP3D = abs(mu.dB(pat::Muon::PV3D)/mu.edB(pat::Muon::PV3D)); 
       trMuon.passImpactParameter =testImpactParameters(d0,dZ,SIP3D,false,true);
-      trMuon.nTrkLayers = mu.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+      //trMuon.nTrkLayers = mu.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+      trMuon.nTrkLayers = nl;
       trMuon.d0=d0;
       trMuon.dZ=dZ;
       trMuon.SIP3D=SIP3D;
@@ -888,7 +953,8 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    vElectrons_.clear();
    tree::Electron trEl;
    for (edm::View<pat::Electron>::const_iterator el = electronColl->begin();el != electronColl->end(); el++) {
-      if (el->pt()<5) continue;
+      //if (el->pt()<5) continue;
+      if (el->pt()<15.) continue;
       const edm::Ptr<pat::Electron> elPtr(electronColl, el - electronColl->begin());
       if (!(*electron_veto_id_decisions)[elPtr]) continue; // take only 'veto' electrons
       trEl.isVetoID=(*electron_veto_id_decisions)[elPtr];
@@ -956,7 +1022,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    vJets_.clear();
    tree::Jet trJet;
    for (const pat::Jet& jet : *jetColl) {
-      if (fabs(jet.eta())>3) continue;
+      if (fabs(jet.eta())>3.) continue;
       if (jet.pt()<dJet_pT_cut_) continue;
       trJet.p.SetPtEtaPhi(jet.pt(), jet.eta(), jet.phi());
       trJet.bDiscriminator = jet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
@@ -965,18 +1031,18 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       jecUnc.setJetPt(jet.pt());
       trJet.uncert = jecUnc.getUncertainty(true);
       JME::JetParameters parameters = {{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, rho_}};
-      //trJet.ptRes = resolution_pt.getResolution(parameters);
-      //trJet.phiRes = resolution_phi.getResolution(parameters);
-      //trJet.sfRes = resolution_sf.getScaleFactor(parameters);
-      //trJet.sfResUp = resolution_sf.getScaleFactor(parameters, Variation::UP);
-      //trJet.sfResDn = resolution_sf.getScaleFactor(parameters, Variation::DOWN);
-      //trJet.uncorJecFactor = jet.jecFactor(0);
+      trJet.ptRes = resolution_pt.getResolution(parameters);
+      trJet.phiRes = resolution_phi.getResolution(parameters);
+      trJet.sfRes = resolution_sf.getScaleFactor(parameters);
+      trJet.sfResUp = resolution_sf.getScaleFactor(parameters, Variation::UP);
+      trJet.sfResDn = resolution_sf.getScaleFactor(parameters, Variation::DOWN);
+      trJet.uncorJecFactor = jet.jecFactor(0);
       trJet.chf = jet.chargedHadronEnergyFraction();
-      //trJet.nhf = jet.neutralHadronEnergyFraction();
-      //trJet.cef = jet.chargedEmEnergyFraction();
-      //trJet.nef = jet.neutralEmEnergyFraction();
-      //trJet.nch = jet.chargedMultiplicity();
-      //trJet.nconstituents = jet.numberOfDaughters();
+      trJet.nhf = jet.neutralHadronEnergyFraction();
+      trJet.cef = jet.chargedEmEnergyFraction();
+      trJet.nef = jet.neutralEmEnergyFraction();
+      trJet.nch = jet.chargedMultiplicity();
+      trJet.nconstituents = jet.numberOfDaughters();
       // object matching
       trJet.hasPhotonMatch = false;
       for (tree::Photon const &ph: vPhotons_) {
