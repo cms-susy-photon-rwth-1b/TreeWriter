@@ -128,14 +128,14 @@ datasets["TTJets_HT"] = [
 
 def dataDatasets(datasetName):
     sets = [
-        "/{}/Run2016B-03Feb2017_ver2-v2/MINIAOD",
-        "/{}/Run2016C-03Feb2017-v1/MINIAOD",
-        "/{}/Run2016D-03Feb2017-v1/MINIAOD",
-        "/{}/Run2016E-03Feb2017-v1/MINIAOD",
-        "/{}/Run2016F-03Feb2017-v1/MINIAOD",
-        "/{}/Run2016G-03Feb2017-v1/MINIAOD",
+        #"/{}/Run2016B-03Feb2017_ver2-v2/MINIAOD",
+        #"/{}/Run2016C-03Feb2017-v1/MINIAOD",
+        #"/{}/Run2016D-03Feb2017-v1/MINIAOD",
+        #"/{}/Run2016E-03Feb2017-v1/MINIAOD",
+        #"/{}/Run2016F-03Feb2017-v1/MINIAOD",
+        #"/{}/Run2016G-03Feb2017-v1/MINIAOD",
         "/{}/Run2016H-03Feb2017_ver2-v1/MINIAOD",
-        "/{}/Run2016H-03Feb2017_ver3-v1/MINIAOD",
+        #"/{}/Run2016H-03Feb2017_ver3-v1/MINIAOD",
     ]
     return [x.format(datasetName) for x in sets]
 
@@ -235,6 +235,16 @@ datasets["swuchterl"]=[
     
     #"/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     
+    #"/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/TTGamma_Hadronic_TuneCUETP8M2T4_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM",
+    #"/TTGamma_SingleLeptFromT_TuneCUETP8M2T4_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM",
+    #"/TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM",
+    
+    #"/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+    
+    #"/ZGToLLG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    
     ####"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM",
     ####"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM",
     #"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM",
@@ -276,7 +286,8 @@ datasets["swuchterl"]=[
 #] +dataDatasets("DoubleEG")+dataDatasets("DoubleMuon")+dataDatasets("MuonEG")+dataDatasets("JetHT")
 #] +dataDatasets("DoubleEG")+dataDatasets("DoubleMuon")+dataDatasets("JetHT")
 #] +dataDatasets("DoubleEG")+dataDatasets("DoubleMuon")
-]
+] +dataDatasets("MET")
+#]
 
 
 
@@ -306,7 +317,7 @@ if __name__ == '__main__':
         config.JobType.pyCfgParams = ["dataset="+dataset,"user="+user]
         config.JobType.inputFiles  = [cmssw_src+"TreeWriter/TreeWriter/"+x for x in ["Spring16_25nsFastSimV1_MC.db","data/rcdata"]]
         #config.JobType.inputFiles  = [cmssw_src+"TreeWriter/TreeWriter/Spring16_25nsFastSimV1_MC.db","/afs/cern.ch/user/s/sewuchte/public"]
-
+        config.JobType.allowUndistributedCMSSW = True
 
         config.section_("Data")
         config.Data.inputDataset = dataset
