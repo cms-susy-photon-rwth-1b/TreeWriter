@@ -15,6 +15,14 @@ enum PromptStatusType {
 
 namespace tree
 {
+      
+   struct Particle4Vector
+   {
+      TLorentzVector vec;
+   };   
+      
+      
+      
    struct Particle
    {
       TVector3 p;
