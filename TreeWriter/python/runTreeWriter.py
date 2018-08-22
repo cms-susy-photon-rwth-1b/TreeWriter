@@ -38,7 +38,8 @@ options.register("electronSmearing",
 
 # defaults
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/100000/000786F7-3AD0-E611-A6AE-842B2B765E01.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MuonEG/MINIAOD/03Feb2017_ver2-v2/100000/008C5624-A1EC-E611-8238-0090FAA56F60.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MuonEG/MINIAOD/03Feb2017_ver2-v2/100000/008C5624-A1EC-E611-8238-0090FAA56F60.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MET/MINIAOD/03Feb2017_ver1-v1/100000/1CDECD1B-0CEB-E611-A2A9-D4AE526A0455.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/DoubleEG/MINIAOD/03Feb2017_ver2-v2/50000/001EB4EF-D3EA-E611-B94E-0CC47A4C8F26.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/DoubleMuon/MINIAOD/03Feb2017_ver2-v2/100000/D628C213-0CEB-E611-B5E2-3417EBE7051F.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/120000/040E9990-AA08-E711-BAAA-0025905B8574.root'
@@ -648,8 +649,20 @@ elif user=="swuchterl":
         "HLT_PFHT650_v",
         "HLT_PFHT800_v"
     ]
+    triggerNamesMET=[
+        "HLT_PFMET110_PFMHT110_IDTight_v",
+        "HLT_PFMET120_PFMHT120_IDTight_v",
+        "HLT_PFMET170_NoiseCleaned_v",
+        "HLT_PFMET170_HBHECleaned_v",
+        "HLT_PFMET170_JetIdCleaned_v",
+        "HLT_PFMET170_NotCleaned_v",
+        "HLT_PFMET300_v",
+        "HLT_PFMET400_v",
+        "HLT_PFMET500_v",
+        "HLT_PFMET600_v"
+    ]
     if (useHTTrigger):
-        process.TreeWriter.triggerNames=triggerNames+triggerNamesHT
+        process.TreeWriter.triggerNames=triggerNames+triggerNamesHT+triggerNamesMET
     else:
         process.TreeWriter.triggerNames=triggerNames
     
