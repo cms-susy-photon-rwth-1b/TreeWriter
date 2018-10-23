@@ -366,11 +366,15 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , electronLooseIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronLooseIdMap"  )))
    , electronMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronMediumIdMap" )))
    , electronTightIdMapToken_ (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronTightIdMap"  )))
+   //,electronVetoIdMapToken_(consumes >(iConfig.getParameter("electronVetoIdMap")))
+   //,electronLooseIdMapToken_(consumes >(iConfig.getParameter("electronLooseIdMap")))
+   //,electronMediumIdMapToken_(consumes >(iConfig.getParameter("electronMediumIdMap")))
+   //,electronTightIdMapToken_(consumes >(iConfig.getParameter("electronTightIdMap")))
     //MVA electron ID
-   , eleMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("eleMediumIdMap")))
-   , eleTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("eleTightIdMap")))
-   , mvaValuesMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("mvaValuesMap")))
-   , mvaCategoriesMapToken_(consumes<edm::ValueMap<int> >(iConfig.getParameter<edm::InputTag>("mvaCategoriesMap")))
+   //, eleMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("eleMediumIdMap")))
+   //, eleTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("eleTightIdMap")))
+   //, mvaValuesMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("mvaValuesMap")))
+   //, mvaCategoriesMapToken_(consumes<edm::ValueMap<int> >(iConfig.getParameter<edm::InputTag>("mvaCategoriesMap")))
    
    
    // photon id
@@ -379,10 +383,10 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , photonTightIdMapToken_  (consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonTightIdMap"  )))
    , photonLooseIdFullInfoMapToken_mva_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("photonLooseIdMap" )))
    //MVA ID
-   , photonMediumIdBoolMapToken_mva_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonMediumIdBoolMap_mva")))
-   , photonMediumIdFullInfoMapToken_mva_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("photonMediumIdFullInfoMap_mva")))
-   , photonMvaValuesMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("photonMvaValuesMap")))
-   , photonMvaCategoriesMapToken_(consumes<edm::ValueMap<int> >(iConfig.getParameter<edm::InputTag>("photonMvaCategoriesMap")))
+   //, photonMediumIdBoolMapToken_mva_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("photonMediumIdBoolMap_mva")))
+   //, photonMediumIdFullInfoMapToken_mva_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("photonMediumIdFullInfoMap_mva")))
+   //, photonMvaValuesMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("photonMvaValuesMap")))
+   //, photonMvaCategoriesMapToken_(consumes<edm::ValueMap<int> >(iConfig.getParameter<edm::InputTag>("photonMvaCategoriesMap")))
    
    
    // met filters to apply
@@ -400,8 +404,15 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    // declare consumptions that are used "byLabel" in analyze()
    mayConsume<GenLumiInfoHeader,edm::InLumi> (edm::InputTag("generator"));
    consumes<GenEventInfoProduct>(edm::InputTag("generator"));
-   consumes<edm::TriggerResults>(edm::InputTag("TriggerResults", "", "HLT"));
-   consumes<edm::TriggerResults>(edm::InputTag("TriggerResults", ""));
+   //consumes<edm::TriggerResults>(edm::InputTag("TriggerResults", "", "HLT"));
+   //consumes<edm::TriggerResults>(edm::InputTag("TriggerResults", ""));
+   //consumes<edm::TriggerResults>(edm::InputTag("TriggerResults", "", "HLT",edm::InputTag::kSkipCurrentProcess));
+   //consumes<edm::TriggerResults>(edm::InputTag("TriggerResults", "",edm::InputTag::kSkipCurrentProcess));
+   //consumes<edm::TriggerResults>(edm::InputTag("TriggerResults", "HLT",edm::InputTag::kSkipCurrentProcess));
+   consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","", "HLT"));
+   //consumes<edm::TriggerResults>(edm::InputTag("TriggerResults", "",edm::InputTag::kSkipCurrentProcess));
+   //consumes<edm::TriggerResults>(edm::InputTag("TriggerResults", "","RECO"));
+   consumes<edm::TriggerResults>(edm::InputTag("TriggerResults", "","PAT"));
    consumes<pat::PackedTriggerPrescales>(edm::InputTag("patTrigger"));
    consumes<std::vector<pat::TriggerObjectStandAlone>>(edm::InputTag("selectedPatTrigger"));
    consumes<edm::View<pat::Photon>>(edm::InputTag("slimmedPhotonsBeforeGSFix"));
@@ -507,24 +518,9 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    }
    puFile.Close();
    
-   //rc("rcdata.2016.v3"); //directory path as input for now; initialize only once, contains all variations
-   //rc("rcdata.2016.v3");
-   //RoccoR  rc("rcdata.2016.v3");
-   //RoccoR  rc("../interface/rcdata.2016.v3");
-   //RoccoR  rc("rcdata.2016.v3");
-   //RoccoR *rc = new RoccoR("rcdata.2016.v3");
-   //RoccoR  rc("TreeWriter/TreeWriter/plugins/rcdata");
-   //RoccoR  rc("TreeWriter/plugins/rcdata");
-   //RoccoR  *rc= new RoccoR("TreeWriter/TreeWriter/plugins/rcdata");
-   //RoccoR  *rc= new RoccoR("/.automount/home/home__home4/institut_1b/swuchterl/cmssw/TreeWriter_riga/CMSSW_8_0_26_patch2/src/TreeWriter/TreeWriter/plugins/rcdata");
    
-   rc = RoccoR("src/TreeWriter/TreeWriter/data/rcdata");
-   //rc = RoccoR("rcdata");
-   
-   //rc = RoccoR("TreeWriter/TreeWriter/plugins/rcdata");
-   
-   //TRandom3* rgen_;
-   rgen_ = TRandom3(0);
+   //rc = RoccoR("src/TreeWriter/TreeWriter/data/rcdata");
+   //rgen_ = TRandom3(0);
    
 }
 
@@ -552,6 +548,8 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 {
    Bool_t isRealData;
    isRealData = iEvent.isRealData();
+
+   //cout<<"1"<<endl;
 
    hCutFlow_->Fill("initial_unweighted", 1);
 
@@ -582,7 +580,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       true_nPV_ = -1;
       pu_weight_ = 1.;
    }
-
+   //cout<<"2"<<endl;
    // generator weights
    mc_weight_ = 1; // 1 for data
    if (!isRealData) {
@@ -613,7 +611,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
          }
       }
    }
-
+   //cout<<"3"<<endl;
    hCutFlow_->Fill("initial_mc_weighted", mc_weight_);
    hCutFlow_->Fill("initial", mc_weight_*pu_weight_);
 
@@ -648,7 +646,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
          triggerDecision_[it.first] = triggerBits->accept( it.second );
       }
    }
-   
+   //cout<<"4"<<endl;
    if (!anyTriggerFired && !isSignalBoolean_){
         return;
     }
@@ -665,20 +663,26 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::InputTag triggerObjects_("selectedPatTrigger");
    iEvent.getByLabel(triggerObjects_, triggerObjects);
 
+//cout<<"5"<<endl;
    for (const auto& n : triggerObjectNames_) triggerObjectMap_.at(n).clear();
    tree::Particle trObj;
-   for (const pat::TriggerObjectStandAlone obj: *triggerObjects) {
-      for (const auto& n : triggerObjectNames_) {
-         if (std::count(obj.filterLabels().begin(), obj.filterLabels().end(), n)) {
-            trObj.p.SetPtEtaPhi(obj.pt(), obj.eta(), obj.phi());
-            triggerObjectMap_.at(n).push_back(trObj);
-         }
-      }
-   }
-
+      //auto copyObjects=*triggerObjects;
+   //for (const pat::TriggerObjectStandAlone obj: *triggerObjects) {
+      //for (const auto& n : triggerObjectNames_) {
+         //if (std::count(obj.filterLabels().begin(), obj.filterLabels().end(), n)) {
+            //trObj.p.SetPtEtaPhi(obj.pt(), obj.eta(), obj.phi());
+            //triggerObjectMap_.at(n).push_back(trObj);
+         //}
+      //}
+   //}
+   //cout<<"||||||||"<<endl;
+   
+   //cout<<"6"<<endl;
    // MET Filters
    edm::Handle<edm::TriggerResults> metFilterBits;
-   edm::InputTag metFilterTag("TriggerResults", "");
+   //edm::InputTag metFilterTag("TriggerResults", "");
+   //edm::InputTag metFilterTag("TriggerResults", "","RECO");
+   edm::InputTag metFilterTag("TriggerResults", "","PAT");
    iEvent.getByLabel(metFilterTag, metFilterBits);
    // go through the filters and check if they were passed
    const edm::TriggerNames &allFilterNames = iEvent.triggerNames(*metFilterBits);
@@ -698,7 +702,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
        if (!*ifilterbadPFMuon) return;
    }
    hCutFlow_->Fill("METfilters", mc_weight_*pu_weight_);
-
+//cout<<"7"<<endl;
    // Get PV
    edm::Handle<reco::VertexCollection> vertices;
    iEvent.getByToken(vtxToken_, vertices);
@@ -751,19 +755,22 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    iEvent.getByToken(photonMediumIdMapToken_, photon_medium_id_dec);
    iEvent.getByToken(photonTightIdMapToken_, photon_tight_id_dec);
 
+   //cout<<"8"<<endl;
+
+
    iEvent.getByToken(photonLooseIdFullInfoMapToken_mva_, photon_loose_id_cutflow);
 
    //MVA ID
-   edm::Handle<edm::ValueMap<bool> > photon_medium_id_decisions_MVA;
-   iEvent.getByToken(photonMediumIdBoolMapToken_mva_,photon_medium_id_decisions_MVA);
+   //edm::Handle<edm::ValueMap<bool> > photon_medium_id_decisions_MVA;
+   //iEvent.getByToken(photonMediumIdBoolMapToken_mva_,photon_medium_id_decisions_MVA);
    // The second map has the full info about the cut flow
-   edm::Handle<edm::ValueMap<vid::CutFlowResult> > photon_medium_id_cutflow_data;
-   iEvent.getByToken(photonMediumIdFullInfoMapToken_mva_,photon_medium_id_cutflow_data);
+   //edm::Handle<edm::ValueMap<vid::CutFlowResult> > photon_medium_id_cutflow_data;
+   //iEvent.getByToken(photonMediumIdFullInfoMapToken_mva_,photon_medium_id_cutflow_data);
    // Get MVA values and categories (optional)
-   edm::Handle<edm::ValueMap<float> > photon_mvaValues;
-   edm::Handle<edm::ValueMap<int> > photon_mvaCategories;
-   iEvent.getByToken(photonMvaValuesMapToken_,photon_mvaValues);
-   iEvent.getByToken(photonMvaCategoriesMapToken_,photon_mvaCategories);
+   //edm::Handle<edm::ValueMap<float> > photon_mvaValues;
+   //edm::Handle<edm::ValueMap<int> > photon_mvaCategories;
+   //iEvent.getByToken(photonMvaValuesMapToken_,photon_mvaValues);
+   //iEvent.getByToken(photonMvaCategoriesMapToken_,photon_mvaCategories);
 
 
    edm::Handle<EcalRecHitCollection> ebRecHits;
@@ -775,8 +782,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
    // uncorrected photon collection
    edm::Handle<edm::View<pat::Photon>> photonCollUncorrected;
-   if (reMiniAOD_ || !isRealData) iEvent.getByLabel(edm::InputTag("slimmedPhotons", "", "PAT"), photonCollUncorrected);
-   else iEvent.getByLabel(edm::InputTag("slimmedPhotons", "", "RECO"), photonCollUncorrected);
+   //if (reMiniAOD_ || !isRealData) iEvent.getByLabel(edm::InputTag("slimmedPhotons", "", "PAT"), photonCollUncorrected);
+   //else iEvent.getByLabel(edm::InputTag("slimmedPhotons", "", "RECO"), photonCollUncorrected);
+   iEvent.getByLabel(edm::InputTag("slimmedPhotons", "", "PAT"), photonCollUncorrected);
 
    // photon collection
    edm::Handle<edm::View<pat::Photon>> photonColl;
@@ -816,9 +824,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trPho.pIso = cutFlow.getValueCutUpon(6);
       trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
 
-      trPho.isMediumMVA = (*photon_medium_id_decisions_MVA)[phoPtr];
-      trPho.mvaValue = (*photon_mvaValues)[phoPtr];
-      trPho.mvaCategory = (*photon_mvaCategories)[phoPtr];
+      //trPho.isMediumMVA = (*photon_medium_id_decisions_MVA)[phoPtr];
+      //trPho.mvaValue = (*photon_mvaValues)[phoPtr];
+      //trPho.mvaCategory = (*photon_mvaCategories)[phoPtr];
 
       // MC match
       if (!isRealData) {
@@ -841,7 +849,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    sort(vPhotons_.begin(), vPhotons_.end(), tree::PtGreater);
    if (minNumberPhotons_cut_ && (vPhotons_.size()<minNumberPhotons_cut_|| vPhotons_.at(0).p.Pt()<dPhoton_pT_cut_)) return;
    hCutFlow_->Fill("photons", mc_weight_*pu_weight_);
-
+//cout<<"9"<<endl;
    // Muons
    edm::Handle<pat::MuonCollection> muonColl;
    iEvent.getByToken(muonCollectionToken_, muonColl);
@@ -849,50 +857,42 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    vMuons_.clear();
    tree::Muon trMuon;
    for (const pat::Muon &mu : *muonColl) {
-      if (!mu.isLooseMuon()) continue;
+      //if (!mu.isLooseMuon()) continue;
+      if (!mu.passed(reco::Muon::CutBasedIdLoose)) continue;
       if (mu.pt()<5) continue;
       trMuon.p.SetPtEtaPhi(mu.pt(), mu.eta(), mu.phi());
       trMuon.pUncorrected.SetPtEtaPhi(mu.pt(),mu.eta(),mu.phi());
       //cout<<trMuon.p.Pt()<<endl;
       
-      double momentumScaleFactor=1.;
+      //double momentumScaleFactor=1.;
       
-      auto gen_particle = mu.genParticle();
-      //double u1 = rgen_->Rndm();
-      //double u2 = rgen_->Rndm();
-      double u1 = rgen_.Rndm();
-      double u2 = rgen_.Rndm();
+      //auto gen_particle = mu.genParticle();
+      //double u1 = rgen_.Rndm();
+      //double u2 = rgen_.Rndm();
 
-      //nl = mu.track()->hitPattern().trackerLayersWithMeasurement();
       int nl = mu.innerTrack()->hitPattern().trackerLayersWithMeasurement();
 
-      if(isRealData){
-         //cout<<"1st"<<endl;
-         momentumScaleFactor = rc.kScaleDT(mu.charge(), mu.pt(), mu.eta(), mu.phi(),0,0);
-      }else{
-         if(gen_particle!=0){
-            //cout<<"2nd"<<endl;
-            momentumScaleFactor = rc.kScaleFromGenMC(mu.charge(), mu.pt(), mu.eta(), mu.phi(), nl, gen_particle->pt(), u1, 0, 0);
-         }else{
-            //cout<<"3rd"<<endl;
-            momentumScaleFactor = rc.kScaleAndSmearMC(mu.charge(), mu.pt(), mu.eta(), mu.phi(), nl, u1, u2, 0, 0);
-         }
+      //if(isRealData){
+         //momentumScaleFactor = rc.kScaleDT(mu.charge(), mu.pt(), mu.eta(), mu.phi(),0,0);
+      //}else{
+         //if(gen_particle!=0){
+            //momentumScaleFactor = rc.kScaleFromGenMC(mu.charge(), mu.pt(), mu.eta(), mu.phi(), nl, gen_particle->pt(), u1, 0, 0);
+         //}else{
+            //momentumScaleFactor = rc.kScaleAndSmearMC(mu.charge(), mu.pt(), mu.eta(), mu.phi(), nl, u1, u2, 0, 0);
+         //}
       
-      }
+      //}
       
       
-      //cout<<momentumScaleFactor<<endl;
-      trMuon.p.SetPtEtaPhi(mu.pt()*momentumScaleFactor, mu.eta(), mu.phi());
-      //cout<<trMuon.p.Pt()<<endl;
+      //trMuon.p.SetPtEtaPhi(mu.pt()*momentumScaleFactor, mu.eta(), mu.phi());
       
       
-      trMuon.isTight = mu.isTightMuon(firstGoodVertex);
+      //trMuon.isTight = mu.isTightMuon(firstGoodVertex);
+      trMuon.isTight = mu.passed(reco::Muon::CutBasedIdTight);
       auto const& pfIso = mu.pfIsolationR04();
       trMuon.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/mu.pt();
       trMuon.miniIso = getPFIsolation(packedCandidates, mu);
-      //cout<<"old "<<trMuon.miniIso<<endl;
-      trMuon.miniIso = trMuon.miniIso*trMuon.pUncorrected.Pt()/trMuon.p.Pt();
-      //cout<<"new "<<trMuon.miniIso<<endl;
+      //trMuon.miniIso = trMuon.miniIso*trMuon.pUncorrected.Pt()/trMuon.p.Pt();
       trMuon.charge = mu.charge();
       //impact parameters
       double d0=999.;
@@ -908,14 +908,15 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trMuon.d0=d0;
       trMuon.dZ=dZ;
       trMuon.SIP3D=SIP3D;
-      trMuon.isMediumRun = isMediumMuon(mu,runNo_);
-      trMuon.isMedium = mu.isMediumMuon();
+      //trMuon.isMediumRun = isMediumMuon(mu,runNo_);
+      //trMuon.isMedium = mu.isMediumMuon();
+      trMuon.isMedium = mu.passed(reco::Muon::CutBasedIdMedium);
       
       vMuons_.push_back(trMuon);
    } // muon loop
    sort(vMuons_.begin(), vMuons_.end(), tree::PtGreater);
 
-
+//cout<<"10"<<endl;
 
    // Electrons
    // Get the electron ID data from the event stream
@@ -923,19 +924,30 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle<edm::ValueMap<bool>> electron_loose_id_decisions;
    edm::Handle<edm::ValueMap<bool>> electron_medium_id_decisions;
    edm::Handle<edm::ValueMap<bool>> electron_tight_id_decisions;
-   edm::Handle<edm::ValueMap<bool>> medium_id_decisions_MVA;
-   edm::Handle<edm::ValueMap<bool>> tight_id_decisions_MVA; 
+   //edm::Handle<edm::ValueMap<bool>> medium_id_decisions_MVA;
+   //edm::Handle<edm::ValueMap<bool>> tight_id_decisions_MVA; 
+   
+   
+   //edm::Handle > electron_veto_id_decisions;
+   //iEvent.getByToken(electronVetoIdMapToken_ ,electron_veto_id_decisions);
+   //edm::Handle > electron_loose_id_decisions;
+   //iEvent.getByToken(electronLooseIdMapToken_ ,electron_loose_id_decisions);
+   //edm::Handle > electron_medium_id_decisions;
+   //iEvent.getByToken(electronMediumIdMapToken_ ,electron_medium_id_decisions);
+   //edm::Handle > electron_tight_id_decisions;
+   //iEvent.getByToken(electronTightIdMapToken_ ,electron_tight_id_decisions);
+   
    //Get MVA values and categories (optional)
-   edm::Handle<edm::ValueMap<float> > mvaValues;
-   edm::Handle<edm::ValueMap<int> > mvaCategories; 
+   //edm::Handle<edm::ValueMap<float> > mvaValues;
+   //edm::Handle<edm::ValueMap<int> > mvaCategories; 
    iEvent.getByToken(electronVetoIdMapToken_, electron_veto_id_decisions);
    iEvent.getByToken(electronLooseIdMapToken_, electron_loose_id_decisions);
    iEvent.getByToken(electronMediumIdMapToken_, electron_medium_id_decisions);
    iEvent.getByToken(electronTightIdMapToken_, electron_tight_id_decisions);
-   iEvent.getByToken(eleMediumIdMapToken_,medium_id_decisions_MVA);
-   iEvent.getByToken(eleTightIdMapToken_,tight_id_decisions_MVA);
-   iEvent.getByToken(mvaValuesMapToken_,mvaValues);
-   iEvent.getByToken(mvaCategoriesMapToken_,mvaCategories);
+   //iEvent.getByToken(eleMediumIdMapToken_,medium_id_decisions_MVA);
+   //iEvent.getByToken(eleTightIdMapToken_,tight_id_decisions_MVA);
+   //iEvent.getByToken(mvaValuesMapToken_,mvaValues);
+   //iEvent.getByToken(mvaCategoriesMapToken_,mvaCategories);
 
     edm::Handle<reco::ConversionCollection> conversions;
     iEvent.getByToken(conversionsMiniAODToken_, conversions);
@@ -946,8 +958,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
    // uncorrected electron collection
    edm::Handle<edm::View<pat::Electron>> electronCollUncorrected;
-   if (reMiniAOD_ || !isRealData) iEvent.getByLabel(edm::InputTag("slimmedElectrons", "", "PAT"), electronCollUncorrected);
-   else iEvent.getByLabel(edm::InputTag("slimmedElectrons", "", "RECO"), electronCollUncorrected);
+   //if (reMiniAOD_ || !isRealData) iEvent.getByLabel(edm::InputTag("slimmedElectrons", "", "PAT"), electronCollUncorrected);
+   //else iEvent.getByLabel(edm::InputTag("slimmedElectrons", "", "RECO"), electronCollUncorrected);
+   iEvent.getByLabel(edm::InputTag("slimmedElectrons", "", "PAT"), electronCollUncorrected);
 
    vElectrons_.clear();
    tree::Electron trEl;
@@ -963,11 +976,11 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trEl.charge = el->charge();
       auto const & pfIso = el->pfIsolationVariables();
       trEl.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();
-      trEl.isMediumMVA = (*medium_id_decisions_MVA)[elPtr];
-      trEl.isTightMVA = (*tight_id_decisions_MVA)[elPtr];
-      trEl.isTightMVASlope = ElectronTightMVA(el->superCluster()->eta(),el->pt(),(*mvaValues)[elPtr]);
-      trEl.mvaValue=(*mvaValues)[elPtr];
-      trEl.mvaCategory=(*mvaCategories)[elPtr];
+      //trEl.isMediumMVA = (*medium_id_decisions_MVA)[elPtr];
+      //trEl.isTightMVA = (*tight_id_decisions_MVA)[elPtr];
+      //trEl.isTightMVASlope = ElectronTightMVA(el->superCluster()->eta(),el->pt(),(*mvaValues)[elPtr]);
+      //trEl.mvaValue=(*mvaValues)[elPtr];
+      //trEl.mvaCategory=(*mvaCategories)[elPtr];
       
       bool passConvVeto = !ConversionTools::hasMatchedConversion(*el,conversions,theBeamSpot->position());
       trEl.isPassConvVeto = passConvVeto;
@@ -1003,7 +1016,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    sort(vElectrons_.begin(), vElectrons_.end(), tree::PtGreater);
    if (vElectrons_.size()<minNumberElectrons_cut_) return;
    if ((vElectrons_.size()+vMuons_.size())<minNumberLeptons_cut_) return;
-
+//cout<<"11"<<endl;
    // Jets
    edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
    iSetup.get<JetCorrectionsRecord>().get("AK4PFchs", JetCorParColl);
@@ -1088,22 +1101,24 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    hCutFlow_->Fill("HT", mc_weight_*pu_weight_);
    ht_=HT;
 
+   //cout<<"12"<<endl;
+
    // MET
    edm::Handle<pat::METCollection> metCollCalo;
    iEvent.getByToken(caloMetCollectionToken_, metCollCalo);
    caloMetPt_ = metCollCalo->front().caloMETPt();
-
+   //cout<<"1"<<endl;
    edm::Handle<pat::METCollection> metCorrectedColl;
    iEvent.getByToken(metCorrectedCollectionToken_, metCorrectedColl);
    metCorrected_.p.SetPtEtaPhi(metCorrectedColl->front().pt(), metCorrectedColl->front().eta(), metCorrectedColl->front().phi());
-
+   //cout<<"2"<<endl;
    edm::Handle<pat::METCollection> metCalibratedColl;
    iEvent.getByToken(metCalibratedCollectionToken_, metCalibratedColl);
    metCalibrated_.p.SetPtEtaPhi(metCalibratedColl->front().pt(), metCalibratedColl->front().eta(), metCalibratedColl->front().phi());
-
+   //cout<<"3"<<endl;
    edm::Handle<pat::METCollection> metColl;
    iEvent.getByToken(metCollectionToken_, metColl);
-
+   //cout<<"4"<<endl;
    const pat::MET &met = metColl->front();
    double metPt = met.pt();
    met_.p.SetPtEtaPhi(metPt, met.eta(), met.phi());
@@ -1112,7 +1127,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       const reco::GenMET *genMet = met.genMET();
       met_gen_.p.SetPtEtaPhi(genMet->pt(), genMet->eta(), genMet->phi());
    }
-
+   //cout<<"5"<<endl;
    // jet resolution shift is set to 0 for 74X
    met_.uncertainty = 0;
    // loop over all up-shifts save for last one (=NoShift)
@@ -1126,28 +1141,28 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       met_.uncertainty += a*a;
    }
    met_.uncertainty=TMath::Sqrt(met_.uncertainty);
-
+   //cout<<"6"<<endl;
    pat::MET::LorentzVector metShifted;
    metShifted = met.shiftedP4(pat::MET::NoShift, pat::MET::Raw);
    met_raw_.p.SetPtEtaPhi(metShifted.pt(), metShifted.eta(), metShifted.phi());
-
+   //cout<<"7"<<endl;
    metShifted = met.shiftedP4(pat::MET::JetEnUp);
    met_JESu_.p.SetPtEtaPhi(metShifted.pt(), metShifted.eta(), metShifted.phi());
    metShifted = met.shiftedP4(pat::MET::JetEnDown);
    met_JESd_.p.SetPtEtaPhi(metShifted.pt(), metShifted.eta(), metShifted.phi());
-
+   //cout<<"8"<<endl;
    metShifted = met.shiftedP4(pat::MET::JetResUp);
    met_JERu_.p.SetPtEtaPhi(metShifted.pt(), metShifted.eta(), metShifted.phi());
    metShifted = met.shiftedP4(pat::MET::JetResDown);
    met_JERd_.p.SetPtEtaPhi(metShifted.pt(), metShifted.eta(), metShifted.phi());
-
+   //cout<<"9"<<endl;
    met_.sig = met.metSignificance();
    met_raw_.sig = met_.sig;
    met_JESu_.sig = met_.sig;
    met_JESd_.sig = met_.sig;
    met_JERu_.sig = met_.sig;
    met_JERd_.sig = met_.sig;
-
+   //cout<<"10"<<endl;
    // generated HT
    // copied from https://github.com/Aachen-3A/PxlSkimmer/blob/master/Skimming/src/PxlSkimmer_miniAOD.cc#L590
    genHt_ = -1;
@@ -1183,7 +1198,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         } // genParticle loop
       }
    }
-
+//cout<<"13"<<endl;
 
    // Generated Particles
    // status flags: https://indico.cern.ch/event/459797/contribution/2/attachments/1181555/1710844/mcaod-Nov4-2015.pdf
@@ -1210,7 +1225,7 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    TVector3 p_top2_temp;
    p_top1_temp.SetPtEtaPhi(0.,0.,0.);
    p_top2_temp.SetPtEtaPhi(0.,0.,0.);
-
+   //cout<<"14"<<endl;
    if (!isRealData) {
       // Get generator level info
       // Pruned particles are the one containing "important" stuff
@@ -1400,9 +1415,10 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle<bool> duplicateGSFixedHandle;
    iEvent.getByLabel("particleFlowEGammaGSFixed", "dupECALClusters", duplicateGSFixedHandle);
    particleFlowEGammaGSFixed_dupECALClusters_ = reMiniAOD_ && *duplicateGSFixedHandle;
-
+   //cout<<"15"<<endl;
    // write the event
    eventTree_->Fill();
+   //cout<<"16"<<endl;
 }
 
 void TreeWriter::beginRun(edm::Run const& iRun, edm::EventSetup const&)

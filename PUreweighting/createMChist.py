@@ -2,7 +2,8 @@ import ROOT
 import sys
 
 def generateHistoFromList( list, name, title="pileup" ):
-    while len(list)<75: list += [0] # same binning as for data needed
+    #while len(list)<75: list += [0] # same binning as for data needed
+    while len(list)<99: list += [0] # same binning as for data needed
     histo = ROOT.TH1F( name, title, len(list), 0, len(list) )
     for bin, content in enumerate( list ):
         histo.SetBinContent( bin+1, content ) # bin0 is underflow!
@@ -36,6 +37,7 @@ if __name__ == "__main__":
     hists.append( generateHistoFromMixingModule( "mix_2015_25ns_FallMC_matchData_PoissonOOTPU" ) )
     hists.append( generateHistoFromMixingModule( "mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU" ) )
     hists.append( generateHistoFromMixingModule( "mix_2016_25ns_Moriond17MC_PoissonOOTPU" ) )
+    #hists.append( generateHistoFromMixingModule( "mix_2017_25ns_WinterMC_PUScenarioV1_PoissonOOTPU" ) )
 
     writeObjectsToFile( hists, filename )
 

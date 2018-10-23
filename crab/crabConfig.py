@@ -126,16 +126,25 @@ datasets["TTJets_HT"] = [
     "/TTJets_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
 ]
 
+#def dataDatasets(datasetName):
+    #sets = [
+        #"/{}/Run2016B-03Feb2017_ver2-v2/MINIAOD",
+        #"/{}/Run2016C-03Feb2017-v1/MINIAOD",
+        #"/{}/Run2016D-03Feb2017-v1/MINIAOD",
+        #"/{}/Run2016E-03Feb2017-v1/MINIAOD",
+        #"/{}/Run2016F-03Feb2017-v1/MINIAOD",
+        #"/{}/Run2016G-03Feb2017-v1/MINIAOD",
+        #"/{}/Run2016H-03Feb2017_ver2-v1/MINIAOD",
+        #"/{}/Run2016H-03Feb2017_ver3-v1/MINIAOD",
+    #]
+    #return [x.format(datasetName) for x in sets]
 def dataDatasets(datasetName):
     sets = [
-        "/{}/Run2016B-03Feb2017_ver2-v2/MINIAOD",
-        "/{}/Run2016C-03Feb2017-v1/MINIAOD",
-        "/{}/Run2016D-03Feb2017-v1/MINIAOD",
-        "/{}/Run2016E-03Feb2017-v1/MINIAOD",
-        "/{}/Run2016F-03Feb2017-v1/MINIAOD",
-        "/{}/Run2016G-03Feb2017-v1/MINIAOD",
-        "/{}/Run2016H-03Feb2017_ver2-v1/MINIAOD",
-        "/{}/Run2016H-03Feb2017_ver3-v1/MINIAOD",
+        "/{}/Run2017B-31Mar2018-v1/MINIAOD",
+        "/{}/Run2017C-31Mar2018-v1/MINIAOD",
+        "/{}/Run2017D-31Mar2018-v1/MINIAOD",
+        "/{}/Run2017E-31Mar2018-v1/MINIAOD",
+        "/{}/Run2017F-31Mar2018-v1/MINIAOD",
     ]
     return [x.format(datasetName) for x in sets]
 
@@ -206,7 +215,7 @@ datasets["jschulz"] = [
 ] + datasets["GJets_HT"] + datasets["GJets_HT_extra"] + datasets["GJets_DR-HT"] + datasets["QCD_HT"] + datasets["QCD_HT_extra"] + datasets["ZJetsToNuNu_HT"] + datasets["ZJetsToNuNu_HT_extra"] + datasets["WJetsToLNu_HT"] + datasets["WJetsToLNu_HT_extra"] + dataDatasets("SinglePhoton") + dataDatasets("MET")
 
 
-datasets["swuchterl"]=[
+#datasets["swuchterl"]=[
     ###"/SMS-T5ttttZg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     ##"/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM",    
     ######"/TWJToLNuLNu_EWK_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
@@ -261,22 +270,23 @@ datasets["swuchterl"]=[
     #"/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     #"/ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
     #"/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
-    "/ST_tWll_5f_LO_13TeV-MadGraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #"/ST_tWll_5f_LO_13TeV-MadGraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     #
     #"/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     #"/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
     
     #"/GGM_GravitinoLSP_M1-200to1500_M2-200to1500_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     #"/GGM_GravitinoLSP_M1-50to1500_M3-1000to2500_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
-    
+datasets["swuchterl"]=[
+    "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
 #]+dataDatasets("DoubleEG")
 #]+dataDatasets("DoubleMuon")
 #]+dataDatasets("MuonEG")
 #]+dataDatasets("JetHT")
 #] +dataDatasets("DoubleEG")+dataDatasets("DoubleMuon")+dataDatasets("MuonEG")+dataDatasets("JetHT")
 #] +dataDatasets("DoubleEG")+dataDatasets("DoubleMuon")+dataDatasets("JetHT")
-#] +dataDatasets("DoubleEG")+dataDatasets("DoubleMuon")
-]
+] +dataDatasets("DoubleEG")+dataDatasets("DoubleMuon")
+#]
 
 
 
@@ -332,9 +342,8 @@ if __name__ == '__main__':
             config.Data.outputDatasetTag = 'v10'
             config.Data.outLFNDirBase = "/store/user/jschulz/run2/"
         elif user=="swuchterl":
-            #config.Data.outputDatasetTag = 'v12'
-            config.Data.outputDatasetTag = 'v13'
-            config.Data.outLFNDirBase = "/store/user/sewuchte/nTuples/"
+            config.Data.outputDatasetTag = 'v01'
+            config.Data.outLFNDirBase = "/store/user/sewuchte/nTuples17/"
         else:
             print "you shall not pass!"
             print "(unkown user '%s')"%user

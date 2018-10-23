@@ -26,34 +26,19 @@ options.register ('user',
                   VarParsing.multiplicity.singleton,
                   VarParsing.varType.string,
                   "Name the user. If not set by crab, this script will determine it.")
-                  
-options.register("electronSmearing",
-    "Moriond17_23Jan",
-    VarParsing.multiplicity.singleton,
-    VarParsing.varType.string,
-    "correction type for electron energy smearing"
-)
+                
                   
                   
 
 # defaults
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/100000/000786F7-3AD0-E611-A6AE-842B2B765E01.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MuonEG/MINIAOD/03Feb2017_ver2-v2/100000/008C5624-A1EC-E611-8238-0090FAA56F60.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/DoubleEG/MINIAOD/03Feb2017_ver2-v2/50000/001EB4EF-D3EA-E611-B94E-0CC47A4C8F26.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/DoubleMuon/MINIAOD/03Feb2017_ver2-v2/100000/D628C213-0CEB-E611-B5E2-3417EBE7051F.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/120000/040E9990-AA08-E711-BAAA-0025905B8574.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch///store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/100000/00099D43-77ED-E611-8889-5065F381E1A1.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2017C/DoubleMuon/MINIAOD/31Mar2018-v1/90000/FAC28F5A-C639-E811-B4BB-10604BA8FC24.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIIFall17MiniAODv2/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/20000/FEC01104-3B42-E811-8349-001E6739BB01.root'
+
 #options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/GGM_GravitinoLSP_M1-200to1500_M2-200to1500_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/000C44EA-F8EC-E711-8145-0242AC130002.root'
-#options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/GGM_GravitinoLSP_M1-50to1500_M3-1000to2500_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/06B8CB51-31EB-E711-B445-0025905A6136.root'
-#options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/SMS-T5bbbbZg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/10000/00BA5D3D-2592-E711-82AE-0242AC110011.root'
-#options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/0030B9D6-72C1-E611-AE49-02163E00E602.root'
-#options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/TTGamma_Dilept_TuneCUETP8M2T4_13TeV-amcatnlo-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/80000/02915ED5-FBE5-E611-8C52-001E67586A2F.root'
 
 
 options.outputFile = 'photonTree.root'
-#options.maxEvents = -1
-options.maxEvents = 1000
-#options.maxEvents = 10
+options.maxEvents = 10000
 # get and parse the command line arguments
 options.parseArguments()
 
@@ -65,11 +50,6 @@ isSignal=False
 useHTTrigger=True
 
 
-
-electronCollection = cms.InputTag("slimmedElectrons", "", "PAT")
-photonCollection   = cms.InputTag("slimmedPhotons", "", "PAT")
-
-
 # the actual TreeWriter module
 process = cms.Process("TreeWriter")
 process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True) )
@@ -77,25 +57,22 @@ process.options = cms.untracked.PSet( allowUnscheduled = cms.untracked.bool(True
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
-
-
 process.load('Geometry.CaloEventSetup.CaloTopology_cfi')
 process.load("Configuration.StandardSequences.GeometryDB_cff")
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
+
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+from Configuration.AlCa.GlobalTag import GlobalTag
+
 # determine global tag
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 if isRealData:
-    if "Run2016H" in dataset:
-        process.GlobalTag.globaltag = "80X_dataRun2_Prompt_v16"
-    else:
-        process.GlobalTag.globaltag = "80X_dataRun2_2016SeptRepro_v7"
+    process.GlobalTag= GlobalTag(process.GlobalTag,"94X_dataRun2_v6","")
 else:    
-    if "80X_mcRun2_asymptotic_2016_TrancheIV_v6" in dataset:
-        process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_TrancheIV_v8"
-    elif "80X_mcRun2_asymptotic_2016_miniAODv2" in dataset:
-        process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_miniAODv2_v1"
+    if "RunIIFall17MiniAOD" in dataset:
+        process.GlobalTag= GlobalTag(process.GlobalTag,"94X_mc2017_realistic_v14","")
     else:
         print "Could not guess correct global tag for", dataset
 
@@ -108,77 +85,14 @@ seq = cms.Sequence()
 # PHOTONS, ELECTRONS #
 ######################
 
-
-from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
-process = regressionWeights(process)
-process.load("EgammaAnalysis.ElectronTools.regressionApplication_cff")
-seq += process.regressionApplication
-
-# set the electron and photon sources
-process.slimmedElectrons.src = electronCollection
-process.slimmedPhotons.src = photonCollection
-
-# overwrite output collections
-electronCollection = cms.InputTag("slimmedElectrons", "", process.name_())
-photonCollection = cms.InputTag("slimmedPhotons", "", process.name_())
-
-
-process.selectedElectrons = cms.EDFilter("PATElectronSelector",
-  src = electronCollection,
-  cut = cms.string("pt>5 && abs(eta)<2.5")
-)
-electronCollection = cms.InputTag("selectedElectrons", "", process.name_())
-
-process.selectedPhotons = cms.EDFilter("PATPhotonSelector",
-  src = photonCollection,
-  cut = cms.string("pt>5 && abs(eta)<2.5")
-)
-photonCollection = cms.InputTag("selectedPhotons", "", process.name_())
-
-
-# setup the smearing
-process.load("EgammaAnalysis.ElectronTools.calibratedPatElectronsRun2_cfi")
-from EgammaAnalysis.ElectronTools.calibratedPatElectronsRun2_cfi import files
-process.calibratedPatElectrons.isMC           = cms.bool(not isRealData)
-process.calibratedPatElectrons.correctionFile = cms.string(files[options.electronSmearing])
-process.calibratedPatElectrons.electrons      = electronCollection
-seq += process.calibratedPatElectrons
-
-process.load("EgammaAnalysis.ElectronTools.calibratedPatPhotonsRun2_cfi")
-from EgammaAnalysis.ElectronTools.calibratedPatPhotonsRun2_cfi import files
-process.calibratedPatPhotons.isMC           = cms.bool(not isRealData)
-process.calibratedPatPhotons.correctionFile = cms.string(files[options.electronSmearing])
-process.calibratedPatPhotons.photons      = photonCollection
-seq += process.calibratedPatPhotons
-
-
-process.load("Configuration.StandardSequences.Services_cff")
-process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-    calibratedPatElectrons = cms.PSet(
-        initialSeed = cms.untracked.uint32(81),
-        engineName  = cms.untracked.string("TRandom3")
-    ),
-    calibratedPatPhotons = cms.PSet(
-        initialSeed = cms.untracked.uint32(81),
-        engineName  = cms.untracked.string("TRandom3")
-    )
-)
-
-# overwrite output collections
-electronCollection = cms.InputTag("calibratedPatElectrons", "", process.name_())
-photonCollection = cms.InputTag("calibratedPatPhotons", "", process.name_())
-
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 
 eleVIDModules = [
-    #"RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_Trig_V1_cff",
-    "RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_GeneralPurpose_V1_cff",
-    "RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff"
+    "RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_cff"
 ]
 
 phoVIDModules = [
-    'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring16_V2p2_cff',
-    'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring16_nonTrig_V1_cff'
+    'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V1_TrueVtx_cff'
 ]
 
 switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
@@ -189,19 +103,6 @@ for mod in eleVIDModules:
 
 for idmod in phoVIDModules:
     setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
-
-# update some VID modules to work with potentially changed electron collections
-process.egmGsfElectronIDs.physicsObjectSrc = electronCollection
-process.electronRegressionValueMapProducer.srcMiniAOD = electronCollection
-process.electronMVAValueMapProducer.srcMiniAOD = electronCollection
-
-
-process.egmPhotonIDs.physicsObjectSrc = photonCollection
-process.egmPhotonIsolation.srcToIsolate = photonCollection
-process.photonIDValueMapProducer.srcMiniAOD = photonCollection
-process.photonRegressionValueMapProducer.srcMiniAOD = photonCollection
-process.photonMVAValueMapProducer.srcMiniAOD = photonCollection
-
 
 ##########################
 # Jet Energy Corrections #
@@ -243,14 +144,6 @@ updateJetCollection(
    jetCorrections = ('AK4PFchs', cms.vstring(jecLevels), 'None')
 )
 
-##########################
-# Top Pt reweighting     #
-##########################
-#https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting
-#process.load("TopQuarkAnalysis.TopEventProducers.sequences.ttGenEvent_cff")
-#
-#process.decaySubset.fillMode = cms.string("kME")
-#process.TreeWriter.ttGenEvent = cms.InputTag('genEvt')
 
 ##########################
 # MET                    #
@@ -263,9 +156,6 @@ runMetCorAndUncFromMiniAOD(
 )
 
 
-#process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
-    #ignoreTotal = cms.untracked.int32(1)
-#)
 
 
 
@@ -304,11 +194,11 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     minNumberLeptons_cut=cms.untracked.uint32(0),
                                     minNumberBinos_cut=cms.untracked.uint32(0),
                                     # physics objects
-                                    photons = photonCollection,
+                                    photons = cms.InputTag("slimmedPhotons", "", "PAT"),
                                     jets = cms.InputTag("updatedPatJetsUpdatedJEC"),
                                     muons = cms.InputTag("slimmedMuons"),
                                     genJets= cms.InputTag("slimmedGenJets"),
-                                    electrons = electronCollection,
+                                    electrons = cms.InputTag("slimmedElectrons", "", "PAT"),
                                     mets = cms.InputTag("slimmedMETs", "", "TreeWriter"),
                                     metCorr = cms.InputTag(""),
                                     metCorrCal = cms.InputTag(""),
@@ -324,31 +214,34 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     #ttGenEvent = cms.InputTag("genEvt"),
                                     
                                     # electron IDs
-                                    electronVetoIdMap   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-veto"),
-                                    electronLooseIdMap  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose"),
-                                    electronMediumIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium"),
-                                    electronTightIdMap  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight"),
+                                    electronVetoIdMap   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-veto"),
+                                    electronLooseIdMap  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-loose"),
+                                    electronMediumIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-medium"),
+                                    electronTightIdMap  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-tight"),
  
                                     # ID decisions (common to all formats)
-                                    eleMediumIdMap = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90"),
-                                    eleTightIdMap  = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp80"),
+                                    #eleMediumIdMap = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90"),
+                                    #eleTightIdMap  = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp80"),
                                     # ValueMaps with MVA results
-                                    mvaValuesMap     = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Values"),
-                                    mvaCategoriesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Categories"),
+                                    #mvaValuesMap     = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Values"),
+                                    #mvaCategoriesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Categories"),
                                     
                                     
                                     beamSpot = cms.InputTag('offlineBeamSpot'),
                                     conversionsMiniAOD = cms.InputTag('reducedEgamma:reducedConversions'),
                                     
                                     # photon IDs
-                                    photonLooseIdMap   = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-loose"),
-                                    photonMediumIdMap  = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-medium"),
-                                    photonTightIdMap   = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-tight"),
+                                    #photonLooseIdMap   = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-loose"),
+                                    #photonMediumIdMap  = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-medium"),
+                                    #photonTightIdMap   = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-tight"),
+                                    photonLooseIdMap   = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-loose"),
+                                    photonMediumIdMap  = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-medium"),
+                                    photonTightIdMap   = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-tight"),
 
-                                    photonMediumIdBoolMap_mva = cms.InputTag("egmPhotonIDs:mvaPhoID-Spring16-nonTrig-V1-wp90"),
-                                    photonMediumIdFullInfoMap_mva = cms.InputTag("egmPhotonIDs:mvaPhoID-Spring16-nonTrig-V1-wp90"),
-                                    photonMvaValuesMap     = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring16NonTrigV1Values"),
-                                    photonMvaCategoriesMap = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring16NonTrigV1Categories"),
+                                    #photonMediumIdBoolMap_mva = cms.InputTag("egmPhotonIDs:mvaPhoID-Spring16-nonTrig-V1-wp90"),
+                                    #photonMediumIdFullInfoMap_mva = cms.InputTag("egmPhotonIDs:mvaPhoID-Spring16-nonTrig-V1-wp90"),
+                                    #photonMvaValuesMap     = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring16NonTrigV1Values"),
+                                    #photonMvaCategoriesMap = cms.InputTag("photonMVAValueMapProducer:PhotonMVAEstimatorRun2Spring16NonTrigV1Categories"),
                                     
                                     # met filters to apply
                                     metFilterNames=cms.untracked.vstring(
@@ -358,6 +251,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                         "Flag_goodVertices",
                                         "Flag_eeBadScFilter",
                                         "Flag_globalTightHalo2016Filter",
+                                        "Flag_ecalBadCalibFilter",
                                     ),
                                     phoWorstChargedIsolation = cms.InputTag("photonIDValueMapProducer:phoWorstChargedIsolation"),
                                     pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU"),
@@ -376,8 +270,7 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     metCalibrated = cms.InputTag("slimmedMETs")
 )
 
-#process.TreeWriter.ttGenEvent = cms.InputTag('genEvt')
-#process.TreeWriter.ttGenEvent = cms.InputTag('prunedGenParticles')
+
 
 
 ################################
@@ -385,55 +278,6 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
 ################################
 
 process.TreeWriter.hardPUveto=dataset.startswith("/QCD_HT100to200")
-
-if "03Feb2017" in dataset:
-    process.TreeWriter.reMiniAOD = True
-    process.TreeWriter.mets = cms.InputTag("slimmedMETsMuEGClean", "", "PAT")
-    process.TreeWriter.metCorrected = cms.InputTag("slimmedMETsMuEGClean", "", "TreeWriter")
-    process.TreeWriter.metCalibrated = cms.InputTag("slimmedMETsMuEGCleanCalibrated", "", "TreeWriter")
-    process.TreeWriter.metFilterNames.extend(["Flag_chargedHadronTrackResolutionFilter", "Flag_muonBadTrackFilter"])
-
-    # Now you are creating the e/g corrected MET on top of the bad muon corrected MET (on re-miniaod)
-    from PhysicsTools.PatUtils.tools.corMETFromMuonAndEG import corMETFromMuonAndEG
-    corMETFromMuonAndEG(
-        process,
-        pfCandCollection = "",
-        electronCollection = "slimmedElectronsBeforeGSFix",
-        photonCollection = "slimmedPhotonsBeforeGSFix",
-        corElectronCollection = "slimmedElectrons",
-        corPhotonCollection = "slimmedPhotons",
-        allMETEGCorrected = True,
-        muCorrection = False,
-        eGCorrection = True,
-        runOnMiniAOD = True,
-        postfix = "MuEGClean"
-    )
-    process.slimmedMETsMuEGClean = process.slimmedMETs.clone()
-    process.slimmedMETsMuEGClean.src = cms.InputTag("patPFMetT1MuEGClean")
-    process.slimmedMETsMuEGClean.rawVariation =  cms.InputTag("patPFMetRawMuEGClean")
-    process.slimmedMETsMuEGClean.t1Uncertainties = cms.InputTag("patPFMetT1%sMuEGClean")
-    del process.slimmedMETsMuEGClean.caloMET
-
-    corMETFromMuonAndEG(
-        process,
-        pfCandCollection = "",
-        electronCollection = "slimmedElectronsBeforeGSFix",
-        photonCollection = "slimmedPhotonsBeforeGSFix",
-        #corElectronCollection = "calibratedPatElectrons",
-        #corPhotonCollection = "calibratedPatPhotons",
-        corElectronCollection = electronCollection.value(),
-        corPhotonCollection = photonCollection.value(),
-        allMETEGCorrected = True,
-        muCorrection = False,
-        eGCorrection = True,
-        runOnMiniAOD = True,
-        postfix = "MuEGCleanCalibrated"
-    )
-    process.slimmedMETsMuEGCleanCalibrated = process.slimmedMETs.clone()
-    process.slimmedMETsMuEGCleanCalibrated.src = cms.InputTag("patPFMetT1MuEGClean")
-    process.slimmedMETsMuEGCleanCalibrated.rawVariation =  cms.InputTag("patPFMetRawMuEGClean")
-    process.slimmedMETsMuEGCleanCalibrated.t1Uncertainties = cms.InputTag("patPFMetT1%sMuEGClean")
-    del process.slimmedMETsMuEGCleanCalibrated.caloMET
 
 if not isRealData:
     process.TreeWriter.metFilterNames.remove("Flag_eeBadScFilter")
@@ -574,68 +418,60 @@ elif user=="swuchterl":
     process.TreeWriter.HT_cut=0
     process.TreeWriter.photon_pT_cut=5 # for leading photon
     process.TreeWriter.jet_pT_cut=30
-    process.TreeWriter.triggerObjectNames = [
-       #DoubleEle
-        "hltEle17Ele12CaloIdLTrackIdLIsoVLDZFilter",#1
-        "hltEle23Ele12CaloIdLTrackIdLIsoVLDZFilter",#2
-        "hltDiEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter",#3
-        "hltDiEle33CaloIdLGsfTrkIdVLMWPMS2UnseededFilter",#4
-        #DoubleMu
-        "hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4",#5
-        "hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4",#6
-        "hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4DzFiltered0p2",#7
-        "hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4DzFiltered0p2",#8
-        "hltDiMuonTrk17Trk8RelTrkIsoFiltered0p4DzFiltered0p2",#9
-        "hltDiMuonGlb27Trk8DzFiltered0p2",#10
-        "hltDiMuonGlb30Trk11DzFiltered0p2",#11
-        #MuEle
-        "hltMu17TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#12.1
-        "hltMu17TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered17",#12.2
-        "hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#13.1
-        "hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23",#13.2
-        "hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLDZFilter",#14
-        "hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#15.1
-        "hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23",#15.2
-        "hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLDZFilter",#16
-        "hltMu8TrkIsoVVLEle17CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#17.1
-        "hltMu8TrkIsoVVLEle17CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8",#17.2
-        "hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#18.1
-        "hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8",#18.2
-        "hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter",#19
-        "hltMu12TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#20.1
-        "hltMu12TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered12",#20.2
-        "hltMu12TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter",#21
-        "hltEle30CaloIdLGsfTrkIdVLDPhiUnseededFilter",#22.1
-        "hltL3fL1sMu22orMu25orMu20EG15orMu5EG20L1f0L2f10QL3Filtered30Q",#22.2
-        "hltEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter",#23.1
-        "hltL3fL1sMu22orMu25orMu20EG15orMu5EG20L1f0L2f10QL3Filtered33Q"#23.2
-    ]
+    #process.TreeWriter.triggerObjectNames = []
+    #process.TreeWriter.triggerObjectNames = [
+       ####DoubleEle
+        #"hltEle17Ele12CaloIdLTrackIdLIsoVLDZFilter",#1
+        #"hltEle23Ele12CaloIdLTrackIdLIsoVLDZFilter",#2
+        #"hltDiEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter",#3
+        #"hltDiEle33CaloIdLGsfTrkIdVLMWPMS2UnseededFilter",#4
+        #####DoubleMu
+        #"hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4",#5
+        #"hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4",#6
+        #"hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4DzFiltered0p2",#7
+        #"hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4DzFiltered0p2",#8
+        #"hltDiMuonTrk17Trk8RelTrkIsoFiltered0p4DzFiltered0p2",#9
+        #"hltDiMuonGlb27Trk8DzFiltered0p2",#10
+        #"hltDiMuonGlb30Trk11DzFiltered0p2",#11
+        #####MuEle
+        #"hltMu17TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#12.1
+        #"hltMu17TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered17",#12.2
+        #"hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#13.1
+        #"hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23",#13.2
+        #"hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLDZFilter",#14
+        #"hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#15.1
+        #"hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23",#15.2
+        #"hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLDZFilter",#16
+        #"hltMu8TrkIsoVVLEle17CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#17.1
+        #"hltMu8TrkIsoVVLEle17CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8",#17.2
+        #"hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#18.1
+        #"hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8",#18.2
+        #"hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter",#19
+        #"hltMu12TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter",#20.1
+        #"hltMu12TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered12",#20.2
+        #"hltMu12TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter",#21
+        #"hltEle30CaloIdLGsfTrkIdVLDPhiUnseededFilter",#22.1
+        #"hltL3fL1sMu22orMu25orMu20EG15orMu5EG20L1f0L2f10QL3Filtered30Q",#22.2
+        #"hltEle33CaloIdLGsfTrkIdVLDPhiUnseededFilter",#23.1
+        #"hltL3fL1sMu22orMu25orMu20EG15orMu5EG20L1f0L2f10QL3Filtered33Q"#23.2
+    #]
     triggerNames=[
-        "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
         "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
-        "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v",
+        "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v",
+        "HLT_DoubleEle33_CaloIdL_v",
+        "HLT_DoubleEle33_CaloIdL_MW_v",
         #DoubleMu
-        "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v",
-        "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v",
         "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-        "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
-        "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
-        "HLT_Mu27_TkMu8_v",
-        "HLT_Mu30_TkMu11_v",
-        #MuEle
-        "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",
-        "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v",
-        "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",
-        "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v",
-        "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",
-        "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",
-        "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        "HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v",
-        "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v"        
+        "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v",
+        "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v",
+        "HLT_Mu37_TkMu27_v",
+        #MuEle    
+        "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",       
+        "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",       
+        "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",       
+        "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",       
+        "HLT_Mu27_Ele37_CaloIdL_MW_v",       
+        "HLT_Mu37_Ele27_CaloIdL_MW_v",       
     ]
     triggerNamesHT=[
         "HLT_PFHT200_v",
@@ -652,40 +488,7 @@ elif user=="swuchterl":
         process.TreeWriter.triggerNames=triggerNames+triggerNamesHT
     else:
         process.TreeWriter.triggerNames=triggerNames
-    
-    #process.TreeWriter.triggerNames=["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v",
-        #"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v",
-        #"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-        #"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
-        #"HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
-        #"HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
-        #"HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v",
-        #"HLT_Mu27_TkMu8_v",
-        #"HLT_Mu30_TkMu11_v",
-        #"HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v",
-        #"HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v",
-        #"HLT_PFHT200_v",
-        #"HLT_PFHT250_v",
-        #"HLT_PFHT300_v",
-        #"HLT_PFHT350_v",
-        #"HLT_PFHT400_v",
-        #"HLT_PFHT475_v",
-        #"HLT_PFHT600_v",
-        #"HLT_PFHT650_v",
-        #"HLT_PFHT800"
-    #]
+
 else:
     print "you shall not pass!"
     print "(unkown user '%s')"%user
@@ -697,8 +500,4 @@ for trig in process.TreeWriter.triggerPrescales:
 ####################
 #     RUN          #
 ####################
-
-############process.p = cms.Path(process.BadPFMuonFilter*process.BadChargedCandidateFilter*process.TreeWriter#)
-process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter + seq + process.TreeWriter)
-#process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter + seq +  process.makeGenEvt + process.TreeWriter)
-############process.p = cms.Path(process.regressionApplication * process.calibratedPatElectrons * process.BadPFMuonFilter * process.BadChargedCandidateFilter  * process.TreeWriter)
+process.p = cms.Path(process.egmGsfElectronIDSequence+process.egmPhotonIDSequence+process.BadPFMuonFilter + process.BadChargedCandidateFilter+process.patJetCorrFactorsUpdatedJEC + process.updatedPatJetsUpdatedJEC + process.fullPatMetSequence +process.TreeWriter)

@@ -9,6 +9,9 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
+
+#include "FWCore/Framework/interface/LuminosityBlock.h"
+
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -81,7 +84,7 @@
 
 //#include "RoccoR.cc"
 //#include "RoccoR.h"
-#include "../interface/RoccoR.cc"
+//#include "../interface/RoccoR.cc"
 
 typedef std::vector<PileupSummaryInfo> PileupSummaryInfoCollection;
 typedef edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit>> EcalRecHitCollection;
@@ -158,11 +161,15 @@ private:
    edm::EDGetTokenT<edm::ValueMap<bool>> electronLooseIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> electronMediumIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<bool>> electronTightIdMapToken_;
-    edm::EDGetTokenT<edm::ValueMap<bool>> eleMediumIdMapToken_;
-    edm::EDGetTokenT<edm::ValueMap<bool>> eleTightIdMapToken_;
+   //edm::EDGetTokenT > electronVetoIdMapToken_;
+   //edm::EDGetTokenT > electronLooseIdMapToken_;
+   //edm::EDGetTokenT > electronMediumIdMapToken_;
+   //edm::EDGetTokenT > electronTightIdMapToken_;
+    //edm::EDGetTokenT<edm::ValueMap<bool>> eleMediumIdMapToken_;
+    //edm::EDGetTokenT<edm::ValueMap<bool>> eleTightIdMapToken_;
     // MVA values and categories (optional)
-    edm::EDGetTokenT<edm::ValueMap<float>> mvaValuesMapToken_;
-    edm::EDGetTokenT<edm::ValueMap<int>> mvaCategoriesMapToken_;
+    //edm::EDGetTokenT<edm::ValueMap<float>> mvaValuesMapToken_;
+    //edm::EDGetTokenT<edm::ValueMap<int>> mvaCategoriesMapToken_;
    
     //~//Conversion veto
    edm::EDGetTokenT<reco::BeamSpot> beamSpotToken_;
@@ -175,11 +182,11 @@ private:
    edm::EDGetTokenT<edm::ValueMap<bool>> photonTightIdMapToken_;
    edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult>> photonLooseIdFullInfoMapToken_mva_;
    //MVA 
-   edm::EDGetTokenT<edm::ValueMap<bool> >               photonMediumIdBoolMapToken_mva_;
-   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > photonMediumIdFullInfoMapToken_mva_;
+   //edm::EDGetTokenT<edm::ValueMap<bool> >               photonMediumIdBoolMapToken_mva_;
+   //edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > photonMediumIdFullInfoMapToken_mva_;
    // MVA values and categories (optional)
-   edm::EDGetTokenT<edm::ValueMap<float> > photonMvaValuesMapToken_;
-   edm::EDGetTokenT<edm::ValueMap<int> > photonMvaCategoriesMapToken_;
+   //edm::EDGetTokenT<edm::ValueMap<float> > photonMvaValuesMapToken_;
+   //edm::EDGetTokenT<edm::ValueMap<int> > photonMvaCategoriesMapToken_;
 
    // met filters to apply
    const std::vector<std::string> metFilterNames_;
@@ -273,12 +280,9 @@ private:
    // Pileup histogram(s)
    TH1F hPU_;
    
-   //RoccoR  rc("rcdata.2016.v3");
-   //RoccoR  rc("TreeWriter/TreeWriter/plugins/rcdata");
-   //RoccoR  rc("TreeWriter/TreeWriter/plugins/rcdata");
-   RoccoR  rc;
-   TRandom rgen_;
-   //RoccoR  *rc;
+
+   //RoccoR  rc;
+   //TRandom rgen_;
    
 };
 
