@@ -50,32 +50,32 @@ struct selPhoton : public tree::Photon{
    public:
    void setAll(const tree::Photon& g){
       p=g.p;
-      sigmaIetaIeta=g.sigmaIetaIeta; // full 5x5
-      sigmaIphiIphi=g.sigmaIphiIphi;
-      hOverE=g.hOverE;
+      //sigmaIetaIeta=g.sigmaIetaIeta; // full 5x5
+      //sigmaIphiIphi=g.sigmaIphiIphi;
+      //hOverE=g.hOverE;
       hasPixelSeed=g.hasPixelSeed;
       passElectronVeto=g.passElectronVeto;
-      r9=g.r9;
-      sigmaPt=g.sigmaPt;
-      hasGainSwitch=g.hasGainSwitch;
+      //r9=g.r9;
+      //sigmaPt=g.sigmaPt;
+      //hasGainSwitch=g.hasGainSwitch;
 //
-      cIso=g.cIso;
-      nIso=g.nIso;
-      pIso=g.pIso;
-      cIsoWorst=g.cIsoWorst;
+      //cIso=g.cIso;
+      //nIso=g.nIso;
+      //pIso=g.pIso;
+      //cIsoWorst=g.cIsoWorst;
 //
-      isTrue=g.isTrue;
-      isTrueAlternative=g.isTrueAlternative;
-      pMultifit=g.pMultifit;
-      pUncorrected=g.pUncorrected;
+      //isTrue=g.isTrue;
+      //isTrueAlternative=g.isTrueAlternative;
+      //pMultifit=g.pMultifit;
+      //pUncorrected=g.pUncorrected;
 
       isLoose=g.isLoose;
-      isMedium=g.isMedium;
-      isTight=g.isTight;
+      //isMedium=g.isMedium;
+      //isTight=g.isTight;
 
-      isMediumMVA=g.isMediumMVA;
-      mvaValue=g.mvaValue;
-      mvaCategory=g.mvaCategory;
+      //isMediumMVA=g.isMediumMVA;
+      //mvaValue=g.mvaValue;
+      //mvaCategory=g.mvaCategory;
    }
    TLorentzVector vec;
    float deltaR1;
@@ -95,25 +95,25 @@ struct selElectron : public tree::Electron{
       p=e.p;
       
       charge=e.charge; // +/- 1
-      rIso=e.rIso;
+      //rIso=e.rIso;
       passImpactParameter=e.passImpactParameter;
-      d0=e.d0;
-      dZ=e.dZ;
-      SIP3D=e.SIP3D;
+      //d0=e.d0;
+      //dZ=e.dZ;
+      //SIP3D=e.SIP3D;
       miniIso=e.miniIso;
       
-      isVetoID=e.isVetoID;
+      //isVetoID=e.isVetoID;
       isLoose=e.isLoose;
       isMedium=e.isMedium;
-      isTight=e.isTight;
-      isMediumMVA=e.isMediumMVA;
-      isTightMVA=e.isTightMVA;
-      isTightMVASlope=e.isTightMVASlope;
-      mvaValue=e.mvaValue;
-      mvaCategory=e.mvaCategory;
-      seedCrystalE=e.seedCrystalE;
+      //isTight=e.isTight;
+      //isMediumMVA=e.isMediumMVA;
+      //isTightMVA=e.isTightMVA;
+      //isTightMVASlope=e.isTightMVASlope;
+      //mvaValue=e.mvaValue;
+      //mvaCategory=e.mvaCategory;
+      //seedCrystalE=e.seedCrystalE;
       isPassConvVeto=e.isPassConvVeto;
-      pUncorrected=e.pUncorrected;
+      //pUncorrected=e.pUncorrected;
    }
    TLorentzVector vec;
    bool matched=false;
@@ -133,17 +133,17 @@ struct selMuon : public tree::Muon{
       p=m.p;
       
       charge=m.charge; // +/- 1
-      rIso=m.rIso;
+      //rIso=m.rIso;
       passImpactParameter=m.passImpactParameter;
-      d0=m.d0;
-      dZ=m.dZ;
-      SIP3D=m.SIP3D;
+      //d0=m.d0;
+      //dZ=m.dZ;
+      //SIP3D=m.SIP3D;
       miniIso=m.miniIso;
       
-      isTight=m.isTight;
+      //isTight=m.isTight;
       isMedium=m.isMedium;
-      isMediumRun=m.isMediumRun;
-      nTrkLayers=m.nTrkLayers;
+      //isMediumRun=m.isMediumRun;
+      //nTrkLayers=m.nTrkLayers;
    }
    TLorentzVector vec;
    bool matched=false;
@@ -163,11 +163,11 @@ struct selLepton : public tree::Lepton{
       p=m.p;
       
       charge=m.charge; // +/- 1
-      rIso=m.rIso;
+      //rIso=m.rIso;
       passImpactParameter=m.passImpactParameter;
-      d0=m.d0;
-      dZ=m.dZ;
-      SIP3D=m.SIP3D;
+      //d0=m.d0;
+      //dZ=m.dZ;
+      //SIP3D=m.SIP3D;
       miniIso=m.miniIso;
       
       vec=m.vec;
@@ -183,11 +183,11 @@ struct selLepton : public tree::Lepton{
       p=e.p;
       
       charge=e.charge; // +/- 1
-      rIso=e.rIso;
+      //rIso=e.rIso;
       passImpactParameter=e.passImpactParameter;
-      d0=e.d0;
-      dZ=e.dZ;
-      SIP3D=e.SIP3D;
+      //d0=e.d0;
+      //dZ=e.dZ;
+      //SIP3D=e.SIP3D;
       miniIso=e.miniIso;
       
       vec=e.vec;
@@ -218,19 +218,19 @@ struct selJet : public tree::Jet{
       hasElectronMatch=j.hasElectronMatch;
       hasMuonMatch=j.hasMuonMatch;
       bDiscriminator=j.bDiscriminator;
-      uncert=j.uncert;
-      chf=j.chf;
-      nhf=j.nhf;
-      cef=j.cef;
-      nef=j.nef;
-      nch=j.nch;
-      nconstituents=j.nconstituents;
-      ptRes=j.ptRes;
-      phiRes=j.phiRes;
-      sfRes=j.sfRes;
-      sfResUp=j.sfResUp;
-      sfResDn=j.sfResDn;
-      uncorJecFactor=j.uncorJecFactor; // uncorrected jet momentum over corrected jet momentum
+      //uncert=j.uncert;
+      //chf=j.chf;
+      //nhf=j.nhf;
+      //cef=j.cef;
+      //nef=j.nef;
+      //nch=j.nch;
+      //nconstituents=j.nconstituents;
+      //ptRes=j.ptRes;
+      //phiRes=j.phiRes;
+      //sfRes=j.sfRes;
+      //sfResUp=j.sfResUp;
+      //sfResDn=j.sfResDn;
+      //uncorJecFactor=j.uncorJecFactor; // uncorrected jet momentum over corrected jet momentum
    }
    TLorentzVector vec;
    float deltaR1;

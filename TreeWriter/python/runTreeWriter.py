@@ -39,9 +39,9 @@ options.register("electronSmearing",
 # defaults
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/100000/000786F7-3AD0-E611-A6AE-842B2B765E01.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MuonEG/MINIAOD/03Feb2017_ver2-v2/100000/008C5624-A1EC-E611-8238-0090FAA56F60.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MET/MINIAOD/03Feb2017_ver1-v1/100000/1CDECD1B-0CEB-E611-A2A9-D4AE526A0455.root'
+#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/MET/MINIAOD/03Feb2017_ver1-v1/100000/1CDECD1B-0CEB-E611-A2A9-D4AE526A0455.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/DoubleEG/MINIAOD/03Feb2017_ver2-v2/50000/001EB4EF-D3EA-E611-B94E-0CC47A4C8F26.root'
-#options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/DoubleMuon/MINIAOD/03Feb2017_ver2-v2/100000/D628C213-0CEB-E611-B5E2-3417EBE7051F.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/data/Run2016B/DoubleMuon/MINIAOD/03Feb2017_ver2-v2/100000/D628C213-0CEB-E611-B5E2-3417EBE7051F.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/SMS-TChiNG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/120000/040E9990-AA08-E711-BAAA-0025905B8574.root'
 #options.inputFiles = 'root://cms-xrd-global.cern.ch///store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/100000/00099D43-77ED-E611-8889-5065F381E1A1.root'
 #options.inputFiles = '/store/mc/RunIISummer16MiniAODv2/GGM_GravitinoLSP_M1-200to1500_M2-200to1500_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/000C44EA-F8EC-E711-8145-0242AC130002.root'
@@ -69,6 +69,8 @@ useHTTrigger=True
 
 electronCollection = cms.InputTag("slimmedElectrons", "", "PAT")
 photonCollection   = cms.InputTag("slimmedPhotons", "", "PAT")
+#muonCollection   = cms.InputTag("slimmedMuons","","PAT")
+muonCollection   = cms.InputTag("slimmedMuons")
 
 
 # the actual TreeWriter module
@@ -104,6 +106,7 @@ else:
 
 
 seq = cms.Sequence()
+seq2 = cms.Sequence()
 
 ######################
 # PHOTONS, ELECTRONS #
@@ -122,6 +125,7 @@ process.slimmedPhotons.src = photonCollection
 # overwrite output collections
 electronCollection = cms.InputTag("slimmedElectrons", "", process.name_())
 photonCollection = cms.InputTag("slimmedPhotons", "", process.name_())
+
 
 
 process.selectedElectrons = cms.EDFilter("PATElectronSelector",
@@ -244,29 +248,28 @@ updateJetCollection(
    jetCorrections = ('AK4PFchs', cms.vstring(jecLevels), 'None')
 )
 
-##########################
-# Top Pt reweighting     #
-##########################
-#https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting
-#process.load("TopQuarkAnalysis.TopEventProducers.sequences.ttGenEvent_cff")
-#
-#process.decaySubset.fillMode = cms.string("kME")
-#process.TreeWriter.ttGenEvent = cms.InputTag('genEvt')
+
 
 ##########################
 # MET                    #
 ##########################
 # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+#runMetCorAndUncFromMiniAOD(
+    #process,
+    #isData=isRealData,
+#)
 runMetCorAndUncFromMiniAOD(
-    process,
-    isData=isRealData,
+        process,
+        isData           = isRealData,
+        electronColl     = electronCollection.value(),
+        muonColl         = muonCollection.value(),
+        photonColl       = photonCollection.value(),
+        recoMetFromPFCs  = True
 )
 
 
-#process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
-    #ignoreTotal = cms.untracked.int32(1)
-#)
+
 
 
 
@@ -274,12 +277,35 @@ runMetCorAndUncFromMiniAOD(
 # MET Filter                   #
 ################################
 process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
-process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
+#process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
+process.BadPFMuonFilter.muons = muonCollection
 process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
 
 process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
-process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
+#process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
+process.BadChargedCandidateFilter.muons = muonCollection
 process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+
+
+
+#if (not isRealData):
+process.load('RecoMET.METFilters.badGlobalMuonTaggersMiniAOD_cff')
+process.badGlobalMuonTagger = cms.EDFilter("BadGlobalMuonTagger",
+    muons = cms.InputTag("slimmedMuons"),
+    ##muons = muonCollection.value(),
+    vtx   = cms.InputTag("offlineSlimmedPrimaryVertices"),
+    muonPtCut = cms.double(20),
+    selectClones = cms.bool(False),
+    taggingMode = cms.bool(False),
+)
+process.cloneGlobalMuonTagger = process.badGlobalMuonTagger.clone(
+    selectClones = True
+)
+#process.badGlobalMuonTaggerMAOD.muons=cms.InputTag("slimmedMuons")
+#process.cloneGlobalMuonTaggerMAOD.muons=cms.InputTag("slimmedMuons")
+
+seq2+=process.badGlobalMuonTagger
+seq2+=process.cloneGlobalMuonTagger
 
 
 ################################
@@ -307,7 +333,8 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     # physics objects
                                     photons = photonCollection,
                                     jets = cms.InputTag("updatedPatJetsUpdatedJEC"),
-                                    muons = cms.InputTag("slimmedMuons"),
+                                    #muons = cms.InputTag("slimmedMuons"),
+                                    muons = muonCollection,
                                     genJets= cms.InputTag("slimmedGenJets"),
                                     electrons = electronCollection,
                                     mets = cms.InputTag("slimmedMETs", "", "TreeWriter"),
@@ -358,7 +385,10 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                         "Flag_EcalDeadCellTriggerPrimitiveFilter",
                                         "Flag_goodVertices",
                                         "Flag_eeBadScFilter",
-                                        "Flag_globalTightHalo2016Filter",
+                                        #"Flag_globalTightHalo2016Filter",
+                                        "Flag_globalSuperTightHalo2016Filter",
+                                        "Flag_badMuons",
+                                        "Flag_duplicateMuons",
                                     ),
                                     phoWorstChargedIsolation = cms.InputTag("photonIDValueMapProducer:phoWorstChargedIsolation"),
                                     pileupHistogramName=cms.untracked.string("pileupWeight_mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU"),
@@ -373,12 +403,18 @@ process.TreeWriter = cms.EDAnalyzer('TreeWriter',
                                     triggerPrescales=cms.vstring(), # also useful to check whether a trigger was run
                                     BadChargedCandidateFilter = cms.InputTag("BadChargedCandidateFilter"),
                                     BadPFMuonFilter = cms.InputTag("BadPFMuonFilter"),
+                                    badGlobalMuonFilter = cms.InputTag("badGlobalMuonTagger"),
+                                    cloneGlobalMuonFilter = cms.InputTag("cloneGlobalMuonTagger"),
+                                    #badGlobalMuonFilter = cms.InputTag("badGlobalMuonTaggerMAOD"),
+                                    #cloneGlobalMuonFilter = cms.InputTag("cloneGlobalMuonTaggerMAOD"),
+                                    #badGlobalMuonTaggerMAOD = cms.InputTag("badGlobalMuonTaggerMAOD"),
+                                    #cloneGlobalMuonTaggerMAOD = cms.InputTag("cloneGlobalMuonTaggerMAOD"),
                                     metCorrected = cms.InputTag("slimmedMETs"),
-                                    metCalibrated = cms.InputTag("slimmedMETs")
+                                    metCalibrated = cms.InputTag("slimmedMETs")#,
+                                    #metNoEGCleaning = cms.InputTag("slimmedMETs","TreeWriter")
 )
 
-#process.TreeWriter.ttGenEvent = cms.InputTag('genEvt')
-#process.TreeWriter.ttGenEvent = cms.InputTag('prunedGenParticles')
+
 
 
 ################################
@@ -435,11 +471,59 @@ if "03Feb2017" in dataset:
     process.slimmedMETsMuEGCleanCalibrated.rawVariation =  cms.InputTag("patPFMetRawMuEGClean")
     process.slimmedMETsMuEGCleanCalibrated.t1Uncertainties = cms.InputTag("patPFMetT1%sMuEGClean")
     del process.slimmedMETsMuEGCleanCalibrated.caloMET
+    
+    
+    
+
+    
+    
+if (not isRealData) and (not isSignal):
+#if (False):
+    #process.TreeWriter.reMiniAOD = True
+    #process.TreeWriter.mets = cms.InputTag("slimmedMETsMuEGClean", "", "PAT")
+    #process.TreeWriter.metCorrected = cms.InputTag("slimmedMETsMuEGClean", "", "TreeWriter")
+    #process.TreeWriter.metCalibrated = cms.InputTag("slimmedMETsMuEGCleanCalibrated", "", "TreeWriter")
+    #process.TreeWriter.metFilterNames.extend(["Flag_chargedHadronTrackResolutionFilter", "Flag_muonBadTrackFilter"])
+
+   # Now you are creating the bad muon corrected MET
+    from PhysicsTools.PatUtils.tools.muonRecoMitigation import muonRecoMitigation
+
+    muonRecoMitigation(
+                       process = process,
+                       pfCandCollection = "packedPFCandidates", #input PF Candidate Collection
+                       runOnMiniAOD = True, #To determine if you are running on AOD or MiniAOD
+                       selection="", #You can use a custom selection for your bad muons. Leave empty if you would like to use the bad muon recipe definition.
+                       muonCollection="", #The muon collection name where your custom selection will be applied to. Leave empty if you would like to use the bad muon recipe definition.
+                       cleanCollName="cleanMuonsPFCandidates", #output pf candidate collection ame
+                       #cleanCollName=muonCollection.value(), #output pf candidate collection ame
+                       #cleaningScheme="computeAllApplyClone", #Options are: "all", "computeAllApplyBad","computeAllApplyClone". Decides which (or both) bad muon collections to be used for MET cleaning coming from the bad muon recipe.
+                       cleaningScheme="all", #Options are: "all", "computeAllApplyBad","computeAllApplyClone". Decides which (or both) bad muon collections to be used for MET cleaning coming from the bad muon recipe.
+                       #postfix="MuClean" #Use if you would like to add a post fix to your muon / pf collections
+                       postfix="" #Use if you would like to add a post fix to your muon / pf collections
+                       )
+
+    runMetCorAndUncFromMiniAOD(process,
+                           #isData=runOnData,
+                           isData=isRealData,
+                           pfCandColl="cleanMuonsPFCandidates",
+                           #pfCandColl=muonCollection.value(),
+                           #pfCandColl=muonCollection,
+                           recoMetFromPFCs=True,
+                           postfix="MuClean"
+                           )
+
+
+
+
+
 
 if not isRealData:
     process.TreeWriter.metFilterNames.remove("Flag_eeBadScFilter")
+    process.TreeWriter.metFilterNames.remove("Flag_badMuons")
+    process.TreeWriter.metFilterNames.remove("Flag_duplicateMuons")
 if "Fast" in dataset:
-    process.TreeWriter.metFilterNames.remove("Flag_globalTightHalo2016Filter")
+    #process.TreeWriter.metFilterNames.remove("Flag_globalTightHalo2016Filter")
+    process.TreeWriter.metFilterNames.remove("Flag_globalSuperTightHalo2016Filter")
     process.TreeWriter.lheEventProduct = "source"
     if "T5Wg" in dataset or "T6Wg" in dataset:
         process.TreeWriter.minNumberBinos_cut = 1
@@ -665,40 +749,7 @@ elif user=="swuchterl":
         process.TreeWriter.triggerNames=triggerNames+triggerNamesHT+triggerNamesMET
     else:
         process.TreeWriter.triggerNames=triggerNames
-    
-    #process.TreeWriter.triggerNames=["HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v",
-        #"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v",
-        #"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-        #"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
-        #"HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
-        #"HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",
-        #"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",
-        #"HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v",
-        #"HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v",
-        #"HLT_Mu27_TkMu8_v",
-        #"HLT_Mu30_TkMu11_v",
-        #"HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v",
-        #"HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v",
-        #"HLT_PFHT200_v",
-        #"HLT_PFHT250_v",
-        #"HLT_PFHT300_v",
-        #"HLT_PFHT350_v",
-        #"HLT_PFHT400_v",
-        #"HLT_PFHT475_v",
-        #"HLT_PFHT600_v",
-        #"HLT_PFHT650_v",
-        #"HLT_PFHT800"
-    #]
+ 
 else:
     print "you shall not pass!"
     print "(unkown user '%s')"%user
@@ -712,6 +763,12 @@ for trig in process.TreeWriter.triggerPrescales:
 ####################
 
 ############process.p = cms.Path(process.BadPFMuonFilter*process.BadChargedCandidateFilter*process.TreeWriter#)
-process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter + seq + process.TreeWriter)
+#if(not isRealData):
+#process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter +~process.cloneGlobalMuonTagger + ~process.badGlobalMuonTagger + seq + process.TreeWriter)
+process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter + seq2 + seq + process.TreeWriter)
+#process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter + ~process.badGlobalMuonTaggerMAOD + ~process.cloneGlobalMuonTaggerMAOD + seq + process.TreeWriter)
+#process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter + seq + process.TreeWriter)
+#else:
+        #process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter + seq + process.TreeWriter)
 #process.p = cms.Path(process.BadPFMuonFilter + process.BadChargedCandidateFilter + seq +  process.makeGenEvt + process.TreeWriter)
 ############process.p = cms.Path(process.regressionApplication * process.calibratedPatElectrons * process.BadPFMuonFilter * process.BadChargedCandidateFilter  * process.TreeWriter)

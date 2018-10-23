@@ -56,32 +56,32 @@ namespace tree
 
    struct Photon : public Particle
    {
-      Float_t sigmaIetaIeta; // full 5x5
-      Float_t sigmaIphiIphi;
-      Float_t hOverE;
+      //Float_t sigmaIetaIeta; // full 5x5   
+      //Float_t sigmaIphiIphi;
+      //Float_t hOverE;
       Bool_t hasPixelSeed;
       Bool_t passElectronVeto;
-      Float_t r9;
-      Float_t sigmaPt;
-      Bool_t hasGainSwitch;
+      //Float_t r9;
+      //Float_t sigmaPt;
+      //Bool_t hasGainSwitch;
 //
-      Float_t cIso;
-      Float_t nIso;
-      Float_t pIso;
-      Float_t cIsoWorst;
+      //Float_t cIso;
+      //Float_t nIso;
+      //Float_t pIso;
+      //Float_t cIsoWorst;
 //
-      Int_t isTrue;
-      Int_t isTrueAlternative;
-      TVector3 pMultifit;
-      TVector3 pUncorrected;
+      //Int_t isTrue;
+      //Int_t isTrueAlternative;
+      //TVector3 pMultifit;
+      //TVector3 pUncorrected;
 
       // IDs
       Bool_t  isLoose;
-      Bool_t  isMedium;
-      Bool_t  isTight;
-      bool isMediumMVA;
-      float mvaValue;
-      int mvaCategory;
+      //Bool_t  isMedium;
+      //Bool_t  isTight;
+      //bool isMediumMVA;
+      //float mvaValue;
+      //int mvaCategory;
    };
 
    struct Jet : public Particle
@@ -91,56 +91,56 @@ namespace tree
       bool hasElectronMatch;
       bool hasMuonMatch;
       float bDiscriminator;
-      float uncert;
-      float chf;
+      //float uncert;
+      //float chf;
       
-      float nhf;
-      float cef;
-      float nef;
-      int nch;
-      int nconstituents;
-      float ptRes;
-      float phiRes;
-      float sfRes;
-      float sfResUp;
-      float sfResDn;
-      float uncorJecFactor; // uncorrected jet momentum over corrected jet momentum
+      //float nhf;
+      //float cef;
+      //float nef;
+      //int nch;
+      //int nconstituents;
+      //float ptRes;
+      //float phiRes;
+      //float sfRes;
+      //float sfResUp;
+      //float sfResDn;
+      //float uncorJecFactor; // uncorrected jet momentum over corrected jet momentum
    };
 
    struct Lepton: public Particle
    {
       Char_t charge; // +/- 1
-      float rIso;
+      //float rIso;
       bool passImpactParameter;
-      float d0;
-      float dZ;
-      float SIP3D;
+      //float d0;
+      //float dZ;
+      //float SIP3D;
       float miniIso;
    };
 
    struct Muon: public Lepton
    {
-      bool isTight;
+      //bool isTight;
       bool isMedium;
-      bool isMediumRun;
-      int nTrkLayers;
-      TVector3 pUncorrected; //new
+      //bool isMediumRun;
+      //int nTrkLayers;
+      //TVector3 pUncorrected; //new
    };
 
    struct Electron: public Lepton
    {
-      bool isVetoID;
+      //bool isVetoID;
       bool isLoose;
       bool isMedium;
-      bool isTight;
-      bool isMediumMVA;
-      bool isTightMVA;
-      bool isTightMVASlope;
-      float mvaValue;
-      int mvaCategory;
-      Float_t seedCrystalE;
+      //bool isTight;
+      //bool isMediumMVA;
+      //bool isTightMVA;
+      //bool isTightMVASlope;
+      //float mvaValue;
+      //int mvaCategory;
+      //Float_t seedCrystalE;
       bool isPassConvVeto;
-      TVector3 pUncorrected;
+      //TVector3 pUncorrected;
 
       
    };

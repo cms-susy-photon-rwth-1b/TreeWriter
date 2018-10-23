@@ -143,28 +143,31 @@ bool isMediumMuon(const reco::Muon & recoMu, int runNumber){
 //and SUSY Aachen Dilepton Analysis
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSLeptonSF#Electron_and_Muons_Selections
     bool testImpactParameters(float d0_, float dZ_, float SIP3D_,bool isElectron, bool isEB){
-        float d0Min = -1.;
-        float d0MaxEE = 0.1;
-        float d0MaxEB = 0.05;
-        float dZMin = -1.;
-        float dZMaxEE = 0.2;
-        float dZMaxEB = 0.1;
-        float SIP3DMin = -1.;
+        //float d0Min = -1.;
+        //float d0MaxEE = 0.1;
+        //float d0MaxEB = 0.05;
+        float d0Max=0.05;
+        //float dZMin = -1.;
+        //float dZMaxEE = 0.2;
+        //float dZMaxEB = 0.1;
+        float dZMax=0.1;
+        //float SIP3DMin = -1.;
         //float SIP3DMax = 8.;
         float SIP3DMax = 4.;
         if(isElectron){
-            return ((isEB)&&(d0_ >= d0Min && d0_ < d0MaxEB && dZ_ >= dZMin && dZ_ < dZMaxEB && SIP3D_ < SIP3DMax && SIP3D_ >= SIP3DMin))
-                    || ( d0_ >= d0Min && d0_ < d0MaxEE && dZ_ >= dZMin && dZ_ < dZMaxEE  && SIP3D_ < SIP3DMax && SIP3D_ >= SIP3DMin);
+            //return ((isEB)&&(d0_ >= d0Min && d0_ < d0MaxEB && dZ_ >= dZMin && dZ_ < dZMaxEB && SIP3D_ < SIP3DMax && SIP3D_ >= SIP3DMin))
+                    //|| ( d0_ >= d0Min && d0_ < d0MaxEE && dZ_ >= dZMin && dZ_ < dZMaxEE  && SIP3D_ < SIP3DMax && SIP3D_ >= SIP3DMin);
+            return (d0_ < d0Max && dZ_ < dZMax);
         }
         else{
-            d0Min= -1.;
-            float d0Max= 0.05;
-            dZMin= -0.1;
-            float dZMax= 0.1;
-            SIP3DMin= -1.;
+            //d0Min= -1.;
+            //float d0Max= 0.05;
+            //dZMin= -0.1;
+            //float dZMax= 0.1;
+            //SIP3DMin= -1.;
             //SIP3DMax= 8.;   
-            SIP3DMax= 4.;   
-            return ( d0_ >= d0Min && d0_ < d0Max && dZ_ >= dZMin && dZ_ < dZMax && SIP3D_ < SIP3DMax && SIP3D_ >= SIP3DMin);
+            //float SIP3DMax= 4.;   
+            return (d0_ < d0Max && dZ_ < dZMax && SIP3D_ < SIP3DMax);
         }
     }
 
@@ -396,6 +399,10 @@ TreeWriter::TreeWriter(const edm::ParameterSet& iConfig)
    , triggerObjectNames_(iConfig.getParameter<std::vector<std::string>>("triggerObjectNames"))
    , BadChCandFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("BadChargedCandidateFilter")))
    , BadPFMuonFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("BadPFMuonFilter")))
+   , BadGlobalMuonFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("badGlobalMuonFilter")))
+   //, BadGlobalMuonFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("badGlobalMuonTaggerMAOD")))
+   //, CloneGlobalMuonFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("cloneGlobalMuonTaggerMAOD")))
+   , CloneGlobalMuonFilterToken_(consumes<bool>(iConfig.getParameter<edm::InputTag>("cloneGlobalMuonFilter")))
 {
    // declare consumptions that are used "byLabel" in analyze()
    mayConsume<GenLumiInfoHeader,edm::InLumi> (edm::InputTag("generator"));
@@ -686,7 +693,11 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    for (std::string const &name: metFilterNames_) {
       const unsigned index = allFilterNames.triggerIndex(name);
       if (index >= allFilterNames.size()) std::cerr << "MET filter '" << name << "' not found!" << std::endl;
-      if (!metFilterBits->accept(index)) return; // not passed
+      if((name=="Flag_badMuons")||(name=="Flag_duplicateMuons")){
+         if (metFilterBits->accept(index)) return; // passed, this filter works the way around
+      }else{
+         if (!metFilterBits->accept(index)) return; // not passed
+      }
    }
    if (!reMiniAOD_) {
        edm::Handle<bool> ifilterbadChCand;
@@ -696,7 +707,20 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
        edm::Handle<bool> ifilterbadPFMuon;
        iEvent.getByToken(BadPFMuonFilterToken_, ifilterbadPFMuon);
        if (!*ifilterbadPFMuon) return;
+
+       edm::Handle<bool> ifilterbadGlobalMuon;
+       iEvent.getByToken(BadGlobalMuonFilterToken_, ifilterbadGlobalMuon);
+       if (!*ifilterbadGlobalMuon) return;
+       //if (*ifilterbadGlobalMuon) return;
+
+       edm::Handle<bool> ifiltercloneGlobalMuon;
+       iEvent.getByToken(CloneGlobalMuonFilterToken_, ifiltercloneGlobalMuon);
+       if (!*ifiltercloneGlobalMuon) return;
+       //if (*ifiltercloneGlobalMuon) return;
    }
+   
+
+      
    hCutFlow_->Fill("METfilters", mc_weight_*pu_weight_);
 
    // Get PV
@@ -790,49 +814,49 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
       trPho.p.SetPtEtaPhi(pho->pt(), pho->superCluster()->eta(), pho->superCluster()->phi());
       const edm::Ptr<pat::Photon> phoPtr( photonColl, pho - photonColl->begin() );
-      trPho.sigmaIetaIeta = pho->full5x5_sigmaIetaIeta();
-      trPho.sigmaIphiIphi = pho->full5x5_showerShapeVariables().sigmaIphiIphi;
-      trPho.hOverE = pho->hadTowOverEm();
+      //trPho.sigmaIetaIeta = pho->full5x5_sigmaIetaIeta();
+      //trPho.sigmaIphiIphi = pho->full5x5_showerShapeVariables().sigmaIphiIphi;
+      //trPho.hOverE = pho->hadTowOverEm();
       trPho.hasPixelSeed = pho->hasPixelSeed();
       trPho.passElectronVeto = pho->passElectronVeto();
-      trPho.r9 = pho->r9();
-      trPho.hasGainSwitch = !pho->hasUserInt("hasGainSwitchFlag") || pho->userInt("hasGainSwitchFlag");
+      //trPho.r9 = pho->r9();
+      //trPho.hasGainSwitch = !pho->hasUserInt("hasGainSwitchFlag") || pho->userInt("hasGainSwitchFlag");
 
-      auto itPos = std::distance(photonColl->begin(), pho);
-      trPho.pMultifit.SetXYZ(0,0,0);
-      trPho.pUncorrected.SetXYZ(0,0,0);
-      if (reMiniAOD_ && itPos<photonCollOld->size()) {
-        auto p = (*photonCollOld).at(itPos);
-        trPho.pMultifit.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
-      }
-      if (itPos<photonCollUncorrected->size()) {
-        auto p = (*photonCollUncorrected).at(itPos);
-        trPho.pUncorrected.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
-      }
+      //auto itPos = std::distance(photonColl->begin(), pho);
+      //trPho.pMultifit.SetXYZ(0,0,0);
+      //trPho.pUncorrected.SetXYZ(0,0,0);
+      //if (reMiniAOD_ && itPos<photonCollOld->size()) {
+        //auto p = (*photonCollOld).at(itPos);
+        //trPho.pMultifit.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
+      //}
+      //if (itPos<photonCollUncorrected->size()) {
+        //auto p = (*photonCollUncorrected).at(itPos);
+        //trPho.pUncorrected.SetPtEtaPhi(p.pt(), p.superCluster()->eta(), p.superCluster()->phi());
+      //}
 
       vid::CutFlowResult cutFlow = (*photon_loose_id_cutflow)[phoPtr];
-      trPho.cIso = cutFlow.getValueCutUpon(4);
-      trPho.nIso = cutFlow.getValueCutUpon(5);
-      trPho.pIso = cutFlow.getValueCutUpon(6);
-      trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
+      //trPho.cIso = cutFlow.getValueCutUpon(4);
+      //trPho.nIso = cutFlow.getValueCutUpon(5);
+      //trPho.pIso = cutFlow.getValueCutUpon(6);
+      //trPho.cIsoWorst = (*phoWorstChargedIsolationMap)[phoPtr];
 
-      trPho.isMediumMVA = (*photon_medium_id_decisions_MVA)[phoPtr];
-      trPho.mvaValue = (*photon_mvaValues)[phoPtr];
-      trPho.mvaCategory = (*photon_mvaCategories)[phoPtr];
+      //trPho.isMediumMVA = (*photon_medium_id_decisions_MVA)[phoPtr];
+      //trPho.mvaValue = (*photon_mvaValues)[phoPtr];
+      //trPho.mvaCategory = (*photon_mvaCategories)[phoPtr];
 
       // MC match
-      if (!isRealData) {
-         trPho.isTrue = matchToTruth(*pho, prunedGenParticles);
-         trPho.isTrueAlternative = matchToTruthAlternative(*pho, prunedGenParticles);
-      } else {
-         trPho.isTrue = UNMATCHED;
-         trPho.isTrueAlternative = UNMATCHED;
-      }
+      //if (!isRealData) {
+         //trPho.isTrue = matchToTruth(*pho, prunedGenParticles);
+         //trPho.isTrueAlternative = matchToTruthAlternative(*pho, prunedGenParticles);
+      //} else {
+         //trPho.isTrue = UNMATCHED;
+         //trPho.isTrueAlternative = UNMATCHED;
+      //}
 
       // check photon working points
       trPho.isLoose = (*photon_loose_id_dec) [phoPtr];
-      trPho.isMedium = (*photon_medium_id_dec)[phoPtr];
-      trPho.isTight = (*photon_tight_id_dec) [phoPtr];
+      //trPho.isMedium = (*photon_medium_id_dec)[phoPtr];
+      //trPho.isTight = (*photon_tight_id_dec) [phoPtr];
       // write the photon to collection
       if (isolatedPhotons_ && !trPho.isLoose) continue;
       vPhotons_.push_back(trPho);
@@ -853,7 +877,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       //if (mu.pt()<5) continue;
       if (mu.pt()<15.) continue;
       trMuon.p.SetPtEtaPhi(mu.pt(), mu.eta(), mu.phi());
-      trMuon.pUncorrected.SetPtEtaPhi(mu.pt(),mu.eta(),mu.phi());
+      //trMuon.pUncorrected.SetPtEtaPhi(mu.pt(),mu.eta(),mu.phi());
+      TVector3 pUncorrected_;
+      pUncorrected_.SetPtEtaPhi(mu.pt(),mu.eta(),mu.phi());
       //cout<<trMuon.p.Pt()<<endl;
       
       double momentumScaleFactor=1.;
@@ -887,12 +913,13 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       //cout<<trMuon.p.Pt()<<endl;
       
       
-      trMuon.isTight = mu.isTightMuon(firstGoodVertex);
-      auto const& pfIso = mu.pfIsolationR04();
-      trMuon.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/mu.pt();
+      //trMuon.isTight = mu.isTightMuon(firstGoodVertex);
+      //auto const& pfIso = mu.pfIsolationR04();
+      //trMuon.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/mu.pt();
       trMuon.miniIso = getPFIsolation(packedCandidates, mu);
       //cout<<"old "<<trMuon.miniIso<<endl;
-      trMuon.miniIso = trMuon.miniIso*trMuon.pUncorrected.Pt()/trMuon.p.Pt();
+      //trMuon.miniIso = trMuon.miniIso*trMuon.pUncorrected.Pt()/trMuon.p.Pt();
+      trMuon.miniIso = trMuon.miniIso*pUncorrected_.Pt()/trMuon.p.Pt();
       //cout<<"new "<<trMuon.miniIso<<endl;
       trMuon.charge = mu.charge();
       //impact parameters
@@ -905,11 +932,11 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       SIP3D = abs(mu.dB(pat::Muon::PV3D)/mu.edB(pat::Muon::PV3D)); 
       trMuon.passImpactParameter =testImpactParameters(d0,dZ,SIP3D,false,true);
       //trMuon.nTrkLayers = mu.innerTrack()->hitPattern().trackerLayersWithMeasurement();
-      trMuon.nTrkLayers = nl;
-      trMuon.d0=d0;
-      trMuon.dZ=dZ;
-      trMuon.SIP3D=SIP3D;
-      trMuon.isMediumRun = isMediumMuon(mu,runNo_);
+      //trMuon.nTrkLayers = nl;
+      //trMuon.d0=d0;
+      //trMuon.dZ=dZ;
+      //trMuon.SIP3D=SIP3D;
+      //trMuon.isMediumRun = isMediumMuon(mu,runNo_);
       trMuon.isMedium = mu.isMediumMuon();
       
       vMuons_.push_back(trMuon);
@@ -957,29 +984,29 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       if (el->pt()<15.) continue;
       const edm::Ptr<pat::Electron> elPtr(electronColl, el - electronColl->begin());
       if (!(*electron_veto_id_decisions)[elPtr]) continue; // take only 'veto' electrons
-      trEl.isVetoID=(*electron_veto_id_decisions)[elPtr];
+      //trEl.isVetoID=(*electron_veto_id_decisions)[elPtr];
       trEl.isLoose =(*electron_loose_id_decisions) [elPtr];
       trEl.isMedium=(*electron_medium_id_decisions) [elPtr];
-      trEl.isTight =(*electron_tight_id_decisions) [elPtr];
+      //trEl.isTight =(*electron_tight_id_decisions) [elPtr];
       trEl.p.SetPtEtaPhi(el->pt(), el->superCluster()->eta(), el->superCluster()->phi());
       trEl.charge = el->charge();
-      auto const & pfIso = el->pfIsolationVariables();
-      trEl.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();
-      trEl.isMediumMVA = (*medium_id_decisions_MVA)[elPtr];
-      trEl.isTightMVA = (*tight_id_decisions_MVA)[elPtr];
-      trEl.isTightMVASlope = ElectronTightMVA(el->superCluster()->eta(),el->pt(),(*mvaValues)[elPtr]);
-      trEl.mvaValue=(*mvaValues)[elPtr];
-      trEl.mvaCategory=(*mvaCategories)[elPtr];
+      //auto const & pfIso = el->pfIsolationVariables();
+      //trEl.rIso = (pfIso.sumChargedHadronPt + std::max(0., pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5*pfIso.sumPUPt))/el->pt();
+      //trEl.isMediumMVA = (*medium_id_decisions_MVA)[elPtr];
+      //trEl.isTightMVA = (*tight_id_decisions_MVA)[elPtr];
+      //trEl.isTightMVASlope = ElectronTightMVA(el->superCluster()->eta(),el->pt(),(*mvaValues)[elPtr]);
+      //trEl.mvaValue=(*mvaValues)[elPtr];
+      //trEl.mvaCategory=(*mvaCategories)[elPtr];
       
       bool passConvVeto = !ConversionTools::hasMatchedConversion(*el,conversions,theBeamSpot->position());
       trEl.isPassConvVeto = passConvVeto;
       
-      auto itPos = std::distance(electronColl->begin(), el);
-      trEl.pUncorrected.SetXYZ(0,0,0);
-      if (itPos<electronCollUncorrected->size()) {
-        auto e = (*electronCollUncorrected).at(itPos);
-        trEl.pUncorrected.SetPtEtaPhi(e.pt(), e.superCluster()->eta(), e.superCluster()->phi());
-      }
+      //auto itPos = std::distance(electronColl->begin(), el);
+      //trEl.pUncorrected.SetXYZ(0,0,0);
+      //if (itPos<electronCollUncorrected->size()) {
+        //auto e = (*electronCollUncorrected).at(itPos);
+        //trEl.pUncorrected.SetPtEtaPhi(e.pt(), e.superCluster()->eta(), e.superCluster()->phi());
+      //}
       
       
       
@@ -992,9 +1019,9 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       dZ = abs( el->gsfTrack()->dz( vtx_point )); 
       SIP3D = abs(el->dB(pat::Electron::PV3D)/el->edB(pat::Electron::PV3D)); 
       trEl.passImpactParameter = testImpactParameters(d0,dZ,SIP3D,true,el->isEB());
-      trEl.d0=d0;
-      trEl.dZ=dZ;
-      trEl.SIP3D=SIP3D;
+      //trEl.d0=d0;
+      //trEl.dZ=dZ;
+      //trEl.SIP3D=SIP3D;
       trEl.miniIso = getPFIsolation(packedCandidates, *el);
       //trEl.mva = (*electron_mva_value) [elPtr];
       
@@ -1029,20 +1056,20 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trJet.isLoose = jetIdSelector(jet);
       jecUnc.setJetEta(jet.eta());
       jecUnc.setJetPt(jet.pt());
-      trJet.uncert = jecUnc.getUncertainty(true);
+      //trJet.uncert = jecUnc.getUncertainty(true);
       JME::JetParameters parameters = {{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, rho_}};
-      trJet.ptRes = resolution_pt.getResolution(parameters);
-      trJet.phiRes = resolution_phi.getResolution(parameters);
-      trJet.sfRes = resolution_sf.getScaleFactor(parameters);
-      trJet.sfResUp = resolution_sf.getScaleFactor(parameters, Variation::UP);
-      trJet.sfResDn = resolution_sf.getScaleFactor(parameters, Variation::DOWN);
-      trJet.uncorJecFactor = jet.jecFactor(0);
-      trJet.chf = jet.chargedHadronEnergyFraction();
-      trJet.nhf = jet.neutralHadronEnergyFraction();
-      trJet.cef = jet.chargedEmEnergyFraction();
-      trJet.nef = jet.neutralEmEnergyFraction();
-      trJet.nch = jet.chargedMultiplicity();
-      trJet.nconstituents = jet.numberOfDaughters();
+      //trJet.ptRes = resolution_pt.getResolution(parameters);
+      //trJet.phiRes = resolution_phi.getResolution(parameters);
+      //trJet.sfRes = resolution_sf.getScaleFactor(parameters);
+      //trJet.sfResUp = resolution_sf.getScaleFactor(parameters, Variation::UP);
+      //trJet.sfResDn = resolution_sf.getScaleFactor(parameters, Variation::DOWN);
+      //trJet.uncorJecFactor = jet.jecFactor(0);
+      //trJet.chf = jet.chargedHadronEnergyFraction();
+      //trJet.nhf = jet.neutralHadronEnergyFraction();
+      //trJet.cef = jet.chargedEmEnergyFraction();
+      //trJet.nef = jet.neutralEmEnergyFraction();
+      //trJet.nch = jet.chargedMultiplicity();
+      //trJet.nconstituents = jet.numberOfDaughters();
       // object matching
       trJet.hasPhotonMatch = false;
       for (tree::Photon const &ph: vPhotons_) {
@@ -1185,7 +1212,11 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
         } // genParticle loop
       }
    }
-
+   
+   if(metPt>50.){
+      //if(metPt/caloMetPt_>5.) cout<<metPt<<" "<<caloMetPt_<<" "<<metPt/caloMetPt_<<endl;
+      if(metPt/caloMetPt_>5.) return;
+   }
 
    // Generated Particles
    // status flags: https://indico.cern.ch/event/459797/contribution/2/attachments/1181555/1710844/mcaod-Nov4-2015.pdf

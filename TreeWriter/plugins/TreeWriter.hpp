@@ -242,6 +242,8 @@ private:
    // met filter tokens
    edm::EDGetTokenT<bool> BadChCandFilterToken_;
    edm::EDGetTokenT<bool> BadPFMuonFilterToken_;
+   edm::EDGetTokenT<bool> BadGlobalMuonFilterToken_;
+   edm::EDGetTokenT<bool> CloneGlobalMuonFilterToken_;
 
    // physics Objects
    std::vector<tree::Photon>   vPhotons_;
