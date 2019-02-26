@@ -818,9 +818,6 @@ void TreeWriter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trEl.phiObj = el->phi();
       trEl.etaObj = el->eta();
       
-      std::cout<<el->superCluster()->phi()<<"        "<<el->phi()<<std::endl;
-      std::cout<<el->superCluster()->eta()<<"        "<<el->eta()<<std::endl;
-      
       // VID calculation of (1/E - 1/p)
       if (el->ecalEnergy() == 0)   trEl.EoverPInv = 1e30;
       else if (!std::isfinite(el->ecalEnergy()))  trEl.EoverPInv = 1e30;

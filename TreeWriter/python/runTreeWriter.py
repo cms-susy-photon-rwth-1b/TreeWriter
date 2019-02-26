@@ -46,12 +46,14 @@ options.register ('user',
 #options.inputFiles = 'root:///user/kiesel/root-files/johannes/SinglePhoton_Run2016H-03Feb2017_ver3-v1_MINIAOD.root'
 #~ options.inputFiles = 'root:///user/dmeuser/master/root-files/MINIAOD_80X_mcRun2_asymptotic_2016_miniAODv2_Fast_PAT_500_SIM.root'
 #~ options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/GGM_GravitinoLSP_M1-50to1500_M3-1000to2500_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/06B8CB51-31EB-E711-B445-0025905A6136.root'
-options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/GGM_GravitinoLSP_M1-200to1500_M2-200to1500_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/000C44EA-F8EC-E711-8145-0242AC130002.root'
+#~ options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/GGM_GravitinoLSP_M1-200to1500_M2-200to1500_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/000C44EA-F8EC-E711-8145-0242AC130002.root'
+options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/GGM_GravitinoLSP_M1-200to1500_M2-200to1500_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/100000/0E0EDE89-9AC4-E811-9484-AC1F6B1AF16E.root'
 #~ options.inputFiles = 'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/SMS-T5qqqqHg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/00078287-CB49-E711-B388-FA163E1C5C83.root'
+#~ options.inputFiles = 'root:///net/data_cms1b/user/dmeuser/master/root-files/tching.root'
 options.outputFile = 'photonTree.root'
 #~ options.outputFile = 'overlap_lepton_2.root'
 #~ options.maxEvents = -1
-options.maxEvents = 100
+options.maxEvents = 1000
 # get and parse the command line arguments
 options.parseArguments()
 

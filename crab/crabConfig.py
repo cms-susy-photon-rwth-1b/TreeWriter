@@ -231,7 +231,8 @@ datasets["dmeuser"] = [
     #~ '/GGM_GravitinoLSP_M1-200to1500_M2-200to1500_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
     #~ '/GGM_GravitinoLSP_M1-50to1500_M3-1000to2500_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
     #~ '/SMS-T5qqqqHg_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
-    "/GJets_DR-0p4_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_qcut19_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    #~ "/GJets_DR-0p4_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_qcut19_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    '/GGM_GravitinoLSP_M1-200to1500_M2-200to1500_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUSummer16Fast_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
 ] #+ datasets["WJetsToLNu_HT"]+ datasets["GJets_HT"] + datasets["QCD_HT"] + datasets["GJets_DR-HT"] + datasets["ZJetsToNuNu_HT"]+ datasets["QCD_HT_extra"] + dataDatasets("MET") + datasets["WJetsToLNu_HT_extra"] + datasets["GJets_HT_extra"] + datasets["ZJetsToNuNu_HT_extra"] + dataDatasets("SinglePhoton")
 
 
@@ -258,6 +259,7 @@ if __name__ == '__main__':
         config.JobType.psetName = cmssw_src + 'TreeWriter/TreeWriter/python/runTreeWriter.py'
         config.JobType.pyCfgParams = ["dataset="+dataset,"user="+user]
         config.JobType.inputFiles  = [cmssw_src+"TreeWriter/TreeWriter/"+x for x in ["Spring16_25nsFastSimV1_MC.db"]]
+        config.JobType.allowUndistributedCMSSW = True
 
 
         config.section_("Data")
